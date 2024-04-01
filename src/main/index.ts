@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, screen } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, screen, globalShortcut } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -47,6 +47,7 @@ function createWindow(): void {
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    mainWindow.webContents.openDevTools({ mode: 'detach' }) // DevTools를 엽니다.
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
@@ -68,17 +69,31 @@ function createWindow(): void {
   // mouseIpcProtocol(mainWindow)
   //   tray.on('right-click', showMenu)
 }
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+const keyboardControl = () => {
+  app.on('browser-window-focus', () => {
+    globalShortcut.register('CommandOrControl+W', () => {
+      // Prevent the default behavior
+      console.log('CommandOrControl+W is disabled')
+    })
+    //mac
+    globalShortcut.register('CommandOrControl+R', () => {
+      console.log('CommandOrControl+R is pressed: Shortcut Disabled')
+    })
+    //window
+    globalShortcut.register('F5', () => {
+      console.log('F5 is pressed: Shortcut Disabled')
+    })
+  })
+  app.on('browser-window-blur', () => {
+    globalShortcut.unregister('CommandOrControl+W')
+    globalShortcut.unregister('CommandOrControl+R')
+    globalShortcut.unregister('F5')
+  })
+}
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
@@ -93,6 +108,8 @@ app.whenReady().then(() => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  keyboardControl()
 })
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
