@@ -1,25 +1,18 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 const ScreenDragStyle = styled.svg`
-  cursor: pointer;
-  /* -webkit-app-region: drag; */
-`;
+  -webkit-app-region: drag;
+`
 
 type Props = {
-  width: number;
-  height: number;
-  mouseMoveHandler: (e: React.MouseEvent<SVGSVGElement>) => void;
-  mouseUpHandler: () => void;
-  mouseDownHandler: (e: React.MouseEvent<SVGSVGElement>) => void;
-};
+  width: number
+  height: number
+  mouseMoveHandler: (e: React.MouseEvent<SVGSVGElement>) => void
+  mouseUpHandler: () => void
+  mouseDownHandler: (e: React.MouseEvent<SVGSVGElement>) => void
+}
 
-function ScreenDrag({
-  width,
-  height,
-  mouseMoveHandler,
-  mouseUpHandler,
-  mouseDownHandler,
-}: Props) {
+function ScreenDrag({ width, height, mouseMoveHandler, mouseUpHandler, mouseDownHandler }: Props) {
   return (
     <ScreenDragStyle
       xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +79,7 @@ function ScreenDrag({
         </clipPath>
       </defs>
     </ScreenDragStyle>
-  );
+  )
 }
 
-export default ScreenDrag;
+export default ScreenDrag

@@ -1,11 +1,10 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, screen } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import path = require('path')
 import { handleWindow, showWindow } from './windowHandler'
 import { createTray } from './trayhandler'
-import { mouseIpcProtocol } from './IpcProtocol'
 
 function createWindow(): void {
   // Create the browser window.
@@ -19,7 +18,7 @@ function createWindow(): void {
     fullscreenable: false,
     resizable: false,
     darkTheme: false,
-    movable: false,
+    // movable: true,
     transparent: false,
     icon: path.join(__dirname, icon),
     // backgroundColor: "white",
@@ -66,7 +65,7 @@ function createWindow(): void {
     showWindow(tray, mainWindow)
   })
   mainWindow?.isDestroyed()
-  mouseIpcProtocol(mainWindow)
+  // mouseIpcProtocol(mainWindow)
   //   tray.on('right-click', showMenu)
 }
 

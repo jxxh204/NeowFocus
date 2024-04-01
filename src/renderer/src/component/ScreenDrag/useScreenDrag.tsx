@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 
+// 문제 생기면 다시 사용하도록 send만 제거해놓음.
 function useScreenDrag() {
   const on = useRef(false)
   // renderer Process
@@ -11,7 +12,7 @@ function useScreenDrag() {
     }
     if (on.current) {
       console.log('move', move)
-      window.message.send('MOUSE_MOVE', move)
+      // window.message.send('MOUSE_MOVE', move)
     }
   }
 
@@ -26,7 +27,7 @@ function useScreenDrag() {
       mouseX: e.screenX,
       mouseY: e.screenY
     }
-    window.message.send('MOUSE_DOWN', move)
+    // window.message.send('MOUSE_DOWN', move)
     on.current = true
     console.log('down')
   }
