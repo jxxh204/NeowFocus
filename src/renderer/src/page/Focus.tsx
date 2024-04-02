@@ -5,6 +5,7 @@ import ScreenDrag from '@renderer/component/ScreenDrag/ScreenDrag'
 import useScreenDrag from '@renderer/component/ScreenDrag/useScreenDrag'
 import SkipButton from '@renderer/component/SkipButton'
 import { useStorage } from '@renderer/context/TaskContext'
+import { useEffect } from 'react'
 import styled from 'styled-components'
 const DefaultTaskWrap = styled.article`
   width: 100%;
@@ -25,7 +26,6 @@ const TaskName = styled.div`
 export function FocusDefault(): JSX.Element {
   const { storage } = useStorage()
   const { mouseMoveHandler, mouseUpHandler, mouseDownHandler } = useScreenDrag()
-
   return (
     <DefaultTaskWrap>
       <TaskName>{storage.taskName}</TaskName>
@@ -73,6 +73,9 @@ const CountSection = styled.section`
 export function FocusControl() {
   const { storage } = useStorage()
   const buttonHandler = () => {}
+  useEffect(() => {
+    console.log(storage.minute)
+  }, [storage.minute])
   return (
     <ControlTaskWrap>
       <Header />
