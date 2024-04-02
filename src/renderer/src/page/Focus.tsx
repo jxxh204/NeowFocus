@@ -23,6 +23,7 @@ const DefaultTaskStyle = styled.div`
 export function FocusDefault(): JSX.Element {
   const { storage } = useStorage()
   const { mouseMoveHandler, mouseUpHandler, mouseDownHandler } = useScreenDrag()
+
   return (
     <DefaultTaskWrap>
       <DefaultTaskStyle>{storage.taskName}</DefaultTaskStyle>

@@ -38,8 +38,7 @@ function Input() {
           <Time value="40">40분</Time>
           <Time value="60">60분</Time>
         </SelectTimer>
-
-        <Button type="submit" name="집중 시작!" />
+        {task.timer && task.taskName ? <Button type="submit" name="집중 시작!" /> : null}
       </Main>
     </>
   )
