@@ -1,5 +1,5 @@
 function Complete() {
-  return;
+  return <div>complete</div>
 }
 
-export default Complete;
+export default Complete

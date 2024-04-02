@@ -1,6 +1,7 @@
 import CountDown from '@renderer/component/CountDown/CountDown'
 import ScreenDrag from '@renderer/component/ScreenDrag/ScreenDrag'
 import useScreenDrag from '@renderer/component/ScreenDrag/useScreenDrag'
+import SkipButton from '@renderer/component/SkipButton'
 import { useStorage } from '@renderer/context/TaskContext'
 import styled from 'styled-components'
 const DefaultTaskWrap = styled.section`
@@ -19,7 +20,7 @@ const DefaultTaskStyle = styled.div`
   width: 100%;
 `
 
-export function FocusDefault() {
+export function FocusDefault(): JSX.Element {
   const { storage } = useStorage()
   const { mouseMoveHandler, mouseUpHandler, mouseDownHandler } = useScreenDrag()
   return (
@@ -33,6 +34,7 @@ export function FocusDefault() {
         mouseUpHandler={mouseUpHandler}
         mouseDownHandler={mouseDownHandler}
       />
+      <SkipButton navi={'complete'} />
     </DefaultTaskWrap>
   )
 }
