@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import menu from '../asset/MenuIcon.svg'
 type Props = {
-  name: string
+  name?: string
 }
 
 const HeaderStyle = styled.header`
@@ -17,7 +17,8 @@ const HeaderStyle = styled.header`
 function Header({ name }: Props) {
   return (
     <HeaderStyle>
-      <h2>{name}</h2>
+      {name ? <h2>{name}</h2> : null}
+
       <img src={menu} />
     </HeaderStyle>
   )

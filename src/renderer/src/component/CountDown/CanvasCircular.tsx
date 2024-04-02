@@ -11,6 +11,7 @@ interface CanvasCircularProps {
 
 const CanvasCircularWrap = styled.div`
   position: relative;
+  padding: 3px;
 `
 const TextStyle = styled.p`
   /* padding: 0; */

@@ -1,7 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import useCountDown from './useCountDown'
 import CanvasCircular from './CanvasCircular'
-import CircularProgress from './CircularProgress'
 
 type Props = {
   countMinutes: number
