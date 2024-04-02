@@ -5,9 +5,9 @@ import { useLocalStorage } from './useLocalStorage'
 const initialState = {
   // 전역으로 돌려야할듯.
   taskName: '',
-  timer: 0,
-  minute: 0
-  // endTime,
+  minute: 0, // timer
+  endTime: 0,
+  done: false
   //  saveTime
 }
 export type InitialState = typeof initialState

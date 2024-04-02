@@ -1,4 +1,4 @@
-import React, { Children, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
 interface CanvasCircularProps {
@@ -81,13 +81,6 @@ const CanvasCircular: React.FC<CanvasCircularProps> = ({
       context.strokeStyle = 'white'
 
       context.stroke()
-      // if (text) {
-      //   context.beginPath()
-
-      //   context.font = '12px'
-      //   context.font = context.fillText(text, 0, centerY)
-      //   // context.textAlign = 'center'
-      // }
     }
   }, [percentage])
 

@@ -5,8 +5,9 @@ import ScreenDrag from '@renderer/component/ScreenDrag/ScreenDrag'
 import useScreenDrag from '@renderer/component/ScreenDrag/useScreenDrag'
 import SkipButton from '@renderer/component/SkipButton'
 import { useStorage } from '@renderer/context/TaskContext'
-import { useEffect } from 'react'
 import styled from 'styled-components'
+import useCountDown from '../hooks/useCountDown'
+import { useEffect } from 'react'
 const DefaultTaskWrap = styled.article`
   width: 100%;
   display: flex;
@@ -25,11 +26,18 @@ const TaskName = styled.div`
 
 export function FocusDefault(): JSX.Element {
   const { storage } = useStorage()
+  const { remainingTime, startCount, setTime } = useCountDown(storage.minute)
+
+  useEffect(() => {
+    setTime()
+    startCount()
+  }, [])
   const { mouseMoveHandler, mouseUpHandler, mouseDownHandler } = useScreenDrag()
+  //제거하기.
   return (
     <DefaultTaskWrap>
       <TaskName>{storage.taskName}</TaskName>
-      <CountDown countMinutes={storage.timer} color={'black'} isMinutesTimer={true} />
+      <CountDown remainingTime={remainingTime} color={'black'} isMinutesTimer={true} />
       <ScreenDrag
         width={34}
         height={30}
@@ -72,10 +80,14 @@ const CountSection = styled.section`
 
 export function FocusControl() {
   const { storage } = useStorage()
-  const buttonHandler = () => {}
+  const { remainingTime, startCount, setTime } = useCountDown(storage.minute)
+
   useEffect(() => {
-    console.log(storage.minute)
-  }, [storage.minute])
+    setTime()
+    startCount()
+  }, [])
+  const buttonHandler = () => {}
+
   return (
     <ControlTaskWrap>
       <Header />
@@ -83,7 +95,7 @@ export function FocusControl() {
         <ControlTaskName>{storage.taskName}</ControlTaskName>
         <CountSection>
           <Button name="작업완료" onClick={buttonHandler} />
-          <CountDown countMinutes={storage.timer} color={'black'} isMinutesTimer={true} />
+          <CountDown remainingTime={remainingTime} color={'black'} isMinutesTimer={true} />
         </CountSection>
       </Body>
     </ControlTaskWrap>

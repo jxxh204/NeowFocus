@@ -4,27 +4,22 @@ import InputTask from '@renderer/component/InputTask'
 import Main from '@renderer/component/Main'
 import SelectTimer from '@renderer/component/SelectTime/SelectTimer'
 import Time from '@renderer/component/SelectTime/Time'
-import {
-  useTaskChangeContext,
-  useTaskContext,
-  useTaskDispatchContext
-} from '@renderer/context/TaskContext'
+import { useTaskChangeContext, useTaskContext } from '@renderer/context/TaskContext'
 import { useNavigate } from 'react-router-dom'
 
 function Input() {
   const task = useTaskContext()
   const changeContext = useTaskChangeContext()
-  const { dispatch } = useTaskDispatchContext()
   const navigate = useNavigate()
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(task?.timer)
+    console.log(task?.minute)
     if (!task?.taskName) return alert('태스크를 입력해주세요.')
 
-    if (!task?.timer) return alert('time을 선택해주세요.')
+    if (!task?.minute) return alert('time을 선택해주세요.')
     // 유효성 검사.
-    dispatch({ name: 'minute', type: 'SET_TASK', value: new Date().getTime() })
+    // dispatch({ name: 'minute', type: 'SET_TASK', value: new Date().getTime() })
     navigate('/focus_control')
   }
   return (
@@ -33,12 +28,12 @@ function Input() {
       <Main onSubmit={onSubmit}>
         <InputTask name="taskName" onChange={changeContext?.onChange} />
 
-        <SelectTimer value={task?.timer} name="timer" onChange={changeContext?.onChange}>
+        <SelectTimer value={task?.minute} name="minute" onChange={changeContext?.onChange}>
           <Time value="20">20분</Time>
           <Time value="40">40분</Time>
           <Time value="60">60분</Time>
         </SelectTimer>
-        {task.timer && task.taskName ? <Button type="submit" name="집중 시작!" /> : null}
+        {task.minute && task.taskName ? <Button type="submit" name="집중 시작!" /> : null}
       </Main>
     </>
   )
