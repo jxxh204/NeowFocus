@@ -5,7 +5,7 @@ export type TaskName = 'taskName' | 'minute' | 'endTime' | 'done'
 export type TaskAction = {
   type: TaskType
   name: TaskName
-  value: string | number
+  value: string | number | boolean
 }
 export type T_ChangeHandler = ChangeEventHandler<HTMLInputElement>
 

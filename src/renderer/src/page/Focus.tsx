@@ -4,10 +4,11 @@ import Header from '@renderer/component/Header'
 import ScreenDrag from '@renderer/component/ScreenDrag/ScreenDrag'
 import useScreenDrag from '@renderer/component/ScreenDrag/useScreenDrag'
 import SkipButton from '@renderer/component/SkipButton'
-import { useStorage } from '@renderer/context/TaskContext'
+import { useStorage, useTaskDispatchContext } from '@renderer/context/TaskContext'
 import styled from 'styled-components'
 import useCountDown from '../hooks/useCountDown'
 import { useEffect } from 'react'
+import AddTime from '@renderer/component/AddTime'
 const DefaultTaskWrap = styled.article`
   width: 100%;
   display: flex;
@@ -76,17 +77,23 @@ const ControlTaskName = styled.div`
 const CountSection = styled.section`
   display: flex;
   flex-direction: row;
+  gap: ${({ theme }) => theme.size.gap};
 `
 
 export function FocusControl() {
   const { storage } = useStorage()
-  const { remainingTime, startCount, setTime } = useCountDown(storage.minute)
+  const { dispatch } = useTaskDispatchContext()
+  const { remainingTime, startCount, setTime, stopCount } = useCountDown(storage.minute)
 
   useEffect(() => {
     setTime()
     startCount()
   }, [])
-  const buttonHandler = () => {}
+  const buttonHandler = () => {
+    dispatch({ name: 'endTime', type: 'SET_TASK', value: remainingTime.time })
+    dispatch({ name: 'done', type: 'SET_TASK', value: true })
+    stopCount()
+  }
 
   return (
     <ControlTaskWrap>
@@ -95,7 +102,11 @@ export function FocusControl() {
         <ControlTaskName>{storage.taskName}</ControlTaskName>
         <CountSection>
           <Button name="작업완료" onClick={buttonHandler} />
-          <CountDown remainingTime={remainingTime} color={'black'} isMinutesTimer={true} />
+          {storage.done ? (
+            <AddTime size={26} />
+          ) : (
+            <CountDown remainingTime={remainingTime} color={'black'} isMinutesTimer={true} />
+          )}
         </CountSection>
       </Body>
     </ControlTaskWrap>
