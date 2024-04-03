@@ -10,6 +10,7 @@ import useCountDown from '../hooks/useCountDown'
 import { useEffect } from 'react'
 import AddTime from '@renderer/component/AddTime'
 import { useNavigate } from 'react-router-dom'
+import Complete from '@renderer/component/Modal/Complete'
 const DefaultTaskWrap = styled.article`
   width: 100%;
   display: flex;
@@ -114,6 +115,7 @@ export function FocusControl() {
 
   return (
     <ControlTaskWrap>
+      <Complete isOpen={true} />
       <Header />
       <Body>
         <ControlTaskName>{storage.taskName}</ControlTaskName>

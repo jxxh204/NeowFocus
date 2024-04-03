@@ -9,7 +9,6 @@ function Router() {
       <Route path="/" element={<Input />} />
       <Route path="/focus" element={<FocusDefault />} />
       <Route path="/focus_control" element={<FocusControl />} />
-      <Route path="/complete" element={<Complete />} />
       {/* <Route path="/" element={<FocusDefault />} /> */}
     </Routes>
   )
