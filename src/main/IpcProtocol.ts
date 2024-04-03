@@ -1,4 +1,4 @@
-import { ipcMain, screen } from 'electron'
+import { ipcMain } from 'electron'
 import { MouseMove } from '../renderer/src/type/interface'
 
 // 제거

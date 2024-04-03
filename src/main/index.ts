@@ -2,11 +2,10 @@ import { app, shell, BrowserWindow, ipcMain, screen, globalShortcut } from 'elec
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import path = require('path')
 import { handleWindow, showWindow } from './windowHandler'
 import { createTray } from './trayhandler'
 
-function createWindow(): void {
+function createWindow(): BrowserWindow {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 400,
@@ -20,7 +19,7 @@ function createWindow(): void {
     darkTheme: false,
     // movable: true,
     transparent: false,
-    icon: path.join(__dirname, icon),
+    icon: join(__dirname, icon),
     // backgroundColor: "white",
     vibrancy: 'popover', // in my case...
     visualEffectState: 'followWindow',
@@ -68,8 +67,28 @@ function createWindow(): void {
   mainWindow?.isDestroyed()
   // mouseIpcProtocol(mainWindow)
   //   tray.on('right-click', showMenu)
+  return mainWindow
 }
-const keyboardControl = () => {
+
+app.whenReady().then(() => {
+  // Set app user model id for windows
+  electronApp.setAppUserModelId('com.electron')
+
+  app.on('browser-window-created', (_, window) => {
+    optimizer.watchWindowShortcuts(window)
+  })
+
+  // IPC test
+  ipcMain.on('ping', () => console.log('pong'))
+
+  const mainWindow = createWindow()
+
+  app.on('activate', function () {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+
   app.on('browser-window-focus', () => {
     globalShortcut.register('CommandOrControl+W', () => {
       // Prevent the default behavior
@@ -83,33 +102,15 @@ const keyboardControl = () => {
     globalShortcut.register('F5', () => {
       console.log('F5 is pressed: Shortcut Disabled')
     })
+
+    mainWindow.webContents.send('browser-window-focus')
   })
   app.on('browser-window-blur', () => {
     globalShortcut.unregister('CommandOrControl+W')
     globalShortcut.unregister('CommandOrControl+R')
     globalShortcut.unregister('F5')
+    mainWindow.webContents.send('browser-window-blur')
   })
-}
-app.whenReady().then(() => {
-  // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
-
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
-
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-
-  createWindow()
-
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-
-  keyboardControl()
 })
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

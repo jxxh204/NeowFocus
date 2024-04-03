@@ -9,6 +9,7 @@ import styled from 'styled-components'
 import useCountDown from '../hooks/useCountDown'
 import { useEffect } from 'react'
 import AddTime from '@renderer/component/AddTime'
+import { useNavigate } from 'react-router-dom'
 const DefaultTaskWrap = styled.article`
   width: 100%;
   display: flex;
@@ -28,10 +29,18 @@ const TaskName = styled.div`
 export function FocusDefault(): JSX.Element {
   const { storage } = useStorage()
   const { remainingTime, startCount, setTime } = useCountDown(storage.minute)
+  const navigate = useNavigate()
 
   useEffect(() => {
     setTime()
     startCount()
+    window.message.receive('browser-window-blur', () => {
+      console.log('browser-window-blur')
+      navigate('/focus_control')
+    })
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('browser-window-blur')
+    }
   }, [])
   const { mouseMoveHandler, mouseUpHandler, mouseDownHandler } = useScreenDrag()
   //제거하기.
@@ -82,12 +91,20 @@ const CountSection = styled.section`
 
 export function FocusControl() {
   const { storage } = useStorage()
+  const navigate = useNavigate()
   const { dispatch } = useTaskDispatchContext()
   const { remainingTime, startCount, setTime, stopCount } = useCountDown(storage.minute)
 
   useEffect(() => {
     setTime()
     startCount()
+    window.message.receive('browser-window-focus', () => {
+      console.log('browser-window-focus')
+      navigate('/focus')
+    })
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('browser-window-focus')
+    }
   }, [])
   const buttonHandler = () => {
     dispatch({ name: 'endTime', type: 'SET_TASK', value: remainingTime.time })
