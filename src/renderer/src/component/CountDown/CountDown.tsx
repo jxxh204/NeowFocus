@@ -9,7 +9,6 @@ type Props = {
 
 function CountDown({ remainingTime, color }: Props) {
   return (
-    // {remainingTime.time}
     <CanvasCircular
       size={50}
       strokeWidth={30}

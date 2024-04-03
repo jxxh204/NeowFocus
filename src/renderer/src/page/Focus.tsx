@@ -35,12 +35,12 @@ export function FocusDefault(): JSX.Element {
   useEffect(() => {
     setTime()
     startCount()
-    window.message.receive('browser-window-blur', () => {
-      console.log('browser-window-blur')
+    window.message.receive('browser-window-focus', () => {
+      console.log('browser-window-focus')
       navigate('/focus_control')
     })
     return () => {
-      window.electron.ipcRenderer.removeAllListeners('browser-window-blur')
+      window.electron.ipcRenderer.removeAllListeners('browser-window-focus')
     }
   }, [])
   const { mouseMoveHandler, mouseUpHandler, mouseDownHandler } = useScreenDrag()
@@ -99,23 +99,24 @@ export function FocusControl() {
   useEffect(() => {
     setTime()
     startCount()
-    window.message.receive('browser-window-focus', () => {
-      console.log('browser-window-focus')
+    window.message.receive('browser-window-blur', () => {
       navigate('/focus')
+
+      console.log('browser-window-blur', storage)
     })
+
     return () => {
-      window.electron.ipcRenderer.removeAllListeners('browser-window-focus')
+      window.electron.ipcRenderer.removeAllListeners('browser-window-blur')
     }
   }, [])
   const buttonHandler = () => {
-    dispatch({ name: 'endTime', type: 'SET_TASK', value: remainingTime.time })
     dispatch({ name: 'done', type: 'SET_TASK', value: true })
     stopCount()
   }
 
   return (
     <ControlTaskWrap>
-      <Complete isOpen={true} />
+      <Complete isOpen={storage.done} />
       <Header />
       <Body>
         <ControlTaskName>{storage.taskName}</ControlTaskName>

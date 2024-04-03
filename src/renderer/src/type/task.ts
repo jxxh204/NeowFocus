@@ -1,7 +1,7 @@
 import { ChangeEventHandler } from 'react'
 
 export type TaskType = 'SET_TASK' | 'SET_NAME' | 'SET_TIMER' | 'SET_DATE'
-export type TaskName = 'taskName' | 'minute' | 'endTime' | 'done' | 'date'
+export type TaskName = 'taskName' | 'minute' | 'time' | 'done' | 'date'
 export type TaskAction = {
   type: TaskType
   name: TaskName

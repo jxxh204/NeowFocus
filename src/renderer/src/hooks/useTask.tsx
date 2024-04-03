@@ -6,7 +6,7 @@ const initialState = {
   // 전역으로 돌려야할듯.
   taskName: '',
   minute: 0, // timer
-  endTime: 0,
+  time: 0,
   done: false
   //  saveTime
 }

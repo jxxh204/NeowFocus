@@ -35,7 +35,7 @@ type Props = {
 
 function Complete({ isOpen }: Props) {
   return (
-    <Dialog open={true}>
+    <Dialog open={isOpen}>
       <Icon>🎉</Icon>
       <p>집중해서 끝내셨군요.</p>
       <p>대단해요!</p>
