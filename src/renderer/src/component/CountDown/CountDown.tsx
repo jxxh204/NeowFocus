@@ -14,7 +14,6 @@ function CountDown({ minute, color, doneText, done }: Props) {
   const { remainingTime, startCount, stopCount } = useCountDown(Number(minute))
 
   useEffect(() => {
-    console.log('CountDown', remainingTime, minute)
     if (done) {
       stopCount()
     } else {

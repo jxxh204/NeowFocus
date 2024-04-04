@@ -8,7 +8,6 @@ function useWindowSize() {
   const windowRef = useRef('none')
   const setWindowSize = ({ windowName }: Props) => {
     if (windowRef.current === windowName) return
-    console.log('windowsize : ', windowName)
 
     switch (windowName) {
       case 'default-input':

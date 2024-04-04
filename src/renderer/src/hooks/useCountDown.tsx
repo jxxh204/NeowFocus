@@ -16,11 +16,6 @@ function useCountDown(durationInMinutes: number) {
 
   useEffect(() => {
     console.log('storage : ', storage, remainingTime)
-    if (storage.time <= 0) {
-      dispatch({ name: 'time', type: 'SET_TASK', value: remainingTime.time })
-    } else {
-      dispatch({ name: 'time', type: 'SET_TASK', value: storage.time })
-    }
 
     // stop
     if (remainingTime.time <= 0 && storage.done) {
@@ -31,6 +26,8 @@ function useCountDown(durationInMinutes: number) {
     // working
     if (isActive && remainingTime.time > -1) {
       intervalId.current = setInterval(() => {
+        dispatch({ name: 'time', type: 'SET_TASK', value: remainingTime.time })
+
         setTime()
       }, 1000) // Update every second
     }
@@ -53,7 +50,6 @@ function useCountDown(durationInMinutes: number) {
       second: formattedSeconds,
       progress: setPercent(time)
     })
-    // if (time > storage.time) dispatch({ name: 'time', type: 'SET_TASK', value: storage.time })
     if (time <= 0) dispatch({ name: 'done', type: 'SET_TASK', value: true })
   }
 
