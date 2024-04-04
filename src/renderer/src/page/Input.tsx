@@ -9,6 +9,8 @@ import {
   useTaskContext,
   useTaskDispatchContext
 } from '@renderer/context/TaskContext'
+import useWindowSize from '@renderer/hooks/useWindowSize'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function Input() {
@@ -16,7 +18,11 @@ function Input() {
   const { dispatch } = useTaskDispatchContext()
   const changeContext = useTaskChangeContext()
   const navigate = useNavigate()
+  const { setWindowSize } = useWindowSize()
 
+  useEffect(() => {
+    setWindowSize({ windowName: 'default-input' })
+  }, [])
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!task?.taskName) return

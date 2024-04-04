@@ -130,7 +130,7 @@ export function FocusControl() {
   }, [storage.done])
 
   const onClickCompleteHandler = () => {
-    // dispatch({ type: 'INIT_TASK' }) //완전 끝나고 처음으로 돌아갈 시.
+    dispatch({ type: 'INIT_TASK' }) //완전 끝나고 처음으로 돌아갈 시.
     dispatch({ name: 'done', type: 'SET_TASK', value: true })
     stopCount()
   }
