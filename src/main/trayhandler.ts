@@ -1,5 +1,5 @@
 import { nativeImage, Tray } from 'electron'
-import path = require('path')
+import path from 'path'
 
 export const createTray = (): Tray => {
   const icon = nativeImage.createFromPath(path.join(__dirname, '../../resources/tray.png'))

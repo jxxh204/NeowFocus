@@ -22,11 +22,11 @@ function useScreenDrag() {
     console.log('up')
   }
 
-  const mouseDownHandler = (e: React.MouseEvent<SVGElement>) => {
-    const move = {
-      mouseX: e.screenX,
-      mouseY: e.screenY
-    }
+  const mouseDownHandler = (_e: React.MouseEvent<SVGElement>) => {
+    // const move = {
+    //   mouseX: e.screenX,
+    //   mouseY: e.screenY
+    // }
     // window.message.send('MOUSE_DOWN', move)
     on.current = true
     console.log('down')

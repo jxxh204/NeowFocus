@@ -6,14 +6,13 @@ export const mouseIpcProtocol = (mainWindow): void => {
   let _mouseDiffX
   let _mouseDiffY
 
-  ipcMain.on('MOUSE_MOVE', (e, { mouseX, mouseY }: MouseMove) => {
+  ipcMain.on('MOUSE_MOVE', (_e: Electron.IpcMainEvent, { mouseX, mouseY }: MouseMove) => {
     const newX = mouseX - _mouseDiffX
     const newY = mouseY - _mouseDiffY
-    console.log('🚀 ~ mouseIpcProtocol ~ window:', mainWindow)
 
     mainWindow.setPosition(newX, newY, false)
   })
-  ipcMain.on('MOUSE_DOWN', (e, { mouseX, mouseY }: MouseMove) => {
+  ipcMain.on('MOUSE_DOWN', (_e: Electron.IpcMainEvent, { mouseX, mouseY }: MouseMove) => {
     const bounds = mainWindow?.getBounds()
     if (bounds) {
       _mouseDiffX = mouseX - bounds.x // 처음 마우스가 클릭된 위치
@@ -23,7 +22,7 @@ export const mouseIpcProtocol = (mainWindow): void => {
 }
 
 export const windowSizeChange = (mainWindow): void => {
-  ipcMain.on('WINDOW_SIZE_CHANGE', (e, size) => {
+  ipcMain.on('WINDOW_SIZE_CHANGE', (_e: Electron.IpcMainEvent, size) => {
     const bounds = mainWindow?.getBounds()
     if (bounds.height !== size) mainWindow.setBounds({ height: size })
   })

@@ -67,7 +67,7 @@ function useCountDown(durationInMinutes: number) {
   }
 
   const stopCount = () => {
-    clearInterval(intervalId?.current)
+    clearInterval(intervalId?.current as NodeJS.Timeout)
   }
 
   return { remainingTime, startCount, stopCount }

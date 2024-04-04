@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useReducer } from 'react'
 import { TaskAction, TaskName } from '../type/task'
 import { useLocalStorage } from './useLocalStorage'
 import useWindowSize from './useWindowSize'
@@ -16,7 +16,7 @@ export type InitialState = typeof initialState
 const reducer = (state: InitialState, action: TaskAction) => {
   switch (action.type) {
     case 'SET_TASK':
-      return { ...state, [action.name]: action.value }
+      return { ...state, [action.name ? action.name : '']: action.value }
     case 'INIT_TASK':
       return {
         taskName: '',

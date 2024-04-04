@@ -31,7 +31,7 @@ const getWindowPosition = (tray, mainWindow): void | object => {
 }
 
 export const showWindow = (tray, mainWindow: BrowserWindow): void => {
-  const position = getWindowPosition(tray, mainWindow)
+  const position = getWindowPosition(tray, mainWindow) as { x; y }
   if (position) mainWindow?.setPosition(position?.x, position?.y, false)
   mainWindow?.show()
   mainWindow?.focus()

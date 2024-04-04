@@ -1,4 +1,3 @@
-import React from 'react'
 import useTask from './hooks/useTask'
 import { TaskProvider } from './context/TaskContext'
 import { HashRouter } from 'react-router-dom'
