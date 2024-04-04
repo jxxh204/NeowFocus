@@ -4,12 +4,13 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { handleWindow, showWindow } from './windowHandler'
 import { createTray } from './trayhandler'
+import { windowSizeChange } from './IpcProtocol'
 
 function createWindow(): BrowserWindow {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 400,
-    height: 300,
+    height: 150,
     minHeight: 50,
     maxHeight: 900,
     show: false,
@@ -66,6 +67,7 @@ function createWindow(): BrowserWindow {
   })
   mainWindow?.isDestroyed()
   // mouseIpcProtocol(mainWindow)
+  windowSizeChange(mainWindow)
   //   tray.on('right-click', showMenu)
   return mainWindow
 }

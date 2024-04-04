@@ -21,3 +21,10 @@ export const mouseIpcProtocol = (mainWindow): void => {
     }
   })
 }
+
+export const windowSizeChange = (mainWindow): void => {
+  ipcMain.on('WINDOW_SIZE_CHANGE', (e, size) => {
+    const bounds = mainWindow?.getBounds()
+    if (bounds.height !== size) mainWindow.setBounds({ height: size })
+  })
+}

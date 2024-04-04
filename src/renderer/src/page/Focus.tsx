@@ -3,13 +3,13 @@ import CountDown from '@renderer/component/CountDown/CountDown'
 import Header from '@renderer/component/Header'
 import ScreenDrag from '@renderer/component/ScreenDrag/ScreenDrag'
 import useScreenDrag from '@renderer/component/ScreenDrag/useScreenDrag'
-import SkipButton from '@renderer/component/SkipButton'
 import { useStorage, useTaskDispatchContext } from '@renderer/context/TaskContext'
 import styled from 'styled-components'
 import useCountDown from '../hooks/useCountDown'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CompleteModal from '@renderer/component/Modal/CompleteModal'
+import useWindowSize from '../hooks/useWindowSize'
 const DefaultTaskWrap = styled.article`
   width: 100%;
   display: flex;
@@ -36,6 +36,8 @@ export function FocusDefault(): JSX.Element {
   const { storage } = useStorage()
   const { remainingTime, startCount } = useCountDown(storage.minute)
   const navigate = useNavigate()
+  const { setWindowSize } = useWindowSize()
+  const { mouseMoveHandler, mouseUpHandler, mouseDownHandler } = useScreenDrag()
 
   const onClickModeChange = () => {
     navigate('/focus_control')
@@ -44,6 +46,7 @@ export function FocusDefault(): JSX.Element {
   useEffect(() => {
     console.log('🚀 ~ useEffect ~ useEffect: focusDefault')
     startCount()
+    setWindowSize({ windowName: 'default-focus' })
     // window.message.receive('browser-window-focus', () => {
     //   console.log('browser-window-focus')
 
@@ -51,8 +54,8 @@ export function FocusDefault(): JSX.Element {
     return () => {
       window.electron.ipcRenderer.removeAllListeners('browser-window-focus')
     }
-  }, [])
-  const { mouseMoveHandler, mouseUpHandler, mouseDownHandler } = useScreenDrag()
+  }, [storage.done])
+
   //제거하기.
   return (
     <DefaultTaskWrap>
@@ -110,10 +113,12 @@ export function FocusControl() {
   const navigate = useNavigate()
   const { dispatch } = useTaskDispatchContext()
   const { remainingTime, startCount, stopCount } = useCountDown(storage.minute)
+  const { setWindowSize } = useWindowSize()
 
   useEffect(() => {
     // if (!storage.done) {
     // CompleteModal이 계속 생겨서 적용.
+    setWindowSize({ windowName: 'focus' })
     startCount()
     window.message.receive('browser-window-blur', () => {
       navigate('/focus')

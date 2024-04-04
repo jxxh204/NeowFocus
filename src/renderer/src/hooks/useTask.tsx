@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useState } from 'react'
 import { TaskAction, TaskName } from '../type/task'
 import { useLocalStorage } from './useLocalStorage'
+import useWindowSize from './useWindowSize'
 
 const initialState = {
   // 전역으로 돌려야할듯.
@@ -32,11 +33,15 @@ const reducer = (state: InitialState, action: TaskAction) => {
 function useTask() {
   const [task, taskDispatch] = useReducer(reducer, initialState)
   const [storage, setStorage] = useLocalStorage('task', task)
+  const { setWindowSize } = useWindowSize()
 
   useEffect(() => {
-    // if (!storage?.taskName)
     setStorage(task)
-    console.log(task)
+    if (task?.taskName && task?.minute) {
+      setWindowSize({ windowName: 'input' })
+    } else {
+      setWindowSize({ windowName: 'default-input' })
+    }
   }, [task])
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

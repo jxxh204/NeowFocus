@@ -19,8 +19,8 @@ function Input() {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!task?.taskName) return alert('태스크를 입력해주세요.')
-    if (!task?.minute) return alert('time을 선택해주세요.')
+    if (!task?.taskName) return
+    if (!task?.minute) return
     // 유효성 검사.
 
     dispatch({ name: 'done', type: 'SET_TASK', value: false })
