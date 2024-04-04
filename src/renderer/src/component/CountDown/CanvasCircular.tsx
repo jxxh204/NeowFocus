@@ -16,7 +16,7 @@ const CanvasCircularWrap = styled.div`
 const TextStyle = styled.p`
   /* padding: 0; */
   text-align: center;
-  width: 70%;
+  width: 80%;
   position: absolute;
   top: 50%;
   left: 50%;

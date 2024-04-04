@@ -5,7 +5,7 @@ function useCountDown(durationInMinutes: number) {
   const { storage } = useStorage()
   const { dispatch } = useTaskDispatchContext()
   const [remainingTime, setRemainingTime] = useState({
-    time: storage.time ? storage.time : durationInMinutes * 60,
+    time: storage.time > 0 ? storage.time : durationInMinutes * 60,
     second: '00',
     minute: '00',
     progress: 0
@@ -15,9 +15,10 @@ function useCountDown(durationInMinutes: number) {
   const intervalId = useRef<NodeJS.Timer>()
 
   useEffect(() => {
-    if (!storage.time) dispatch({ name: 'time', type: 'SET_TASK', value: remainingTime.time })
+    console.log(storage, remainingTime, durationInMinutes)
+    if (storage.time < 0) dispatch({ name: 'time', type: 'SET_TASK', value: remainingTime.time })
 
-    if (remainingTime.time === 0 || storage.done) {
+    if (remainingTime.time <= 0 && storage.done) {
       stopCount()
       setIsActive(false)
     }
@@ -29,7 +30,7 @@ function useCountDown(durationInMinutes: number) {
     }
 
     return () => stopCount() // Cleanup interval on component unmount
-  }, [remainingTime])
+  }, [remainingTime.time])
 
   const setTime = () => {
     const time = remainingTime.time - 1
@@ -59,9 +60,6 @@ function useCountDown(durationInMinutes: number) {
 
   const startCount = () => {
     console.log(storage.time, remainingTime.time)
-    // if (storage.time < remainingTime.time)
-    //   //모드가 변경될 경우 유지하기 위해.
-    //   setRemainingTime((prev) => ({ ...prev, time: storage.time }))
     setTime()
     setIsActive(true)
   }

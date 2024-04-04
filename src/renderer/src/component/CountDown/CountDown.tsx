@@ -1,15 +1,27 @@
+import useCountDown from '@renderer/hooks/useCountDown'
 import AddTime from '../AddTime'
 import CanvasCircular from './CanvasCircular'
-import { remainingTime } from '@renderer/type/count'
+import { useEffect } from 'react'
 
 type Props = {
-  remainingTime: remainingTime
+  minute: number
   color: string
   doneText?: string
   done: boolean
 }
 
-function CountDown({ remainingTime, color, doneText, done }: Props) {
+function CountDown({ minute, color, doneText, done }: Props) {
+  const { remainingTime, startCount, stopCount } = useCountDown(Number(minute))
+
+  useEffect(() => {
+    console.log('CountDown', remainingTime, minute)
+    if (done) {
+      stopCount()
+    } else {
+      startCount()
+    }
+  }, [done])
+
   if (done && !doneText) {
     return <AddTime size={26} />
   }
