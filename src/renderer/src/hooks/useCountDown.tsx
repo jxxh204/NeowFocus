@@ -17,13 +17,15 @@ function useCountDown(durationInMinutes: number) {
   useEffect(() => {
     if (!storage.time) dispatch({ name: 'time', type: 'SET_TASK', value: remainingTime.time })
 
+    if (remainingTime.time === 0 || storage.done) {
+      stopCount()
+      setIsActive(false)
+    }
+
     if (isActive && remainingTime.time > -1) {
       intervalId.current = setInterval(() => {
         setTime()
       }, 1000) // Update every second
-    } else if (remainingTime.time === 0) {
-      stopCount()
-      setIsActive(false)
     }
 
     return () => stopCount() // Cleanup interval on component unmount
