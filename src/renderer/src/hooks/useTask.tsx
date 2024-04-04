@@ -41,12 +41,14 @@ function useTask() {
     } else {
       setWindowSize({ windowName: 'default-input' })
     }
-    setStorage(task)
   }, [task.taskName, task.minute])
 
   useEffect(() => {
-    setStorage(task)
-  }, [task.time])
+    console.log('🚀 ~ useEffect ~ useEffect: context', storage, task)
+
+    setStorage(task) // 스토리지, 태스크를 합쳐야할까?
+  }, [task])
+  //모든 변경사항을 수집해야함.
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name as TaskName

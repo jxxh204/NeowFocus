@@ -128,6 +128,7 @@ export function FocusControl() {
 
   const onClickCompleteHandler = () => {
     dispatch({ name: 'done', type: 'SET_TASK', value: true })
+    console.log('??')
   }
 
   return (
