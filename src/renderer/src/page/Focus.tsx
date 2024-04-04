@@ -112,15 +112,15 @@ export function FocusControl() {
   const { remainingTime, startCount, stopCount } = useCountDown(storage.minute)
 
   useEffect(() => {
-    if (!storage.done) {
-      // CompleteModal이 계속 생겨서 적용.
-      startCount()
-      window.message.receive('browser-window-blur', () => {
-        navigate('/focus')
+    // if (!storage.done) {
+    // CompleteModal이 계속 생겨서 적용.
+    startCount()
+    window.message.receive('browser-window-blur', () => {
+      navigate('/focus')
 
-        console.log('browser-window-blur', storage)
-      })
-    }
+      console.log('browser-window-blur', storage)
+    })
+    // }
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('browser-window-blur')
@@ -143,7 +143,7 @@ export function FocusControl() {
           <Button name="작업완료" onClick={onClickCompleteHandler} />
           <CountDown remainingTime={remainingTime} color={'black'} done={storage.done} />
         </CountSection>
-        <SkipButton navi={'/'} name="prev" />
+        {/* <SkipButton navi={'/'} name="prev" /> */}
       </Body>
     </ControlTaskWrap>
   )

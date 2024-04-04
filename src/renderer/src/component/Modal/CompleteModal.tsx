@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 const CompleteModalStyle = styled.div`
@@ -37,21 +38,23 @@ type Props = {
 
 function CompleteModal({ isOpen }: Props) {
   if (!isOpen) return null
-  const [open, setOpen] = useState(true)
+  // const [open, setOpen] = useState(true)
+  const navigate = useNavigate()
   useEffect(() => {
     console.log('🚀 ~ useEffect ~ useEffect: Complete')
     setTimeout(() => {
-      setOpen(false)
+      // setOpen(false)
+      navigate('/')
     }, 1000)
   }, [])
-  if (open)
-    return (
-      <CompleteModalStyle>
-        <Icon>🎉</Icon>
-        <p>집중해서 끝내셨군요.</p>
-        <p>대단해요!</p>
-      </CompleteModalStyle>
-    )
+  // if (open)
+  return (
+    <CompleteModalStyle>
+      <Icon>🎉</Icon>
+      <p>집중해서 끝내셨군요.</p>
+      <p>대단해요!</p>
+    </CompleteModalStyle>
+  )
 }
 
 export default CompleteModal

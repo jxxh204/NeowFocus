@@ -19,7 +19,7 @@ function CountDown({ remainingTime, color, doneText, done }: Props) {
       strokeWidth={30}
       color={color}
       percentage={remainingTime.progress}
-      text={doneText ? doneText : `${remainingTime.minute} : ${remainingTime.second}`}
+      text={done && doneText ? doneText : `${remainingTime.minute} : ${remainingTime.second}`}
     ></CanvasCircular>
   )
 }
