@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import styled from 'styled-components'
 
-const Dialog = styled.dialog`
+const CompleteModal = styled.div`
   top: 0;
+  left: 0;
   position: fixed;
   border: none;
   width: 100%;
@@ -34,12 +36,19 @@ type Props = {
 }
 
 function Complete({ isOpen }: Props) {
+  useEffect(() => {
+    console.log('🚀 ~ useEffect ~ useEffect: Complete')
+    // setTimeout(() => {
+
+    // }, 1000)
+  }, [])
+  if (!isOpen) return null
   return (
-    <Dialog open={isOpen}>
+    <CompleteModal>
       <Icon>🎉</Icon>
       <p>집중해서 끝내셨군요.</p>
       <p>대단해요!</p>
-    </Dialog>
+    </CompleteModal>
   )
 }
 

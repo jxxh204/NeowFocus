@@ -2,8 +2,10 @@ import styled from 'styled-components'
 
 const ScreenDragStyle = styled.svg`
   -webkit-app-region: drag;
+  cursor: grab;
 `
 
+// mouseMoveHandler는 사용해야할 수도 있으니 첫리뷰까지는 그대로 두자.
 type Props = {
   width: number
   height: number

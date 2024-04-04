@@ -29,7 +29,6 @@ const reducer = (state: InitialState, action: TaskAction) => {
 
 function useTask() {
   const [task, taskDispatch] = useReducer(reducer, initialState)
-  const [countDown, setCountDown] = useState()
   const [storage, setStorage] = useLocalStorage('task', task)
 
   useEffect(() => {

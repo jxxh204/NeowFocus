@@ -26,19 +26,30 @@ const TaskName = styled.div`
   padding: 12px 8px;
   width: 100%;
 `
+const ModeChangeArea = styled.section`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  cursor: pointer;
+`
 
 export function FocusDefault(): JSX.Element {
   const { storage } = useStorage()
   const { remainingTime, startCount, setTime } = useCountDown(storage.minute)
   const navigate = useNavigate()
 
+  const onClickModeChange = () => {
+    navigate('/focus_control')
+  }
+
   useEffect(() => {
+    console.log('🚀 ~ useEffect ~ useEffect:')
     setTime()
     startCount()
-    window.message.receive('browser-window-focus', () => {
-      console.log('browser-window-focus')
-      navigate('/focus_control')
-    })
+    // window.message.receive('browser-window-focus', () => {
+    //   console.log('browser-window-focus')
+
+    // })
     return () => {
       window.electron.ipcRenderer.removeAllListeners('browser-window-focus')
     }
@@ -47,8 +58,10 @@ export function FocusDefault(): JSX.Element {
   //제거하기.
   return (
     <DefaultTaskWrap>
-      <TaskName>{storage.taskName}</TaskName>
-      <CountDown remainingTime={remainingTime} color={'black'} isMinutesTimer={true} />
+      <ModeChangeArea onClick={onClickModeChange}>
+        <TaskName>{storage.taskName}</TaskName>
+        <CountDown remainingTime={remainingTime} color={'black'} isMinutesTimer={true} />
+      </ModeChangeArea>
       <ScreenDrag
         width={34}
         height={30}
@@ -56,7 +69,6 @@ export function FocusDefault(): JSX.Element {
         mouseUpHandler={mouseUpHandler}
         mouseDownHandler={mouseDownHandler}
       />
-      <SkipButton navi={'complete'} />
     </DefaultTaskWrap>
   )
 }
@@ -128,6 +140,7 @@ export function FocusControl() {
             <CountDown remainingTime={remainingTime} color={'black'} isMinutesTimer={true} />
           )}
         </CountSection>
+        <SkipButton navi={'/'} name="prev" />
       </Body>
     </ControlTaskWrap>
   )

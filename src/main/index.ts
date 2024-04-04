@@ -103,7 +103,7 @@ app.whenReady().then(() => {
       console.log('F5 is pressed: Shortcut Disabled')
     })
 
-    mainWindow.webContents.send('browser-window-focus')
+    // mainWindow.webContents.send('browser-window-focus')
   })
   app.on('browser-window-blur', () => {
     globalShortcut.unregister('CommandOrControl+W')

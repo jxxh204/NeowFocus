@@ -17,14 +17,14 @@ const ButtonStyle = styled.input`
   }
 `
 
-function SkipButton({ navi }: { navi: string }): JSX.Element {
+function SkipButton({ navi, name }: { navi: string; name: string }): JSX.Element {
   const navigate = useNavigate()
 
   const onClickHandler = () => {
     navigate(`/${navi}`)
   }
 
-  return <ButtonStyle type="button" onClick={onClickHandler} value="skip"></ButtonStyle>
+  return <ButtonStyle type="button" onClick={onClickHandler} value={name}></ButtonStyle>
 }
 
 export default SkipButton

@@ -22,6 +22,8 @@ function Input() {
     if (!task?.taskName) return alert('태스크를 입력해주세요.')
     if (!task?.minute) return alert('time을 선택해주세요.')
     // 유효성 검사.
+
+    dispatch({ name: 'done', type: 'SET_TASK', value: false })
     dispatch({ name: 'date', type: 'SET_TASK', value: new Date().getTime() })
     navigate('/focus')
   }
