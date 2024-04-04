@@ -44,7 +44,6 @@ export function FocusDefault(): JSX.Element {
   }
 
   useEffect(() => {
-    console.log('🚀 ~ useEffect ~ useEffect: focusDefault')
     startCount()
     setWindowSize({ windowName: 'default-focus' })
     // window.message.receive('browser-window-focus', () => {
@@ -122,8 +121,6 @@ export function FocusControl() {
     startCount()
     window.message.receive('browser-window-blur', () => {
       navigate('/focus')
-
-      console.log('browser-window-blur', storage)
     })
     // }
 

@@ -36,13 +36,17 @@ function useTask() {
   const { setWindowSize } = useWindowSize()
 
   useEffect(() => {
-    setStorage(task)
     if (task?.taskName && task?.minute) {
       setWindowSize({ windowName: 'input' })
     } else {
       setWindowSize({ windowName: 'default-input' })
     }
-  }, [task])
+  }, [task.taskName, task.minute])
+
+  useEffect(() => {
+    setStorage(task)
+    console.log('useTask')
+  }, [task.time])
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name as TaskName
