@@ -5,8 +5,8 @@ import { useLocalStorage } from './useLocalStorage'
 const initialState = {
   // 전역으로 돌려야할듯.
   taskName: '',
-  minute: 0, // timer
-  time: 0,
+  minute: 0,
+  time: 0, // microSecond
   done: false
   //  saveTime
 }
@@ -16,12 +16,14 @@ const reducer = (state: InitialState, action: TaskAction) => {
   switch (action.type) {
     case 'SET_TASK':
       return { ...state, [action.name]: action.value }
-    // case "SET_NAME":
-    //   return { ...state, taskName: action.value };
-    // case "SET_TIMER":
-    //   return { ...state, timer: action.value };
-    // case "SET_DATE":
-    //   return { ...state, date: action.value };
+    case 'INIT_TASK':
+      return {
+        taskName: '',
+        minute: 0,
+        time: 0,
+        done: false
+      }
+
     default:
       return state
   }

@@ -10,7 +10,7 @@ import useCountDown from '../hooks/useCountDown'
 import { useEffect } from 'react'
 import AddTime from '@renderer/component/AddTime'
 import { useNavigate } from 'react-router-dom'
-import Complete from '@renderer/component/Modal/Complete'
+import CompleteModal from '@renderer/component/Modal/CompleteModal'
 const DefaultTaskWrap = styled.article`
   width: 100%;
   display: flex;
@@ -35,7 +35,7 @@ const ModeChangeArea = styled.section`
 
 export function FocusDefault(): JSX.Element {
   const { storage } = useStorage()
-  const { remainingTime, startCount, setTime } = useCountDown(storage.minute)
+  const { remainingTime, startCount } = useCountDown(storage.minute)
   const navigate = useNavigate()
 
   const onClickModeChange = () => {
@@ -43,8 +43,7 @@ export function FocusDefault(): JSX.Element {
   }
 
   useEffect(() => {
-    console.log('🚀 ~ useEffect ~ useEffect:')
-    setTime()
+    console.log('🚀 ~ useEffect ~ useEffect: focusDefault')
     startCount()
     // window.message.receive('browser-window-focus', () => {
     //   console.log('browser-window-focus')
@@ -106,34 +105,37 @@ export function FocusControl() {
   const { storage } = useStorage()
   const navigate = useNavigate()
   const { dispatch } = useTaskDispatchContext()
-  const { remainingTime, startCount, setTime, stopCount } = useCountDown(storage.minute)
+  const { remainingTime, startCount, stopCount } = useCountDown(storage.minute)
 
   useEffect(() => {
-    setTime()
-    startCount()
-    window.message.receive('browser-window-blur', () => {
-      navigate('/focus')
+    if (!storage.done) {
+      startCount()
+      window.message.receive('browser-window-blur', () => {
+        navigate('/focus')
 
-      console.log('browser-window-blur', storage)
-    })
+        console.log('browser-window-blur', storage)
+      })
+    }
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('browser-window-blur')
     }
-  }, [])
-  const buttonHandler = () => {
+  }, [storage.done])
+
+  const onClickCompleteHandler = () => {
+    // dispatch({ type: 'INIT_TASK' }) //완전 끝나고 처음으로 돌아갈 시.
     dispatch({ name: 'done', type: 'SET_TASK', value: true })
     stopCount()
   }
 
   return (
     <ControlTaskWrap>
-      <Complete isOpen={storage.done} />
+      <CompleteModal isOpen={storage.done} />
       <Header />
       <Body>
         <ControlTaskName>{storage.taskName}</ControlTaskName>
         <CountSection>
-          <Button name="작업완료" onClick={buttonHandler} />
+          <Button name="작업완료" onClick={onClickCompleteHandler} />
           {storage.done ? (
             <AddTime size={26} />
           ) : (

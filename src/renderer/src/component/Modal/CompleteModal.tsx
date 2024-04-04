@@ -1,7 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-const CompleteModal = styled.div`
+const CompleteModalStyle = styled.div`
   top: 0;
   left: 0;
   position: fixed;
@@ -35,21 +35,23 @@ type Props = {
   isOpen: boolean
 }
 
-function Complete({ isOpen }: Props) {
+function CompleteModal({ isOpen }: Props) {
+  if (!isOpen) return null
+  const [open, setOpen] = useState(true)
   useEffect(() => {
     console.log('🚀 ~ useEffect ~ useEffect: Complete')
-    // setTimeout(() => {
-
-    // }, 1000)
+    setTimeout(() => {
+      setOpen(false)
+    }, 1000)
   }, [])
-  if (!isOpen) return null
-  return (
-    <CompleteModal>
-      <Icon>🎉</Icon>
-      <p>집중해서 끝내셨군요.</p>
-      <p>대단해요!</p>
-    </CompleteModal>
-  )
+  if (open)
+    return (
+      <CompleteModalStyle>
+        <Icon>🎉</Icon>
+        <p>집중해서 끝내셨군요.</p>
+        <p>대단해요!</p>
+      </CompleteModalStyle>
+    )
 }
 
-export default Complete
+export default CompleteModal

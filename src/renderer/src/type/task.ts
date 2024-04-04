@@ -1,11 +1,11 @@
 import { ChangeEventHandler } from 'react'
 
-export type TaskType = 'SET_TASK' | 'SET_NAME' | 'SET_TIMER' | 'SET_DATE'
+export type TaskType = 'SET_TASK' | 'INIT_TASK'
 export type TaskName = 'taskName' | 'minute' | 'time' | 'done' | 'date'
 export type TaskAction = {
   type: TaskType
-  name: TaskName
-  value: string | number | boolean
+  name?: TaskName
+  value?: string | number | boolean
 }
 export type T_ChangeHandler = ChangeEventHandler<HTMLInputElement>
 

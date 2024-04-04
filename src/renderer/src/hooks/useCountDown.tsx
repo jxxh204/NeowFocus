@@ -16,8 +16,6 @@ function useCountDown(durationInMinutes: number) {
 
   useEffect(() => {
     if (!storage.time) dispatch({ name: 'time', type: 'SET_TASK', value: remainingTime.time })
-    if (storage.time < remainingTime.time)
-      setRemainingTime((prev) => ({ ...prev, time: storage.time }))
 
     if (isActive && remainingTime.time > 0) {
       intervalId.current = setInterval(() => {
@@ -25,10 +23,11 @@ function useCountDown(durationInMinutes: number) {
       }, 1000) // Update every second
     } else if (remainingTime.time === 0) {
       stopCount()
+      setIsActive(false)
     }
 
-    return () => clearInterval(intervalId.current) // Cleanup interval on component unmount
-  }, [isActive, remainingTime])
+    return () => stopCount() // Cleanup interval on component unmount
+  }, [remainingTime])
 
   const setTime = () => {
     const time = remainingTime.time - 1
@@ -56,15 +55,19 @@ function useCountDown(durationInMinutes: number) {
   }
 
   const startCount = () => {
+    console.log(storage.time, remainingTime.time)
+    // if (storage.time < remainingTime.time)
+    //   //모드가 변경될 경우 유지하기 위해.
+    //   setRemainingTime((prev) => ({ ...prev, time: storage.time }))
+    setTime()
     setIsActive(true)
   }
 
   const stopCount = () => {
-    setIsActive(false)
     clearInterval(intervalId?.current)
   }
 
-  return { remainingTime, setTime, startCount, stopCount }
+  return { remainingTime, startCount, stopCount }
 }
 
 export default useCountDown
