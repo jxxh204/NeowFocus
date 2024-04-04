@@ -87,7 +87,7 @@ const CanvasCircular: React.FC<CanvasCircularProps> = ({
   return (
     <CanvasCircularWrap>
       <canvas ref={canvasRef} style={{ width: size, height: size }}></canvas>
-      <TextStyle>{text}</TextStyle>
+      {size < 46 ? null : <TextStyle>{text}</TextStyle>}
     </CanvasCircularWrap>
   )
 }

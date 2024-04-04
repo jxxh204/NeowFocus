@@ -15,7 +15,7 @@ function useWindowSize() {
       case 'input':
         return window.message.send('WINDOW_SIZE_CHANGE', 194)
       case 'default-focus':
-        return window.message.send('WINDOW_SIZE_CHANGE', 74)
+        return window.message.send('WINDOW_SIZE_CHANGE', 60)
       case 'focus':
         return window.message.send('WINDOW_SIZE_CHANGE', 154)
     }

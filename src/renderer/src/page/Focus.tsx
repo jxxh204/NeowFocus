@@ -9,7 +9,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CompleteModal from '@renderer/component/Modal/CompleteModal'
 import useWindowSize from '../hooks/useWindowSize'
-import useTask from '@renderer/hooks/useTask'
+
 const DefaultTaskWrap = styled.article`
   width: 100%;
   display: flex;
@@ -22,7 +22,7 @@ const TaskName = styled.div`
   border: 1px solid ${({ theme }) => theme.border.color};
   background: #272727;
   color: white;
-  padding: 12px 8px;
+  padding: 10px 8px;
   width: 100%;
 `
 const ModeChangeArea = styled.section`
@@ -30,6 +30,7 @@ const ModeChangeArea = styled.section`
   flex-direction: row;
   width: 100%;
   cursor: pointer;
+  gap: ${({ theme }) => theme.size.gap};
 `
 
 export function FocusDefault(): JSX.Element {
@@ -63,6 +64,8 @@ export function FocusDefault(): JSX.Element {
           color={'black'}
           done={storage?.done}
           doneText="타이머 완료"
+          size={36}
+          strokeWidth={16}
         />
       </ModeChangeArea>
       <ScreenDrag

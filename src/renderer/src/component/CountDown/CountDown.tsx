@@ -8,9 +8,11 @@ type Props = {
   color: string
   doneText?: string
   done: boolean
+  size?: number
+  strokeWidth?: number
 }
 
-function CountDown({ minute, color, doneText, done }: Props) {
+function CountDown({ minute, color, doneText, done, size, strokeWidth }: Props) {
   const { remainingTime, startCount, stopCount } = useCountDown(Number(minute))
 
   useEffect(() => {
@@ -26,8 +28,8 @@ function CountDown({ minute, color, doneText, done }: Props) {
   }
   return (
     <CanvasCircular
-      size={50}
-      strokeWidth={30}
+      size={size ? size : 50}
+      strokeWidth={strokeWidth ? strokeWidth : 30}
       color={color}
       percentage={remainingTime.progress}
       text={done && doneText ? doneText : `${remainingTime.minute} : ${remainingTime.second}`}
