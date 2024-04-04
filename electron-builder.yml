@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: neow-focus-vite
+productName: NeowFocus
 directories:
   buildResources: build
 files:
@@ -26,6 +26,7 @@ mac:
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
   notarize: false
+  icon: ./resources/icon.png
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:

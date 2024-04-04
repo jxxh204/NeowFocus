@@ -1,7 +1,6 @@
-import { app, shell, BrowserWindow, ipcMain, screen, globalShortcut } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
 import { handleWindow, showWindow } from './windowHandler'
 import { createTray } from './trayhandler'
 import { windowSizeChange } from './IpcProtocol'
@@ -20,7 +19,7 @@ function createWindow(): BrowserWindow {
     darkTheme: false,
     // movable: true,
     transparent: false,
-    icon: join(__dirname, icon),
+    icon: join(__dirname, '/resources/icon.png'),
     // backgroundColor: "white",
     vibrancy: 'popover', // in my case...
     visualEffectState: 'followWindow',
@@ -62,7 +61,7 @@ function createWindow(): BrowserWindow {
   const tray = createTray()
   tray.on('double-click', toggleWindow)
   tray.on('click', toggleWindow)
-  mainWindow?.webContents.once('dom-ready', () => {
+  mainWindow.once('show', () => {
     showWindow(tray, mainWindow)
   })
   mainWindow?.isDestroyed()
