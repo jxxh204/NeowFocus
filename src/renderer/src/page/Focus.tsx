@@ -8,7 +8,6 @@ import { useStorage, useTaskDispatchContext } from '@renderer/context/TaskContex
 import styled from 'styled-components'
 import useCountDown from '../hooks/useCountDown'
 import { useEffect } from 'react'
-import AddTime from '@renderer/component/AddTime'
 import { useNavigate } from 'react-router-dom'
 import CompleteModal from '@renderer/component/Modal/CompleteModal'
 const DefaultTaskWrap = styled.article`
@@ -59,7 +58,12 @@ export function FocusDefault(): JSX.Element {
     <DefaultTaskWrap>
       <ModeChangeArea onClick={onClickModeChange}>
         <TaskName>{storage.taskName}</TaskName>
-        <CountDown remainingTime={remainingTime} color={'black'} isMinutesTimer={true} />
+        <CountDown
+          remainingTime={remainingTime}
+          color={'black'}
+          done={storage.done}
+          doneText="타이머 완료"
+        />
       </ModeChangeArea>
       <ScreenDrag
         width={34}
@@ -108,14 +112,14 @@ export function FocusControl() {
   const { remainingTime, startCount, stopCount } = useCountDown(storage.minute)
 
   useEffect(() => {
-    if (!storage.done) {
-      startCount()
-      window.message.receive('browser-window-blur', () => {
-        navigate('/focus')
+    // if (!storage.done) {
+    startCount()
+    window.message.receive('browser-window-blur', () => {
+      navigate('/focus')
 
-        console.log('browser-window-blur', storage)
-      })
-    }
+      console.log('browser-window-blur', storage)
+    })
+    // }
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('browser-window-blur')
@@ -136,11 +140,7 @@ export function FocusControl() {
         <ControlTaskName>{storage.taskName}</ControlTaskName>
         <CountSection>
           <Button name="작업완료" onClick={onClickCompleteHandler} />
-          {storage.done ? (
-            <AddTime size={26} />
-          ) : (
-            <CountDown remainingTime={remainingTime} color={'black'} isMinutesTimer={true} />
-          )}
+          <CountDown remainingTime={remainingTime} color={'black'} done={storage.done} />
         </CountSection>
         <SkipButton navi={'/'} name="prev" />
       </Body>

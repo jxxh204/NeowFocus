@@ -1,5 +1,5 @@
 import { useStorage, useTaskDispatchContext } from '@renderer/context/TaskContext'
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 function useCountDown(durationInMinutes: number) {
   const { storage } = useStorage()
@@ -17,7 +17,7 @@ function useCountDown(durationInMinutes: number) {
   useEffect(() => {
     if (!storage.time) dispatch({ name: 'time', type: 'SET_TASK', value: remainingTime.time })
 
-    if (isActive && remainingTime.time > 0) {
+    if (isActive && remainingTime.time > -1) {
       intervalId.current = setInterval(() => {
         setTime()
       }, 1000) // Update every second
@@ -45,6 +45,7 @@ function useCountDown(durationInMinutes: number) {
       progress: setPercent(time)
     })
     if (time < storage.time) dispatch({ name: 'time', type: 'SET_TASK', value: time })
+    if (time <= 0) dispatch({ name: 'done', type: 'SET_TASK', value: true })
   }
 
   const setPercent = (time: number) => {
