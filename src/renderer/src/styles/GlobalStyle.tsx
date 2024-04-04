@@ -24,7 +24,7 @@ const GlobalStyle = createGlobalStyle`
     /* width: 100%; */
     display: flex;
     flex-direction: column;
-    padding:16px;
+    padding:8px;
     /* gap: ${({ theme }) => theme.size.gap}; */
   }
   html, body, div, span, applet, object, iframe,
