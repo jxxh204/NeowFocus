@@ -1,5 +1,6 @@
-import { FocusControl, FocusDefault } from '@renderer/page/Focus'
-import Input from '@renderer/page/Input'
+import { FocusDefault } from '@renderer/page/focus'
+import Input from '@renderer/page/input'
+import MiniMizeFocus from '@renderer/page/minimizeFocus'
 import { Route, Routes } from 'react-router-dom'
 
 function Router() {
@@ -7,7 +8,7 @@ function Router() {
     <Routes>
       <Route path="/" element={<Input />} />
       <Route path="/focus" element={<FocusDefault />} />
-      <Route path="/focus_control" element={<FocusControl />} />
+      <Route path="/minimize_focus" element={<MiniMizeFocus />} />
     </Routes>
   )
 }
