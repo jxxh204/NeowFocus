@@ -1,34 +1,24 @@
-# neow-focus-vite
+## 냐우포커스 개발
 
-An Electron application with React and TypeScript
+### 설명
 
-## Recommended IDE Setup
+- 뽀모도로 데스크탑 어플리케이션입니다.
+- 귀여운 고양이 도장을 찍어서 보람찬 하루를 만들어보세요!
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+### 기술 스택
 
-## Project Setup
+- React
+- Electron
+- vite
+- electron builder
 
-### Install
+### 시작
 
-```bash
-$ yarn
+```cpp
+npm i
+npm run dev
 ```
 
-### Development
+**상태관리 설계**
 
-```bash
-$ yarn dev
-```
-
-### Build
-
-```bash
-# For windows
-$ yarn build:win
-
-# For macOS
-$ yarn build:mac
-
-# For Linux
-$ yarn build:linux
-```
+![image.png](./resources/stateArchitecture.png)
