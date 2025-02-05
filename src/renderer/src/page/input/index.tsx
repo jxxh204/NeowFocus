@@ -1,53 +1,30 @@
 import Button from '@renderer/component/Button'
-import Header from '@renderer/component/Header'
-import InputTask from '@renderer/component/InputTask'
-import Main from '@renderer/component/Main'
-import SelectTimer from '@renderer/component/SelectTime/SelectTimer'
-import Time from '@renderer/component/SelectTime/Time'
-import {
-  useTaskChangeContext,
-  useTaskContext,
-  useTaskDispatchContext
-} from '@renderer/context/TaskContext'
-import useWindowSize from '@renderer/hooks/useWindowSize'
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import TextField from '@renderer/component/TextField'
+import { useState } from 'react'
+import styled from 'styled-components'
+
+const MainStyle = styled.form`
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  height: 100%;
+`
 
 function Input() {
-  const task = useTaskContext()
-  const { dispatch } = useTaskDispatchContext()
-  const changeContext = useTaskChangeContext()
-  const navigate = useNavigate()
-  const { setWindowSize } = useWindowSize()
-
-  useEffect(() => {
-    setWindowSize({ windowName: 'default-input' })
-    dispatch({ type: 'INIT_TASK' }) //완전 끝나고 처음으로 돌아갈 시.
-  }, [])
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!task?.taskName) return
-    if (!task?.minute) return
-    // 유효성 검사.
-
-    dispatch({ name: 'done', type: 'SET_TASK', value: false })
-    dispatch({ name: 'date', type: 'SET_TASK', value: new Date().getTime() })
-    navigate('/focus')
+  const [text, setText] = useState('')
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setText(e.target.value)
   }
   return (
-    <>
-      <Header name="작업 이름" />
-      <Main onSubmit={onSubmit}>
-        <InputTask name="taskName" onChange={changeContext?.onChange} />
-
-        <SelectTimer value={task?.minute} name="minute" onChange={changeContext?.onChange}>
-          <Time value="20">20분</Time>
-          <Time value="40">40분</Time>
-          <Time value="60">60분</Time>
-        </SelectTimer>
-        {task.minute && task.taskName ? <Button type="submit" name="집중 시작!" /> : null}
-      </Main>
-    </>
+    <MainStyle>
+      <TextField
+        placeholder="지금 집중할 일을 적어볼까요?"
+        onChange={onChange}
+        maxLength={22}
+        hovered={text.length === 0}
+      />
+      <Button value="시작" type="filled" disabled={text.length === 0} />
+    </MainStyle>
   )
 }
 
