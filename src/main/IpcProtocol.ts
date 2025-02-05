@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron'
-import { MouseMove } from '../renderer/src/type/interface'
+import { MouseMove } from '../renderer/src/types/interface'
 
 // 제거
 export const mouseIpcProtocol = (mainWindow): void => {
