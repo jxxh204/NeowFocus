@@ -1,33 +1,55 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
-const ButtonStyle = styled.input`
-  border-radius: ${({ theme }) => theme.border.radius};
-  width: 100%;
-  padding: 16px 12px;
-  background-color: white;
-  border: 1px solid;
-  font-size: 16px;
+const ButtonStyle = styled.input<{ width?: string; size?: string }>`
+  border: 1px solid #000000;
+  height: ${({ size }) => size};
+  padding: 0 16px;
+  box-shadow: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s;
+`
 
-  transition: background-color 0.2s;
-  background: #000;
-  color: #fff;
+const FilledButtonStyle = styled(ButtonStyle)`
+  background-color: #000000;
+  color: #ffffff;
+  border: none;
 
   &:hover {
-    background: ${({ theme }) => theme.color.green[300]};
+    background-color: #000000;
+    color: #00ff85;
   }
-`;
+  &:active {
+    background-color: #00ff85;
+    color: #000000;
+  }
+  &:disabled {
+    background-color: #e8e8e8;
+    color: #8d8d8d;
+    border: 1px solid #8d8d8d;
+    cursor: not-allowed;
+  }
+`
+
+const OutlinedButtonStyle = styled(ButtonStyle)`
+  background-color: #ffffff;
+  color: #000000;
+`
 
 type Props = {
-  type?: "submit";
-  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void;
-  name: string;
-};
-
-function Button({ onClick, type, name }: Props) {
-  return (
-    <ButtonStyle type={type ? type : "button"} onClick={onClick} value={name} />
-  );
+  value: string
+  type?: 'filled' | 'outlined'
+  disabled?: boolean
+  size?: string
 }
 
-export default Button;
+function Button({ value, type = 'filled', disabled = false, size = '36px' }: Props) {
+  if (type === 'filled') {
+    return <FilledButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+  }
+  return <OutlinedButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+}
+
+export default Button
