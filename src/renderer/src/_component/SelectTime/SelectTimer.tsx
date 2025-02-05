@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import styled from 'styled-components'
 import { SelectTimerProvider } from './context'
-import { T_ChangeHandler, TaskName } from '@renderer/type/task'
+import { T_ChangeHandler, TaskName } from '@renderer/types/task'
 
 const SelectTimeStyle = styled.section`
   display: flex;

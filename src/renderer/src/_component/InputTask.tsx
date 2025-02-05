@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { T_ChangeHandler, TaskName } from '@renderer/type/task'
+import { T_ChangeHandler, TaskName } from '@renderer/types/task'
 
 const InputTaskStyle = styled.input`
   color: gray;
