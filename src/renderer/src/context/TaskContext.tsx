@@ -1,6 +1,6 @@
 import { InitialState } from '@renderer/hooks/useTask'
 import React, { createContext, useContext } from 'react'
-import { LocalStorageValue, T_ChangeHandler, TaskAction } from '@renderer/type/task'
+import { LocalStorageValue, T_ChangeHandler, TaskAction } from '@renderer/types/task'
 
 type ProviderProps = {
   children: React.ReactNode

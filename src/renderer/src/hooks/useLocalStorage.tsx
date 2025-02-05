@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { LocalStorageValue } from '@renderer/type/task'
+import { LocalStorageValue } from '@renderer/types/task'
 
 export function useLocalStorage<T>(
   key: string,

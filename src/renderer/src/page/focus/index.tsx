@@ -1,6 +1,6 @@
-import CountDown from '@renderer/component/CountDown/CountDown'
-import ScreenDrag from '@renderer/component/ScreenDrag/ScreenDrag'
-import useScreenDrag from '@renderer/component/ScreenDrag/useScreenDrag'
+import CountDown from '@renderer/_component/CountDown/CountDown'
+import ScreenDrag from '@renderer/_component/ScreenDrag/ScreenDrag'
+import useScreenDrag from '@renderer/_component/ScreenDrag/useScreenDrag'
 import { useStorage } from '@renderer/context/TaskContext'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -18,7 +18,7 @@ export function FocusDefault(): JSX.Element {
   }
 
   useEffect(() => {
-    setWindowSize({ windowName: 'default-focus' })
+    // setWindowSize({ windowName: 'default-focus' })
     //TODO : 포커스 체크
     // window.message.receive('browser-window-focus', () => {
     //   console.log('browser-window-focus')
