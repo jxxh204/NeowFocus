@@ -7,7 +7,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255);
   }
   #root {
     position: relative;
@@ -24,7 +24,7 @@ const GlobalStyle = createGlobalStyle`
     /* width: 100%; */
     display: flex;
     flex-direction: column;
-    padding:8px;
+    padding:12px;
     /* gap: ${({ theme }) => theme.size.gap}; */
   }
   html, body, div, span, applet, object, iframe,
