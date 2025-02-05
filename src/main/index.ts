@@ -1,16 +1,16 @@
 import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { handleWindow, showWindow } from './windowHandler'
-import { createTray } from './trayhandler'
+import { handleWindow, showWindow } from './handlers/windowHandler'
+import { createTray } from './handlers/trayhandler'
 import { windowSizeChange } from './IpcProtocol'
 
 function createWindow(): BrowserWindow {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 400,
-    height: 150,
-    minHeight: 50,
+    width: 384,
+    height: 60,
+    minHeight: 60,
     maxHeight: 900,
     show: false,
     frame: false,
@@ -20,8 +20,7 @@ function createWindow(): BrowserWindow {
     // movable: true,
     transparent: false,
     icon: join(__dirname, '/resources/icon.png'),
-    // backgroundColor: "white",
-    vibrancy: 'popover', // in my case...
+    vibrancy: 'popover',
     visualEffectState: 'followWindow',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -42,14 +41,7 @@ function createWindow(): BrowserWindow {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-    mainWindow.webContents.openDevTools({ mode: 'detach' }) // DevTools를 엽니다.
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
+  setDevTools(mainWindow)
   handleWindow(mainWindow)
   const toggleWindow = () => {
     if (mainWindow?.isVisible()) {
@@ -67,7 +59,6 @@ function createWindow(): BrowserWindow {
   mainWindow?.isDestroyed()
   // mouseIpcProtocol(mainWindow)
   windowSizeChange(mainWindow)
-  //   tray.on('right-click', showMenu)
   return mainWindow
 }
 
@@ -118,3 +109,12 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+const setDevTools = (mainWindow) => {
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    mainWindow.webContents.openDevTools({ mode: 'detach' }) // DevTools를 엽니다.
+  } else {
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  }
+}
