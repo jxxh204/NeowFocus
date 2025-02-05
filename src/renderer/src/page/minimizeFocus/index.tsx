@@ -2,11 +2,11 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStorage, useTaskDispatchContext } from '@renderer/context/TaskContext'
 import { ControlTaskWrap, Body, ControlTaskName, CountSection } from './styled'
-import CompleteModal from '@renderer/component/Modal/CompleteModal'
+import CompleteModal from '@renderer/_component/Modal/CompleteModal'
 import useWindowSize from '../../hooks/useWindowSize'
-import Button from '@renderer/component/Button'
-import Header from '@renderer/component/Header'
-import CountDown from '@renderer/component/CountDown/CountDown'
+import Button from '@renderer/_component/Button'
+import Header from '@renderer/_component/Header'
+import CountDown from '@renderer/_component/CountDown/CountDown'
 
 const MiniMizeFocus = () => {
   const { storage } = useStorage()
@@ -17,7 +17,7 @@ const MiniMizeFocus = () => {
   useEffect(() => {
     // if (!storage.done) {
     // CompleteModal이 계속 생겨서 적용.
-    setWindowSize({ windowName: 'focus' })
+    // setWindowSize({ windowName: 'focus' })
     window.message.receive('browser-window-blur', () => {
       navigate('/focus')
     })

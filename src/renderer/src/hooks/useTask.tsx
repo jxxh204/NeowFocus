@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from 'react'
-import { TaskAction, TaskName } from '../type/task'
+import { TaskAction, TaskName } from '../types/task'
 import { useLocalStorage } from './useLocalStorage'
 import useWindowSize from './useWindowSize'
 
@@ -34,14 +34,6 @@ function useTask() {
   const [task, taskDispatch] = useReducer(reducer, initialState)
   const [storage, setStorage] = useLocalStorage('task', task)
   const { setWindowSize } = useWindowSize()
-
-  useEffect(() => {
-    if (task?.taskName && task?.minute) {
-      setWindowSize({ windowName: 'input' })
-    } else {
-      setWindowSize({ windowName: 'default-input' })
-    }
-  }, [task.taskName, task.minute])
 
   useEffect(() => {
     console.log('🚀 ~ useEffect ~ useEffect: context', storage, task)
