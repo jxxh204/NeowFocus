@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext } from 'react'
-import { T_ChangeHandler } from '@renderer/type/task'
+import { T_ChangeHandler } from '@renderer/types/task'
 
 type Props = {
   disabled?: boolean
