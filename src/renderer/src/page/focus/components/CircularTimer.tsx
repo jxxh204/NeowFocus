@@ -1,0 +1,122 @@
+import React from 'react'
+import pauseIcon from '@assets/timer_pause.svg'
+import playIcon from '@assets/timer_play.svg'
+
+import {
+  CircleBackground,
+  CircleProgress,
+  PauseIcon,
+  PauseWrap,
+  PlayIcon,
+  PlayWrap,
+  Svg,
+  TimerText,
+  TimerWrapper
+} from './styled'
+import useCircularTimer from './useCircularTimer'
+import theme from '@renderer/styles/theme'
+
+export type TimerProps = {
+  duration: number
+  initialTime?: number
+  strokeWidth?: number
+  size?: number
+  color?: string
+  bgColor?: string
+  iconSize?: number
+}
+
+const CircularTimer: React.FC<TimerProps> = ({
+  duration,
+  initialTime = duration,
+  strokeWidth = 4,
+  size = 54,
+  iconSize = 24
+}) => {
+  const { timeLeft, status, handleStatus } = useCircularTimer({ duration, initialTime })
+
+  const radius = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * radius
+  const progress = (timeLeft / duration) * circumference
+
+  const color = {
+    idle: {
+      progress: '#000000',
+      progressBackground: '#e0e0e0',
+      background: 'white'
+    },
+    pause: {
+      progress: 'black',
+      background: theme.color.primery[300],
+      progressBackground: theme.color.primery[300]
+    },
+    play: {
+      progress: 'black',
+      background: '#e0e0e0',
+      progressBackground: '#e0e0e0'
+    }
+  }
+  const handleClick = () => {
+    if (status === 'pause') {
+      handleStatus('play')
+    } else {
+      handleStatus('pause')
+    }
+  }
+  const handleMouseEnter = () => {
+    if (status === 'idle') {
+      handleStatus('pause')
+    }
+  }
+  const handleMouseLeave = () => {
+    if (status === 'pause') {
+      handleStatus('idle')
+    }
+  }
+  return (
+    <TimerWrapper
+      size={size}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+    >
+      <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        {/* 배경 원 */}
+        <CircleBackground
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          color={color[status].background}
+        />
+        {/* 진행 바 */}
+        <CircleProgress
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference - progress}
+          color={color[status].progress}
+        />
+      </Svg>
+      {status === 'idle' && (
+        <TimerText size={size} color={color[status].progress}>
+          {`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}
+        </TimerText>
+      )}
+      {status === 'play' && (
+        <PlayWrap size={size} onClick={handleClick}>
+          <PlayIcon src={playIcon} alt="플레이 아이콘" size={iconSize} />
+        </PlayWrap>
+      )}
+      {status === 'pause' && (
+        <PauseWrap size={size} onClick={handleClick}>
+          <PauseIcon src={pauseIcon} alt="일시정지 아이콘" size={iconSize} />
+        </PauseWrap>
+      )}
+    </TimerWrapper>
+  )
+}
+
+export default CircularTimer

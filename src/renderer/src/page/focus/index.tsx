@@ -1,24 +1,11 @@
 import { useEffect } from 'react'
 import useWindowSize from '@renderer/hooks/useWindowSize'
-import pawDarkGray from '@assets/paw_dark_gray.svg'
 import TextField from '@renderer/component/TextField'
 import windowMinimize from '@assets/window_minimize.svg'
-import styled from 'styled-components'
-
-const FocusPageWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  height: 100%;
-`
-
-const WindowMinimizeIcon = styled.img`
-  width: 22px;
-  height: 22px;
-  cursor: pointer;
-  margin-bottom: 6px;
-`
+import trash from '@assets/trash.svg'
+import pawDarkGray from '@assets/paw_dark_gray.svg'
+import { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper } from './styled'
+import CircularTimer from './components/CircularTimer'
 
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
@@ -40,10 +27,16 @@ export function FocusPage(): JSX.Element {
     <FocusPageWrapper>
       <WindowMinimizeIcon src={windowMinimize} alt="윈도우 최소화 아이콘" />
       <TextField placeholder="태스크 이름 연동 필요" stretch disabled imgSrc={pawDarkGray} />
-      <div>
-        <div>1</div>
-        <div>2</div>
-      </div>
+
+      <Wrapper>
+        <TrashIcon src={trash} alt="휴지통 아이콘" />
+        <CircularTimer
+          duration={1500} // 25분
+          initialTime={1380} // 23분 12초
+          color="black"
+          iconSize={24}
+        />
+      </Wrapper>
     </FocusPageWrapper>
   )
 }
