@@ -1,26 +1,32 @@
 import styled from 'styled-components'
 
-const DefaultTaskWrap = styled.article`
-  width: 100%;
+const FocusPageWrapper = styled.div`
   display: flex;
-  flex-direction: row;
-  gap: ${({ theme }) => theme.size.gap};
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  height: 132px;
 `
 
-const TaskName = styled.div`
-  border-radius: ${({ theme }) => theme.border.radius};
-  border: 1px solid ${({ theme }) => theme.border.color};
-  background: #272727;
-  color: white;
-  padding: 10px 8px;
-  width: 100%;
-`
-const ModeChangeArea = styled.section`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
+const WindowMinimizeIcon = styled.img`
+  width: 22px;
+  height: 22px;
   cursor: pointer;
-  gap: ${({ theme }) => theme.size.gap};
+  margin-bottom: 6px;
+`
+const TrashIcon = styled.img`
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 `
 
-export { DefaultTaskWrap, TaskName, ModeChangeArea }
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  margin-top: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+`
+
+export { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper }

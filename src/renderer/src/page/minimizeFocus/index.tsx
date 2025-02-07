@@ -6,7 +6,6 @@ import CompleteModal from '@renderer/_component/Modal/CompleteModal'
 import useWindowSize from '../../hooks/useWindowSize'
 import Button from '@renderer/_component/Button'
 import Header from '@renderer/_component/Header'
-import CountDown from '@renderer/_component/CountDown/CountDown'
 
 const MiniMizeFocus = () => {
   const { storage } = useStorage()
@@ -40,7 +39,6 @@ const MiniMizeFocus = () => {
         <ControlTaskName>{storage.taskName}</ControlTaskName>
         <CountSection>
           <Button name="작업완료" onClick={onClickCompleteHandler} />
-          <CountDown minute={storage.minute} color={'black'} done={storage.done} />
         </CountSection>
         {/* <SkipButton navi={'/'} name="prev" /> */}
       </Body>
