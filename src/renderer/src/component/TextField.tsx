@@ -8,8 +8,8 @@ const TextFieldContainer = styled.div`
   width: 100%;
 `
 
-const TextFieldStyle = styled.input<{ hovered: boolean }>`
-  width: 260px;
+const TextFieldStyle = styled.input<{ hovered: boolean; stretch?: boolean }>`
+  width: ${({ stretch }) => (stretch ? '100%' : '260px')};
   padding: 8px 0px 8px 30px;
   border-radius: 6px;
   outline: none;
@@ -27,6 +27,10 @@ const TextFieldStyle = styled.input<{ hovered: boolean }>`
   &:focus {
     border: 1px solid black;
     color: black;
+  }
+  &:disabled {
+    background-color: black;
+    color: white;
   }
 `
 
@@ -50,24 +54,40 @@ const Placeholder = styled.div`
 
 type Props = {
   placeholder: string
-  hovered: boolean
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  imgSrc?: string
+  hovered?: boolean
   maxLength?: number
+  value?: string
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  stretch?: boolean
+  disabled?: boolean
 }
 
-function TextField({ placeholder, onChange, maxLength, hovered }: Props) {
+function TextField({
+  placeholder,
+  imgSrc = pawGray,
+  onChange = () => {},
+  maxLength,
+  hovered = false,
+  value,
+  stretch = false,
+  disabled = false
+}: Props) {
   // TODO : TextField에 도메인 정보가 많으므로 분리 필요.
   return (
     <TextFieldContainer>
       <TextFieldStyle
         type="text"
         placeholder=" "
+        value={value}
         onChange={onChange}
         maxLength={maxLength}
         hovered={hovered}
+        stretch={stretch}
+        disabled={disabled}
       />
       <Placeholder>
-        <img src={pawGray} alt="placeholder image" />
+        <img src={imgSrc} alt="placeholder image" />
         <span>{placeholder}</span>
       </Placeholder>
     </TextFieldContainer>

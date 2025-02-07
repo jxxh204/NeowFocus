@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 
 type Props = {
-  windowName: 'default-input' | 'input' | 'default-focus' | 'focus'
+  windowName: 'default-input' | 'input' | 'default-focus' | 'focus' | 'minimize_focus'
 }
 
 function useWindowSize() {
@@ -10,14 +10,12 @@ function useWindowSize() {
     if (windowRef.current === windowName) return
 
     switch (windowName) {
-      case 'default-input':
-        return window.message.send('WINDOW_SIZE_CHANGE', 134)
       case 'input':
-        return window.message.send('WINDOW_SIZE_CHANGE', 194)
-      case 'default-focus':
         return window.message.send('WINDOW_SIZE_CHANGE', 60)
       case 'focus':
-        return window.message.send('WINDOW_SIZE_CHANGE', 154)
+        return window.message.send('WINDOW_SIZE_CHANGE', 156)
+      case 'minimize_focus':
+        return window.message.send('WINDOW_SIZE_CHANGE', 60)
     }
   }
 
