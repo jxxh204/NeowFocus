@@ -1,55 +1,23 @@
-import CountDown from '@renderer/_component/CountDown/CountDown'
-import ScreenDrag from '@renderer/_component/ScreenDrag/ScreenDrag'
-import useScreenDrag from '@renderer/_component/ScreenDrag/useScreenDrag'
-import { useStorage } from '@renderer/context/TaskContext'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import useWindowSize from '../../hooks/useWindowSize'
-import { DefaultTaskWrap, TaskName, ModeChangeArea } from './styled'
+import useWindowSize from '@renderer/hooks/useWindowSize'
+import pawDarkGray from '@assets/paw_dark_gray.svg'
+import TextField from '@renderer/component/TextField'
 
-export function FocusDefault(): JSX.Element {
-  const { storage } = useStorage()
-  const navigate = useNavigate()
+export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
-  const { mouseMoveHandler, mouseUpHandler, mouseDownHandler } = useScreenDrag()
-
-  const onClickModeChange = () => {
-    navigate('/focus_control')
-  }
 
   useEffect(() => {
-    // setWindowSize({ windowName: 'default-focus' })
+    console.log('focus')
+    setWindowSize({ windowName: 'focus' })
     //TODO : 포커스 체크
     // window.message.receive('browser-window-focus', () => {
     //   console.log('browser-window-focus')
-
     // })
-    return () => {
-      window.electron.ipcRenderer.removeAllListeners('browser-window-focus')
-    }
-  }, [storage?.done])
+    // return () => {
+    //   window.electron.ipcRenderer.removeAllListeners('browser-window-focus')
+    // }
+  }, [])
 
   //제거하기.
-  return (
-    <DefaultTaskWrap>
-      <ModeChangeArea onClick={onClickModeChange}>
-        <TaskName>{storage?.taskName}</TaskName>
-        <CountDown
-          minute={storage?.minute}
-          color={'black'}
-          done={storage?.done}
-          doneText="타이머 완료"
-          size={36}
-          strokeWidth={16}
-        />
-      </ModeChangeArea>
-      <ScreenDrag
-        width={34}
-        height={30}
-        mouseMoveHandler={mouseMoveHandler}
-        mouseUpHandler={mouseUpHandler}
-        mouseDownHandler={mouseDownHandler}
-      />
-    </DefaultTaskWrap>
-  )
+  return <TextField placeholder="태스크 이름 연동 필요" stretch disabled imgSrc={pawDarkGray} />
 }
