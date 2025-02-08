@@ -18,6 +18,7 @@ import theme from '@renderer/styles/theme'
 
 export type TimerProps = {
   duration: number
+  setToastMessage: (message: string) => void
   initialTime?: number
   strokeWidth?: number
   size?: number
@@ -28,6 +29,7 @@ export type TimerProps = {
 
 const CircularTimer: React.FC<TimerProps> = ({
   duration,
+  setToastMessage,
   initialTime = duration,
   strokeWidth = 4,
   size = 54,
@@ -59,19 +61,26 @@ const CircularTimer: React.FC<TimerProps> = ({
   const handleClick = () => {
     if (status === 'pause') {
       handleStatus('play')
+      setToastMessage('타이머 재개')
     } else {
       handleStatus('pause')
+      setToastMessage('타이머 일시정지')
     }
   }
   const handleMouseEnter = () => {
     if (status === 'idle') {
       handleStatus('pause')
+      setToastMessage('타이머 일시정지')
+    }
+    if (status === 'play') {
+      setToastMessage('타이머 재개')
     }
   }
   const handleMouseLeave = () => {
     if (status === 'pause') {
       handleStatus('idle')
     }
+    setToastMessage('')
   }
   return (
     <TimerWrapper
@@ -81,7 +90,6 @@ const CircularTimer: React.FC<TimerProps> = ({
       onClick={handleClick}
     >
       <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {/* 배경 원 */}
         <CircleBackground
           cx={size / 2}
           cy={size / 2}
@@ -89,7 +97,6 @@ const CircularTimer: React.FC<TimerProps> = ({
           strokeWidth={strokeWidth}
           color={color[status].background}
         />
-        {/* 진행 바 */}
         <CircleProgress
           cx={size / 2}
           cy={size / 2}

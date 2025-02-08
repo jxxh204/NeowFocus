@@ -1,14 +1,16 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useWindowSize from '@renderer/hooks/useWindowSize'
 import TextField from '@renderer/component/TextField'
 import windowMinimize from '@assets/window_minimize.svg'
 import trash from '@assets/trash.svg'
 import pawDarkGray from '@assets/paw_dark_gray.svg'
-import { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper } from './styled'
+import { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper, TimerWrapper } from './styled'
 import CircularTimer from './components/CircularTimer'
+import ToastMessage from '@renderer/component/ToastMessage'
 
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
+  const [toastMessage, setToastMessage] = useState('')
 
   useEffect(() => {
     console.log('focus')
@@ -30,12 +32,17 @@ export function FocusPage(): JSX.Element {
 
       <Wrapper>
         <TrashIcon src={trash} alt="휴지통 아이콘" />
-        <CircularTimer
-          duration={1500} // 25분
-          initialTime={1380} // 23분 12초
-          color="black"
-          iconSize={24}
-        />
+        <TimerWrapper>
+          {toastMessage && <ToastMessage message={toastMessage} />}
+          <CircularTimer
+            duration={1500} // 25분
+            initialTime={1380} // 23분 12초
+            color="black"
+            iconSize={24}
+            size={54}
+            setToastMessage={setToastMessage}
+          />
+        </TimerWrapper>
       </Wrapper>
     </FocusPageWrapper>
   )
