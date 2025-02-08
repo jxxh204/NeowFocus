@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
-import { TimerProps } from './CircularTimer'
 
 type StateType = 'idle' | 'play' | 'pause'
+type Props = {
+  duration: number
+  initialTime?: number
+}
 
-const useCircularTimer = ({ duration, initialTime = duration }: TimerProps) => {
+const useCircularTimer = ({ duration, initialTime = duration }: Props) => {
   const [timeLeft, setTimeLeft] = useState(initialTime)
   const [status, setStatus] = useState<StateType>('idle')
 

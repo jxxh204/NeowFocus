@@ -22,11 +22,18 @@ const TrashIcon = styled.img`
 
 const Wrapper = styled.div`
   width: 100%;
-  height: 100%;
+  height: 54px;
   margin-top: 12px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
 `
 
-export { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper }
+const TimerWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: end;
+`
+
+export { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper, TimerWrapper }
