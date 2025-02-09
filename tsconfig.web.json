@@ -13,6 +13,18 @@
     "paths": {
       "@renderer/*": [
         "src/renderer/src/*"
+      ],
+      "@assets/*": [
+        "src/renderer/src/assets/*"
+      ],
+      "@styles/*": [
+        "src/renderer/src/styles/*"
+      ],
+      "@components/*": [
+        "src/renderer/src/component/*"
+      ],
+      "@hooks/*": [
+        "src/renderer/src/hooks/*"
       ]
     }
   }
