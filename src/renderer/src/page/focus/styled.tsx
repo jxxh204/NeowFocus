@@ -8,16 +8,20 @@ const FocusPageWrapper = styled.div`
   height: 132px;
 `
 
-const WindowMinimizeIcon = styled.img`
-  width: 22px;
-  height: 22px;
+const WindowMinimizeIcon = styled.div`
   cursor: pointer;
   margin-bottom: 6px;
+  svg {
+    width: 22px;
+    height: 22px;
+  }
 `
-const TrashIcon = styled.img`
-  width: 24px;
-  height: 24px;
+const TrashIcon = styled.div`
   cursor: pointer;
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 `
 
 const Wrapper = styled.div`

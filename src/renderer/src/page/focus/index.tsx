@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
 import useWindowSize from '@renderer/hooks/useWindowSize'
 import TextField from '@renderer/component/TextField'
-import windowMinimize from '@assets/window_minimize.svg'
-import trash from '@assets/trash.svg'
-import pawDarkGray from '@assets/paw_dark_gray.svg'
+import WindowMinimizeSvg from '@assets/window_minimize.svg'
+import TrashSvg from '@assets/trash.svg'
+import PawDarkGraySvg from '@assets/paw_dark_gray.svg'
 import { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper, TimerWrapper } from './styled'
 import CircularTimer from './components/CircularTimer'
 import ToastMessage from '@renderer/component/ToastMessage'
+import { useNavigate } from 'react-router-dom'
 
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
   const [toastMessage, setToastMessage] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     console.log('focus')
@@ -24,14 +26,32 @@ export function FocusPage(): JSX.Element {
     // }
   }, [])
 
+  const handleClickTrash = () => {
+    console.log('trash')
+  }
+
+  const handleClickMinimize = () => {
+    navigate('/minimize_focus')
+  }
+
   //제거하기.
   return (
     <FocusPageWrapper>
-      <WindowMinimizeIcon src={windowMinimize} alt="윈도우 최소화 아이콘" />
-      <TextField placeholder="태스크 이름 연동 필요" stretch disabled imgSrc={pawDarkGray} />
+      <WindowMinimizeIcon onClick={handleClickMinimize}>
+        <WindowMinimizeSvg />
+      </WindowMinimizeIcon>
+      <TextField
+        placeholder="태스크 이름 연동 필요"
+        stretch
+        disabled
+        svg={<PawDarkGraySvg />}
+        p_color="white"
+      />
 
       <Wrapper>
-        <TrashIcon src={trash} alt="휴지통 아이콘" />
+        <TrashIcon onClick={handleClickTrash}>
+          <TrashSvg />
+        </TrashIcon>
         <TimerWrapper>
           {toastMessage && <ToastMessage message={toastMessage} />}
           <CircularTimer
