@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import pawGray from '@assets/paw_gray.svg'
 
 const TextFieldContainer = styled.div`
   position: relative;
@@ -45,7 +44,7 @@ const Placeholder = styled.div`
   font-size: 14px;
   pointer-events: none;
 
-  img {
+  svg {
     width: 14px;
     height: 14px;
     margin-right: 6px;
@@ -54,7 +53,8 @@ const Placeholder = styled.div`
 
 type Props = {
   placeholder: string
-  imgSrc?: string
+  p_color?: string
+  svg?: React.ReactNode
   hovered?: boolean
   maxLength?: number
   value?: string
@@ -65,7 +65,8 @@ type Props = {
 
 function TextField({
   placeholder,
-  imgSrc = pawGray,
+  p_color = 'gray',
+  svg,
   onChange = () => {},
   maxLength,
   hovered = false,
@@ -87,8 +88,8 @@ function TextField({
         disabled={disabled}
       />
       <Placeholder>
-        <img src={imgSrc} alt="placeholder image" />
-        <span>{placeholder}</span>
+        {svg && svg}
+        <span style={{ color: p_color }}>{placeholder}</span>
       </Placeholder>
     </TextFieldContainer>
   )

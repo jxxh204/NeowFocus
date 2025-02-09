@@ -1,19 +1,17 @@
 import React from 'react'
-import pauseIcon from '@assets/timer_pause.svg'
-import playIcon from '@assets/timer_play.svg'
+import PauseIcon from '@assets/timer_pause.svg'
+import PlayIcon from '@assets/timer_play.svg'
 
 import {
   CircleBackground,
   CircleProgress,
-  PauseIcon,
   PauseWrap,
-  PlayIcon,
   PlayWrap,
   Svg,
   TimerText,
   TimerWrapper
 } from './styled'
-import useCircularTimer from './useCircularTimer'
+import useCircularTimer from '../../../hooks/useCircularTimer'
 import theme from '@renderer/styles/theme'
 
 export type TimerProps = {
@@ -49,8 +47,8 @@ const CircularTimer: React.FC<TimerProps> = ({
     },
     pause: {
       progress: 'black',
-      background: theme.color.primery[300],
-      progressBackground: theme.color.primery[300]
+      background: theme.color.primary[300],
+      progressBackground: theme.color.primary[300]
     },
     play: {
       progress: 'black',
@@ -107,21 +105,24 @@ const CircularTimer: React.FC<TimerProps> = ({
           color={color[status].progress}
         />
       </Svg>
-      {status === 'idle' && (
-        <TimerText size={size} color={color[status].progress}>
-          {`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}
-        </TimerText>
-      )}
-      {status === 'play' && (
-        <PlayWrap size={size} onClick={handleClick}>
-          <PlayIcon src={playIcon} alt="플레이 아이콘" size={iconSize} />
-        </PlayWrap>
-      )}
-      {status === 'pause' && (
-        <PauseWrap size={size} onClick={handleClick}>
-          <PauseIcon src={pauseIcon} alt="일시정지 아이콘" size={iconSize} />
-        </PauseWrap>
-      )}
+
+      <>
+        {status === 'idle' && (
+          <TimerText size={size} color={color[status].progress}>
+            {`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}
+          </TimerText>
+        )}
+        {status === 'play' && (
+          <PlayWrap size={size} iconSize={iconSize} onClick={handleClick}>
+            <PlayIcon />
+          </PlayWrap>
+        )}
+        {status === 'pause' && (
+          <PauseWrap size={size} iconSize={iconSize} onClick={handleClick}>
+            <PauseIcon />
+          </PauseWrap>
+        )}
+      </>
     </TimerWrapper>
   )
 }

@@ -1,4 +1,5 @@
 import TextField from '@renderer/component/TextField'
+import PawGraySvg from '@assets/paw_gray.svg'
 
 type Props = {
   placeholder: string
@@ -15,6 +16,7 @@ const InputTextField = ({ placeholder, maxLength, onChangeHandler, value }: Prop
       hovered={value.length === 0}
       value={value}
       onChange={onChangeHandler}
+      svg={<PawGraySvg />}
     />
   )
 }

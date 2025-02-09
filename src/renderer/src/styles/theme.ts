@@ -4,12 +4,13 @@ const color = {
   main: '#D9D9D9',
   backgroud: '#F6F6F6',
   clickColor: '#000000CC',
-  primery: {
+  primary: {
     500: '#00FF85',
     300: '#B2FFDA'
   },
   gray: {
-    500: '#8D8D8D'
+    500: '#8D8D8D',
+    300: '#D9D9D9'
   }
 }
 const border = {

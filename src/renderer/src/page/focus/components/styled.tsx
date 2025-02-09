@@ -36,50 +36,38 @@ const TimerText = styled.div<{ size: number; color: string }>`
   color: ${({ color }) => color};
 `
 
-const PauseWrap = styled.div<{ size: number }>`
+const PauseWrap = styled.div<{ size: number; iconSize: number }>`
   position: absolute;
   width: ${({ size }) => size}px;
   height: ${({ size }) => size}px;
-  background-color: ${({ theme }) => theme.color.primery[300]};
+  background-color: ${({ theme }) => theme.color.primary[300]};
   border-radius: 50%;
   z-index: 1;
+  svg {
+    width: ${({ iconSize }) => iconSize}px;
+    height: ${({ iconSize }) => iconSize}px;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
 `
 
-const PauseIcon = styled.img<{ size: number }>`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: ${({ size }) => size}px;
-  height: ${({ size }) => size}px;
-`
-
-const PlayWrap = styled.div<{ size: number }>`
+const PlayWrap = styled.div<{ size: number; iconSize: number }>`
   position: absolute;
   width: ${({ size }) => size}px;
   height: ${({ size }) => size}px;
   background-color: #e0e0e0;
   border-radius: 50%;
   z-index: 1;
+  svg {
+    width: ${({ iconSize }) => iconSize}px;
+    height: ${({ iconSize }) => iconSize}px;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
 `
 
-const PlayIcon = styled.img<{ size: number }>`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: ${({ size }) => size}px;
-  height: ${({ size }) => size}px;
-`
-
-export {
-  TimerWrapper,
-  Svg,
-  CircleBackground,
-  CircleProgress,
-  TimerText,
-  PauseWrap,
-  PauseIcon,
-  PlayWrap,
-  PlayIcon
-}
+export { TimerWrapper, Svg, CircleBackground, CircleProgress, TimerText, PauseWrap, PlayWrap }
