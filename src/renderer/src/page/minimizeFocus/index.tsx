@@ -1,48 +1,59 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useStorage, useTaskDispatchContext } from '@renderer/context/TaskContext'
-import { ControlTaskWrap, Body, ControlTaskName, CountSection } from './styled'
-import CompleteModal from '@renderer/_component/Modal/CompleteModal'
 import useWindowSize from '../../hooks/useWindowSize'
-import Button from '@renderer/_component/Button'
-import Header from '@renderer/_component/Header'
+import TextField from '@renderer/component/TextField'
+import { ClickArea, DragHandleWrapper, IconWrapper, Wrapper } from './styled'
+import CircularTimer from './components/CircularTimer'
+import theme from '@renderer/styles/theme'
+import PawGraySvg from '@assets/paw_gray.svg'
+import { useNavigate } from 'react-router-dom'
+import DragHandleSvg from '@assets/drag_handle.svg'
 
 const MiniMizeFocus = () => {
-  const { storage } = useStorage()
   const navigate = useNavigate()
-  const { dispatch } = useTaskDispatchContext()
   const { setWindowSize } = useWindowSize()
-
-  useEffect(() => {
-    // if (!storage.done) {
-    // CompleteModal이 계속 생겨서 적용.
-    // setWindowSize({ windowName: 'focus' })
-    window.message.receive('browser-window-blur', () => {
-      navigate('/focus')
-    })
-    // }
-
-    return () => {
-      window.electron.ipcRenderer.removeAllListeners('browser-window-blur')
-    }
-  }, [storage.done])
-
-  const onClickCompleteHandler = () => {
-    dispatch({ name: 'done', type: 'SET_TASK', value: true })
+  // const [isDragging, setIsDragging] = useState(false)
+  // const handleClickDragHandle = () => {
+  //   setIsDragging(!isDragging)
+  //   window.message.send('WINDOW_SIZE_CHANGE', 60)
+  // }
+  const handleClickDragHandle = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    console.log('drag handle', e.clientX, e.clientY)
   }
 
+  const calculatePercentage = (initialTime: number, duration: number) => {
+    return ((duration - initialTime) / duration) * 100
+  }
+
+  useEffect(() => {
+    setWindowSize({ windowName: 'minimize_focus' })
+
+    return () => {
+      // window.electron.ipcRenderer.removeAllListeners('browser-window-blur')
+    }
+  }, [])
+
   return (
-    <ControlTaskWrap>
-      <CompleteModal isOpen={storage.done} />
-      <Header />
-      <Body>
-        <ControlTaskName>{storage.taskName}</ControlTaskName>
-        <CountSection>
-          <Button name="작업완료" onClick={onClickCompleteHandler} />
-        </CountSection>
-        {/* <SkipButton navi={'/'} name="prev" /> */}
-      </Body>
-    </ControlTaskWrap>
+    <Wrapper gap={8}>
+      <ClickArea gap={8} onClick={() => navigate('/focus')}>
+        <TextField placeholder="태스크 이름 연동 필요" stretch disabled p_color="white" />
+        <CircularTimer
+          duration={1500} // 25분
+          initialTime={1380} // 23분 12초
+          size={36}
+          strokeWidth={3}
+          bgColor={theme.color.gray[300]}
+          progressColor="black"
+        >
+          <IconWrapper size={16} percentage={calculatePercentage(1380, 1500)}>
+            <PawGraySvg />
+          </IconWrapper>
+        </CircularTimer>
+      </ClickArea>
+      <DragHandleWrapper onDrag={handleClickDragHandle}>
+        <DragHandleSvg />
+      </DragHandleWrapper>
+    </Wrapper>
   )
 }
 

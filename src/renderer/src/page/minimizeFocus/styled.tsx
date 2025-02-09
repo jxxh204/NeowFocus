@@ -1,32 +1,40 @@
 import styled from 'styled-components'
 
-const ControlTaskWrap = styled.article`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: end;
-
-  gap: ${({ theme }) => theme.size.gap};
-`
-const Body = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.size.gap};
-`
-
-const ControlTaskName = styled.div`
-  border-radius: ${({ theme }) => theme.border.radius};
-  border: 1px solid ${({ theme }) => theme.border.color};
-  background: #272727;
-  color: white;
-  padding: 12px 8px;
-`
-const CountSection = styled.section`
+const Wrapper = styled.div<{ gap: number }>`
   display: flex;
   flex-direction: row;
-  gap: ${({ theme }) => theme.size.gap};
+  align-items: flex-start;
+  justify-content: center;
+  gap: ${({ gap }) => gap}px;
 `
-
-export { ControlTaskWrap, Body, ControlTaskName, CountSection }
+const ClickArea = styled.div<{ gap: number }>`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  gap: ${({ gap }) => gap}px;
+  z-index: 1;
+`
+const IconWrapper = styled.div<{ size: number; percentage: number }>`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  svg {
+    width: ${({ size }) => size}px;
+    height: ${({ size }) => size}px;
+    path {
+      fill: ${({ theme }) => theme.color.primary[500]};
+      fill-opacity: ${({ percentage }) => percentage / 100}; /* 0% ~ 100% 비율 적용 */
+    }
+  }
+  z-index: 1;
+`
+const DragHandleWrapper = styled.div`
+  cursor: pointer;
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+`
+export { Wrapper, IconWrapper, ClickArea, DragHandleWrapper }
