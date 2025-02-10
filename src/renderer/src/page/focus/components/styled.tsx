@@ -50,7 +50,17 @@ const SvgWrap = styled.div<{ size: number; iconSize: number }>`
     top: 50%;
     left: 50%;
   }
-  @keyframes fadeFill {
+  @keyframes fadeCycleBackground {
+    0% {
+    }
+    50% {
+      color: ${({ theme }) => theme.color.primary[500]};
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes fadePath {
     0% {
     }
     50% {
@@ -82,9 +92,8 @@ const EndWrap = styled(SvgWrap)<{ size: number; iconSize: number }>`
   svg {
     color: white;
     background-color: white;
-
     path {
-      animation: fadeFill 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadePath 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
     }
     circle {
       animation: fadeCycle 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
