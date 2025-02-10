@@ -8,14 +8,15 @@ import { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper, TimerWrapper 
 import CircularTimer from './components/CircularTimer'
 import ToastMessage from '@renderer/component/ToastMessage'
 import { useNavigate } from 'react-router-dom'
+import { useTimerContext } from '@renderer/context/TimerContext'
 
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
-  const [toastMessage, setToastMessage] = useState('')
   const navigate = useNavigate()
+  const [toastMessage, setToastMessage] = useState('')
+  const { timer } = useTimerContext()
 
   useEffect(() => {
-    console.log('focus')
     setWindowSize({ windowName: 'focus' })
     //TODO : 포커스 체크
     // window.message.receive('browser-window-focus', () => {
@@ -56,7 +57,7 @@ export function FocusPage(): JSX.Element {
           {toastMessage && <ToastMessage message={toastMessage} />}
           <CircularTimer
             duration={1500} // 25분
-            initialTime={2} // 23분 12초
+            initialTime={timer} // 23분 12초
             color="black"
             iconSize={24}
             size={54}

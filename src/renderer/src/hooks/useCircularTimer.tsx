@@ -1,3 +1,4 @@
+import { useTimerContext } from '@renderer/context/TimerContext'
 import { useEffect, useState } from 'react'
 
 type StateType = 'idle' | 'play' | 'pause' | 'end'
@@ -7,6 +8,8 @@ type Props = {
 }
 
 const useCircularTimer = ({ duration, initialTime = duration }: Props) => {
+  const { setTimer } = useTimerContext()
+
   const [timeLeft, setTimeLeft] = useState(initialTime)
   const [status, setStatus] = useState<StateType>('idle')
 
@@ -20,7 +23,7 @@ const useCircularTimer = ({ duration, initialTime = duration }: Props) => {
       setStatus('end')
       return
     }
-
+    setTimer(timeLeft)
     const interval = setInterval(() => {
       setTimeLeft((prev) => prev - 1)
     }, 1000)
