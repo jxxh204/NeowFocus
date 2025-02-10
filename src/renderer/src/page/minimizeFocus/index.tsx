@@ -7,10 +7,12 @@ import theme from '@renderer/styles/theme'
 import PawGraySvg from '@assets/paw_gray.svg'
 import { useNavigate } from 'react-router-dom'
 import DragHandleSvg from '@assets/drag_handle.svg'
+import { useTimerContext } from '@renderer/context/TimerContext'
 
 const MiniMizeFocus = () => {
   const navigate = useNavigate()
   const { setWindowSize } = useWindowSize()
+  const { timer } = useTimerContext()
   // const [isDragging, setIsDragging] = useState(false)
   // const handleClickDragHandle = () => {
   //   setIsDragging(!isDragging)
@@ -39,7 +41,7 @@ const MiniMizeFocus = () => {
         <TextField placeholder="태스크 이름 연동 필요" stretch disabled p_color="white" />
         <CircularTimer
           duration={1500} // 25분
-          initialTime={1380} // 23분 12초
+          initialTime={timer} // 23분 12초
           size={36}
           strokeWidth={3}
           bgColor={theme.color.gray[300]}
