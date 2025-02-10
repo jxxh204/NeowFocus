@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-type StateType = 'idle' | 'play' | 'pause'
+type StateType = 'idle' | 'play' | 'pause' | 'end'
 type Props = {
   duration: number
   initialTime?: number
@@ -15,7 +15,11 @@ const useCircularTimer = ({ duration, initialTime = duration }: Props) => {
   }
 
   useEffect(() => {
-    if (status == 'play' || timeLeft <= 0) return
+    if (status == 'play') return
+    if (timeLeft <= 0) {
+      setStatus('end')
+      return
+    }
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => prev - 1)
