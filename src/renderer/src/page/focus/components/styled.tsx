@@ -35,8 +35,7 @@ const TimerText = styled.div<{ size: number; color: string }>`
   font-weight: bold;
   color: ${({ color }) => color};
 `
-
-const PauseWrap = styled.div<{ size: number; iconSize: number }>`
+const SvgWrap = styled.div<{ size: number; iconSize: number }>`
   position: absolute;
   width: ${({ size }) => size}px;
   height: ${({ size }) => size}px;
@@ -51,23 +50,55 @@ const PauseWrap = styled.div<{ size: number; iconSize: number }>`
     top: 50%;
     left: 50%;
   }
-`
-
-const PlayWrap = styled.div<{ size: number; iconSize: number }>`
-  position: absolute;
-  width: ${({ size }) => size}px;
-  height: ${({ size }) => size}px;
-  background-color: #e0e0e0;
-  border-radius: 50%;
-  z-index: 1;
-  svg {
-    width: ${({ iconSize }) => iconSize}px;
-    height: ${({ iconSize }) => iconSize}px;
-    transform: translate(-50%, -50%);
-    position: absolute;
-    top: 50%;
-    left: 50%;
+  @keyframes fadeFill {
+    0% {
+    }
+    50% {
+      fill: ${({ theme }) => theme.color.primary[500]};
+    }
+    100% {
+    }
+  }
+  @keyframes fadeCycle {
+    0% {
+    }
+    50% {
+      stroke: ${({ theme }) => theme.color.primary[500]};
+    }
+    100% {
+    }
   }
 `
 
-export { TimerWrapper, Svg, CircleBackground, CircleProgress, TimerText, PauseWrap, PlayWrap }
+const PauseWrap = styled(SvgWrap)<{ size: number; iconSize: number }>`
+  background-color: ${({ theme }) => theme.color.primary[300]};
+`
+
+const PlayWrap = styled(SvgWrap)<{ size: number; iconSize: number }>`
+  background-color: #e0e0e0;
+`
+
+const EndWrap = styled(SvgWrap)<{ size: number; iconSize: number }>`
+  svg {
+    color: white;
+    background-color: white;
+
+    path {
+      animation: fadeFill 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    circle {
+      animation: fadeCycle 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+`
+
+export {
+  TimerWrapper,
+  Svg,
+  CircleBackground,
+  CircleProgress,
+  TimerText,
+  PauseWrap,
+  PlayWrap,
+  EndWrap
+}

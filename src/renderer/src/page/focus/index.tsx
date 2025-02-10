@@ -56,7 +56,7 @@ export function FocusPage(): JSX.Element {
           {toastMessage && <ToastMessage message={toastMessage} />}
           <CircularTimer
             duration={1500} // 25분
-            initialTime={1380} // 23분 12초
+            initialTime={2} // 23분 12초
             color="black"
             iconSize={24}
             size={54}

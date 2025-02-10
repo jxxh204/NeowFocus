@@ -9,10 +9,12 @@ import {
   PlayWrap,
   Svg,
   TimerText,
-  TimerWrapper
+  TimerWrapper,
+  EndWrap
 } from './styled'
 import useCircularTimer from '../../../hooks/useCircularTimer'
 import theme from '@renderer/styles/theme'
+import PawCircleWhiteSvg from '@assets/paw_circle_white.svg'
 
 export type TimerProps = {
   duration: number
@@ -54,6 +56,11 @@ const CircularTimer: React.FC<TimerProps> = ({
       progress: 'black',
       background: '#e0e0e0',
       progressBackground: '#e0e0e0'
+    },
+    end: {
+      progress: 'white',
+      background: theme.color.primary[500],
+      progressBackground: 'white'
     }
   }
   const handleClick = () => {
@@ -87,24 +94,26 @@ const CircularTimer: React.FC<TimerProps> = ({
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
-      <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <CircleBackground
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-          color={color[status].background}
-        />
-        <CircleProgress
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          strokeDashoffset={circumference - progress}
-          color={color[status].progress}
-        />
-      </Svg>
+      {status !== 'end' && (
+        <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <CircleBackground
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            strokeWidth={strokeWidth}
+            color={color[status].background}
+          />
+          <CircleProgress
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference - progress}
+            color={color[status].progress}
+          />
+        </Svg>
+      )}
 
       <>
         {status === 'idle' && (
@@ -121,6 +130,11 @@ const CircularTimer: React.FC<TimerProps> = ({
           <PauseWrap size={size} iconSize={iconSize} onClick={handleClick}>
             <PauseIcon />
           </PauseWrap>
+        )}
+        {status === 'end' && (
+          <EndWrap size={size} iconSize={size} onClick={handleClick}>
+            <PawCircleWhiteSvg />
+          </EndWrap>
         )}
       </>
     </TimerWrapper>
