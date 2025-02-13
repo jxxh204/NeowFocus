@@ -1,9 +1,9 @@
 import styled from 'styled-components'
 
-const TimerWrapper = styled.div<{ size: number }>`
+const TimerWrapper = styled.div<{ $size: number }>`
   position: relative;
-  width: ${({ size }) => size}px;
-  height: ${({ size }) => size}px;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,36 +15,36 @@ const Svg = styled.svg`
   z-index: 2;
 `
 
-const CircleBackground = styled.circle<{ strokeWidth: number; color: string }>`
+const CircleBackground = styled.circle<{ $strokeWidth: number; $color: string }>`
   fill: none;
-  stroke: ${({ color }) => color};
-  stroke-width: ${({ strokeWidth }) => strokeWidth}px;
+  stroke: ${({ $color }) => $color};
+  stroke-width: ${({ $strokeWidth }) => $strokeWidth}px;
 `
 
-const CircleProgress = styled.circle<{ strokeWidth: number; color: string }>`
+const CircleProgress = styled.circle<{ $strokeWidth: number; $color: string }>`
   fill: none;
-  stroke: ${({ color }) => color};
-  stroke-width: ${({ strokeWidth }) => strokeWidth}px;
+  stroke: ${({ $color }) => $color};
+  stroke-width: ${({ $strokeWidth }) => $strokeWidth}px;
   stroke-linecap: round;
   transition: stroke-dashoffset 1s linear;
 `
 
-const TimerText = styled.div<{ size: number; color: string }>`
+const TimerText = styled.div<{ $size: number; $color: string }>`
   position: absolute;
-  font-size: ${({ size }) => size / 4}px;
+  font-size: ${({ $size }) => $size / 4}px;
   font-weight: bold;
-  color: ${({ color }) => color};
+  color: ${({ $color }) => $color};
 `
-const SvgWrap = styled.div<{ size: number; iconSize: number }>`
+const SvgWrap = styled.div<{ $size: number; $iconSize: number }>`
   position: absolute;
-  width: ${({ size }) => size}px;
-  height: ${({ size }) => size}px;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
   background-color: ${({ theme }) => theme.color.primary[300]};
   border-radius: 50%;
   z-index: 1;
   svg {
-    width: ${({ iconSize }) => iconSize}px;
-    height: ${({ iconSize }) => iconSize}px;
+    width: ${({ $iconSize }) => $iconSize}px;
+    height: ${({ $iconSize }) => $iconSize}px;
     transform: translate(-50%, -50%);
     position: absolute;
     top: 50%;
@@ -80,15 +80,15 @@ const SvgWrap = styled.div<{ size: number; iconSize: number }>`
   }
 `
 
-const PauseWrap = styled(SvgWrap)<{ size: number; iconSize: number }>`
+const PauseWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
   background-color: ${({ theme }) => theme.color.primary[300]};
 `
 
-const PlayWrap = styled(SvgWrap)<{ size: number; iconSize: number }>`
+const PlayWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
   background-color: #e0e0e0;
 `
 
-const EndWrap = styled(SvgWrap)<{ size: number; iconSize: number }>`
+const EndWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
   svg {
     color: white;
     background-color: white;

@@ -40,4 +40,10 @@ const TimerWrapper = styled.div`
   justify-content: end;
 `
 
-export { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper, TimerWrapper }
+const ButtonWrapper = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+`
+
+export { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper, TimerWrapper, ButtonWrapper }

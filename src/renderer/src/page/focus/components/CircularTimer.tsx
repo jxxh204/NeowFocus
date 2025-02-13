@@ -89,7 +89,7 @@ const CircularTimer: React.FC<TimerProps> = ({
   }
   return (
     <TimerWrapper
-      size={size}
+      $size={size}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
@@ -100,39 +100,39 @@ const CircularTimer: React.FC<TimerProps> = ({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            strokeWidth={strokeWidth}
-            color={color[status].background}
+            $strokeWidth={strokeWidth}
+            $color={color[status].background}
           />
           <CircleProgress
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            strokeWidth={strokeWidth}
+            $strokeWidth={strokeWidth}
             strokeDasharray={circumference}
             strokeDashoffset={circumference - progress}
-            color={color[status].progress}
+            $color={color[status].progress}
           />
         </Svg>
       )}
 
       <>
         {status === 'idle' && (
-          <TimerText size={size} color={color[status].progress}>
+          <TimerText $size={size} $color={color[status].progress}>
             {`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}
           </TimerText>
         )}
         {status === 'play' && (
-          <PlayWrap size={size} iconSize={iconSize} onClick={handleClick}>
+          <PlayWrap $size={size} $iconSize={iconSize} onClick={handleClick}>
             <PlayIcon />
           </PlayWrap>
         )}
         {status === 'pause' && (
-          <PauseWrap size={size} iconSize={iconSize} onClick={handleClick}>
+          <PauseWrap $size={size} $iconSize={iconSize} onClick={handleClick}>
             <PauseIcon />
           </PauseWrap>
         )}
         {status === 'end' && (
-          <EndWrap size={size} iconSize={size} onClick={handleClick}>
+          <EndWrap $size={size} $iconSize={size} onClick={handleClick}>
             <PawCircleWhiteSvg />
           </EndWrap>
         )}
