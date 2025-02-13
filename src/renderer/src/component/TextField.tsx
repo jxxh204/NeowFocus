@@ -7,15 +7,15 @@ const TextFieldContainer = styled.div`
   width: 100%;
 `
 
-const TextFieldStyle = styled.input<{ hovered: boolean; stretch?: boolean }>`
-  width: ${({ stretch }) => (stretch ? '100%' : '260px')};
+const TextFieldStyle = styled.input<{ $hovered: boolean; $stretch?: boolean }>`
+  width: ${({ $stretch }) => ($stretch ? '100%' : '260px')};
   padding: 8px 0px 8px 30px;
   border-radius: 6px;
   outline: none;
   border: 1px solid #e8e8e8;
 
-  ${({ hovered }) =>
-    !hovered &&
+  ${({ $hovered }) =>
+    !$hovered &&
     `
       color: ${({ theme }) => theme.color.gray[500]};`}
 
@@ -83,8 +83,8 @@ function TextField({
         value={value}
         onChange={onChange}
         maxLength={maxLength}
-        hovered={hovered}
-        stretch={stretch}
+        $hovered={hovered}
+        $stretch={stretch}
         disabled={disabled}
       />
       <Placeholder>
