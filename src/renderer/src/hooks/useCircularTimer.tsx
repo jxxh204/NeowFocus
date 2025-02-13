@@ -17,9 +17,10 @@ const useCircularTimer = ({ duration, initialTime = duration }: Props) => {
     setStatus(newStatus)
   }
 
+  // TODO : 같은 상태를 두곳에서 관리중이다. 개선이 필요
   useEffect(() => {
     if (status == 'play') return
-    if (timeLeft <= 0) {
+    if (timeLeft < 0) {
       setStatus('end')
       return
     }
