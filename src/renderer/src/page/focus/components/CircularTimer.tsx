@@ -131,11 +131,6 @@ const CircularTimer: React.FC<TimerProps> = ({
             <PauseIcon />
           </PauseWrap>
         )}
-        {status === 'end' && (
-          <EndWrap $size={size} $iconSize={size} onClick={handleClick}>
-            <PawCircleWhiteSvg />
-          </EndWrap>
-        )}
       </>
     </TimerWrapper>
   )

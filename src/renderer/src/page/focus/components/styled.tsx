@@ -50,6 +50,17 @@ const SvgWrap = styled.div<{ $size: number; $iconSize: number }>`
     top: 50%;
     left: 50%;
   }
+`
+
+const PauseWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
+  background-color: ${({ theme }) => theme.color.primary[300]};
+`
+
+const PlayWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
+  background-color: #e0e0e0;
+`
+
+const EndWrap = styled(TimerWrapper)<{ $size: number; $iconSize: number }>`
   @keyframes fadeCycleBackground {
     0% {
     }
@@ -78,17 +89,6 @@ const SvgWrap = styled.div<{ $size: number; $iconSize: number }>`
     100% {
     }
   }
-`
-
-const PauseWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
-  background-color: ${({ theme }) => theme.color.primary[300]};
-`
-
-const PlayWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
-  background-color: #e0e0e0;
-`
-
-const EndWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
   svg {
     color: white;
     background-color: white;
