@@ -4,18 +4,25 @@ import TextField from '@renderer/component/TextField'
 import WindowMinimizeSvg from '@assets/window_minimize.svg'
 import TrashSvg from '@assets/trash.svg'
 import PawDarkGraySvg from '@assets/paw_dark_gray.svg'
-import { FocusPageWrapper, WindowMinimizeIcon, TrashIcon, Wrapper, TimerWrapper } from './styled'
+import {
+  FocusPageWrapper,
+  WindowMinimizeIcon,
+  TrashIcon,
+  Wrapper,
+  TimerWrapper,
+  ButtonWrapper
+} from './styled'
 import CircularTimer from './components/CircularTimer'
 import ToastMessage from '@renderer/component/ToastMessage'
 import { useNavigate } from 'react-router-dom'
 import { useTimerContext } from '@renderer/context/TimerContext'
+import Button from '@renderer/component/Button'
 
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
   const navigate = useNavigate()
   const [toastMessage, setToastMessage] = useState('')
-  const { timer } = useTimerContext()
-
+  const { timer, isEnd } = useTimerContext()
   useEffect(() => {
     setWindowSize({ windowName: 'focus' })
     //TODO : 포커스 체크
@@ -50,9 +57,18 @@ export function FocusPage(): JSX.Element {
       />
 
       <Wrapper>
-        <TrashIcon onClick={handleClickTrash}>
-          <TrashSvg />
-        </TrashIcon>
+        {isEnd ? (
+          <ButtonWrapper>
+            <Button value="이 작업 끝!" type="outlined" />
+            <Button value="한번 더" type="filled" />
+          </ButtonWrapper>
+        ) : (
+          <TrashIcon onClick={handleClickTrash}>
+            <TrashSvg />
+          </TrashIcon>
+        )}
+
+        {/* TODO : 리팩터링 필요 */}
         <TimerWrapper>
           {toastMessage && <ToastMessage message={toastMessage} />}
           <CircularTimer
