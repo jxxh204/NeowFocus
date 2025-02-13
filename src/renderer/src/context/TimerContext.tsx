@@ -13,7 +13,7 @@ const TimerProvider = ({ children }: { children: React.ReactNode }) => {
   const [isEnd, setIsEnd] = useState(false)
 
   useEffect(() => {
-    if (timer < 0) {
+    if (timer <= 0) {
       setIsEnd(true)
     }
   }, [timer])
