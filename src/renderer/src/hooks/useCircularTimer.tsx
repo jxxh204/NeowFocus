@@ -1,7 +1,7 @@
 import { useTimerContext } from '@renderer/context/TimerContext'
 import { useEffect, useState } from 'react'
 
-type StateType = 'idle' | 'play' | 'pause' | 'end'
+export type StateType = 'idle' | 'play' | 'pause' | 'end'
 type Props = {
   duration: number
   initialTime?: number

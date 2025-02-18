@@ -11,8 +11,8 @@ import {
   TimerText,
   TimerWrapper
 } from './styled'
-import useCircularTimer from '../../../hooks/useCircularTimer'
 import theme from '@renderer/styles/theme'
+import type { StateType } from '@renderer/hooks/useCircularTimer'
 
 export type TimerProps = {
   duration: number
@@ -20,21 +20,22 @@ export type TimerProps = {
   initialTime?: number
   strokeWidth?: number
   size?: number
-  color?: string
-  bgColor?: string
   iconSize?: number
+  timeLeft: number
+  status: StateType
+  handleStatus: (status: StateType) => void
 }
 
 const CircularTimer: React.FC<TimerProps> = ({
   duration,
   setToastMessage,
-  initialTime = duration,
   strokeWidth = 4,
   size = 54,
-  iconSize = 24
+  iconSize = 24,
+  timeLeft,
+  status,
+  handleStatus
 }) => {
-  const { timeLeft, status, handleStatus } = useCircularTimer({ duration, initialTime })
-
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const progress = (timeLeft / duration) * circumference
@@ -61,6 +62,7 @@ const CircularTimer: React.FC<TimerProps> = ({
       progressBackground: 'white'
     }
   }
+  // TODO : event handler를 hooks로 분리하기.
   const handleClick = () => {
     if (status === 'pause') {
       handleStatus('play')
