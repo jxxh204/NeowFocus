@@ -1,8 +1,22 @@
 import Button from '@renderer/component/Button'
 import Overlay from '@renderer/component/Overlay'
+import { usePopup } from '@renderer/context/PopupContext'
+import { useTimerContext } from '@renderer/context/TimerContext'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 const AskPopup = () => {
+  const { closePopup } = usePopup()
+  const { initTimer } = useTimerContext()
+  const navigate = useNavigate()
+  const handleClickCancel = () => {
+    closePopup()
+  }
+  const handleClickDelete = () => {
+    closePopup()
+    initTimer()
+    navigate('/')
+  }
   return (
     <Overlay>
       <Wrapper>
@@ -12,8 +26,8 @@ const AskPopup = () => {
           </p>
         </TextWrapper>
         <ButtonWrapper>
-          <Button value="취소" type="outlined" color="white" />
-          <Button value="삭제" type="filled" color="white" />
+          <Button value="취소" type="outlined" color="white" onClick={handleClickCancel} />
+          <Button value="삭제" type="filled" color="white" onClick={handleClickDelete} />
         </ButtonWrapper>
       </Wrapper>
     </Overlay>
