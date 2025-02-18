@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom'
 import { useTimerContext } from '@renderer/context/TimerContext'
 import Completed from './components/Completed'
 import Process from './components/Process'
+import CompletedPopup from './components/Popup/CompletedPopup'
+import AskPopup from './components/Popup/AskPopup'
 
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
@@ -33,6 +35,8 @@ export function FocusPage(): JSX.Element {
   //제거하기.
   return (
     <FocusPageWrapper>
+      {/* <CompletedPopup /> */}
+      <AskPopup />
       <WindowMinimizeIcon onClick={handleClickMinimize}>
         <WindowMinimizeSvg />
       </WindowMinimizeIcon>
