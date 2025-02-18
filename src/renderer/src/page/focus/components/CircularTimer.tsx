@@ -9,12 +9,10 @@ import {
   PlayWrap,
   Svg,
   TimerText,
-  TimerWrapper,
-  EndWrap
+  TimerWrapper
 } from './styled'
 import useCircularTimer from '../../../hooks/useCircularTimer'
 import theme from '@renderer/styles/theme'
-import PawCircleWhiteSvg from '@assets/paw_circle_white.svg'
 
 export type TimerProps = {
   duration: number
