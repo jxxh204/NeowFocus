@@ -8,15 +8,12 @@ import { useNavigate } from 'react-router-dom'
 import { useTimerContext } from '@renderer/context/TimerContext'
 import Completed from './components/Completed'
 import Process from './components/Process'
-import CompletedPopup from './components/Popup/CompletedPopup'
-import AskPopup from './components/Popup/AskPopup'
 
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
   const navigate = useNavigate()
   const { timer, isEnd } = useTimerContext()
 
-  console.log(timer, isEnd)
   useEffect(() => {
     setWindowSize({ windowName: 'focus' })
     //TODO : 포커스 체크
@@ -35,11 +32,10 @@ export function FocusPage(): JSX.Element {
   //제거하기.
   return (
     <FocusPageWrapper>
-      {/* <CompletedPopup /> */}
-      <AskPopup />
       <WindowMinimizeIcon onClick={handleClickMinimize}>
         <WindowMinimizeSvg />
       </WindowMinimizeIcon>
+
       <TextField
         placeholder="태스크 이름 연동 필요"
         stretch
@@ -48,6 +44,7 @@ export function FocusPage(): JSX.Element {
         p_color="white"
       />
 
+      {/* TODO : 아이콘 어디있는지 찾기 힘듬 */}
       <Wrapper>{isEnd ? <Completed /> : <Process timer={timer} />}</Wrapper>
     </FocusPageWrapper>
   )

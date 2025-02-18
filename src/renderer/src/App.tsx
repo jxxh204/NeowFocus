@@ -1,15 +1,16 @@
 import { HashRouter } from 'react-router-dom'
 import Router from './router/router'
 import { TimerProvider } from './context/TimerContext'
+import { PopupProvider } from './context/PopupContext'
 
 function App() {
-  // const { ipcRenderer } = window.require("electron");
-
   return (
     <div className="App">
       <HashRouter>
         <TimerProvider>
-          <Router />
+          <PopupProvider>
+            <Router />
+          </PopupProvider>
         </TimerProvider>
       </HashRouter>
     </div>
