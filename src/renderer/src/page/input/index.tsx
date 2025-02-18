@@ -2,7 +2,8 @@ import Button from '@renderer/component/Button'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import InputTextField from './components/TextField'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import useWindowSize from '@renderer/hooks/useWindowSize'
 
 const MainStyle = styled.form`
   display: flex;
@@ -13,6 +14,7 @@ const MainStyle = styled.form`
 
 function InputPage() {
   const navigate = useNavigate()
+  const { setWindowSize } = useWindowSize()
   const [text, setText] = useState('')
 
   const onClickHandler = (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,6 +25,9 @@ function InputPage() {
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value)
   }
+  useEffect(() => {
+    setWindowSize({ windowName: 'input' })
+  }, [])
 
   return (
     <MainStyle onSubmit={onClickHandler}>
