@@ -80,6 +80,7 @@ type Props = {
   disabled?: boolean
   size?: string
   color?: 'primary' | 'white'
+  onClick?: () => void
 }
 
 function Button({
@@ -87,20 +88,45 @@ function Button({
   type = 'filled',
   disabled = false,
   size = '36px',
-  color = 'primary'
+  color = 'primary',
+  ...rest
 }: Props) {
   if (type === 'filled') {
     if (color === 'primary') {
-      return <FilledButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+      return (
+        <FilledButtonStyle type="submit" value={value} disabled={disabled} size={size} {...rest} />
+      )
     } else if (color === 'white') {
-      return <WhiteFilledButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+      return (
+        <WhiteFilledButtonStyle
+          type="submit"
+          value={value}
+          disabled={disabled}
+          size={size}
+          {...rest}
+        />
+      )
     }
   } else if (type === 'outlined') {
     if (color === 'primary') {
-      return <OutlinedButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+      return (
+        <OutlinedButtonStyle
+          type="submit"
+          value={value}
+          disabled={disabled}
+          size={size}
+          {...rest}
+        />
+      )
     } else if (color === 'white') {
       return (
-        <WhiteOutlinedButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+        <WhiteOutlinedButtonStyle
+          type="submit"
+          value={value}
+          disabled={disabled}
+          size={size}
+          {...rest}
+        />
       )
     }
   }
