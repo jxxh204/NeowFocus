@@ -1,8 +1,24 @@
 import Overlay from '@renderer/component/Overlay'
 import PawCircleGreenSvg from '@assets/paw_circle_green.svg'
 import styled from 'styled-components'
+import { usePopup } from '@renderer/context/PopupContext'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTimerContext } from '@renderer/context/TimerContext'
 
 const CompletedPopup = () => {
+  const { closePopup } = usePopup()
+  const { initTimer } = useTimerContext()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setTimeout(() => {
+      closePopup()
+      initTimer()
+      navigate('/')
+    }, 1500)
+  }, [])
+
   const paw = 6
   return (
     <Overlay>
