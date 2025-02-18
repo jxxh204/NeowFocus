@@ -32,10 +32,46 @@ const FilledButtonStyle = styled(ButtonStyle)`
     cursor: not-allowed;
   }
 `
+const WhiteFilledButtonStyle = styled(ButtonStyle)`
+  background-color: #ffffff;
+  color: #000000;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+  &:active {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  &:disabled {
+    background-color: #e8e8e8;
+    color: #8d8d8d;
+    border: 1px solid #8d8d8d;
+    cursor: not-allowed;
+  }
+`
 
 const OutlinedButtonStyle = styled(ButtonStyle)`
   background-color: #ffffff;
   color: #000000;
+`
+const WhiteOutlinedButtonStyle = styled(ButtonStyle)`
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  &:active {
+    background-color: #838383;
+    border: 1px solid #969696;
+  }
+  &:disabled {
+    background-color: #e8e8e8;
+    color: #8d8d8d;
+    border: 1px solid #8d8d8d;
+    cursor: not-allowed;
+  }
 `
 
 type Props = {
@@ -43,13 +79,31 @@ type Props = {
   type?: 'filled' | 'outlined'
   disabled?: boolean
   size?: string
+  color?: 'primary' | 'white'
 }
 
-function Button({ value, type = 'filled', disabled = false, size = '36px' }: Props) {
+function Button({
+  value,
+  type = 'filled',
+  disabled = false,
+  size = '36px',
+  color = 'primary'
+}: Props) {
   if (type === 'filled') {
-    return <FilledButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+    if (color === 'primary') {
+      return <FilledButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+    } else if (color === 'white') {
+      return <WhiteFilledButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+    }
+  } else if (type === 'outlined') {
+    if (color === 'primary') {
+      return <OutlinedButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+    } else if (color === 'white') {
+      return (
+        <WhiteOutlinedButtonStyle type="submit" value={value} disabled={disabled} size={size} />
+      )
+    }
   }
-  return <OutlinedButtonStyle type="submit" value={value} disabled={disabled} size={size} />
 }
 
 export default Button
