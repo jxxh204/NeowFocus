@@ -13,11 +13,7 @@ const MiniMizeFocus = () => {
   const navigate = useNavigate()
   const { setWindowSize } = useWindowSize()
   const { timer } = useTimerContext()
-  // const [isDragging, setIsDragging] = useState(false)
-  // const handleClickDragHandle = () => {
-  //   setIsDragging(!isDragging)
-  //   window.message.send('WINDOW_SIZE_CHANGE', 60)
-  // }
+
   const handleClickDragHandle = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation()
     console.log('drag handle', e.clientX, e.clientY)
@@ -29,12 +25,9 @@ const MiniMizeFocus = () => {
 
   useEffect(() => {
     setWindowSize({ windowName: 'minimize_focus' })
-
-    return () => {
-      // window.electron.ipcRenderer.removeAllListeners('browser-window-blur')
-    }
   }, [])
 
+  // TODO : 컴포넌트 구조 리팩터링 필요
   return (
     <Wrapper gap={8}>
       <ClickArea gap={8} onClick={() => navigate('/focus')}>
