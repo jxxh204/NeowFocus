@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import InputTextField from './components/TextField'
 import { useEffect, useState } from 'react'
 import useWindowSize from '@renderer/hooks/useWindowSize'
+import { useTaskContext } from '@renderer/context/TaskContext'
 
 const MainStyle = styled.form`
   display: flex;
@@ -15,16 +16,19 @@ const MainStyle = styled.form`
 function InputPage() {
   const navigate = useNavigate()
   const { setWindowSize } = useWindowSize()
+  const { updateCurrentTask } = useTaskContext()
   const [text, setText] = useState('')
 
   const onClickHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    updateCurrentTask(text)
     navigate('/focus')
   }
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value)
   }
+
   useEffect(() => {
     setWindowSize({ windowName: 'input' })
   }, [])
