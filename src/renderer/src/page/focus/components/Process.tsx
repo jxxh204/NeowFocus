@@ -7,13 +7,13 @@ import { usePopup } from '@renderer/context/PopupContext'
 import useCircularTimer from '@renderer/hooks/useCircularTimer'
 
 type ProcessProps = {
-  timer: number
+  minute: number
 }
 
-const Process = ({ timer }: ProcessProps) => {
+const Process = ({ minute }: ProcessProps) => {
   const { timeLeft, status, handleStatus } = useCircularTimer({
     duration: 1500,
-    initialTime: timer
+    initialTime: minute * 60
   })
   const [toastMessage, setToastMessage] = useState('')
   const { openPopup } = usePopup()
@@ -34,7 +34,7 @@ const Process = ({ timer }: ProcessProps) => {
         {toastMessage && <ToastMessage message={toastMessage} />}
         <CircularTimer
           duration={1500} // 25분
-          initialTime={timer} // 23분 12초
+          initialTime={minute * 60} // 23분 12초
           iconSize={24}
           size={54}
           timeLeft={timeLeft}

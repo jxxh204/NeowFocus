@@ -9,7 +9,7 @@ type Props = {
 
 const useCircularTimer = ({ duration, initialTime = duration }: Props) => {
   const { setTimer } = useTimerContext()
-
+  // TODO : timerContext와 중복되므로 상태 관리 중복 제거 필요
   const [timeLeft, setTimeLeft] = useState(initialTime)
   const [status, setStatus] = useState<StateType>('idle')
 
