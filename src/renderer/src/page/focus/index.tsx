@@ -8,11 +8,12 @@ import { useNavigate } from 'react-router-dom'
 import { useTimerContext } from '@renderer/context/TimerContext'
 import Completed from './components/Completed'
 import Process from './components/Process'
-
+import { useTaskContext } from '@renderer/context/TaskContext'
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
   const navigate = useNavigate()
-  const { timer, isEnd } = useTimerContext()
+  const { currentTask } = useTaskContext()
+  const { isTimerEnd } = useTimerContext()
 
   useEffect(() => {
     setWindowSize({ windowName: 'focus' })
@@ -37,7 +38,7 @@ export function FocusPage(): JSX.Element {
       </WindowMinimizeIcon>
 
       <TextField
-        placeholder="태스크 이름 연동 필요"
+        placeholder={currentTask.taskName}
         stretch
         disabled
         svg={<PawDarkGraySvg />}
@@ -45,7 +46,7 @@ export function FocusPage(): JSX.Element {
       />
 
       {/* TODO : 아이콘 어디있는지 찾기 힘듬 */}
-      <Wrapper>{isEnd ? <Completed /> : <Process timer={timer} />}</Wrapper>
+      <Wrapper>{isTimerEnd ? <Completed /> : <Process minute={currentTask.taskMinute} />}</Wrapper>
     </FocusPageWrapper>
   )
 }
