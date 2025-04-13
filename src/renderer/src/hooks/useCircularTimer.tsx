@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react'
 export type StateType = 'idle' | 'play' | 'pause' | 'end'
 type Props = {
   duration: number
-  initialTime?: number
 }
 
-const useCircularTimer = ({ duration, initialTime = duration }: Props) => {
+const useCircularTimer = ({ duration }: Props) => {
   const { setTimer } = useTimerContext()
   // TODO : timerContext와 중복되므로 상태 관리 중복 제거 필요
-  const [timeLeft, setTimeLeft] = useState(initialTime)
+  const [timeLeft, setTimeLeft] = useState(duration)
   const [status, setStatus] = useState<StateType>('idle')
 
   const handleStatus = (newStatus: StateType) => {

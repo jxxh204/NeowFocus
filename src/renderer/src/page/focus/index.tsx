@@ -17,13 +17,6 @@ export function FocusPage(): JSX.Element {
 
   useEffect(() => {
     setWindowSize({ windowName: 'focus' })
-    //TODO : 포커스 체크
-    // window.message.receive('browser-window-focus', () => {
-    //   console.log('browser-window-focus')
-    // })
-    // return () => {
-    //   window.electron.ipcRenderer.removeAllListeners('browser-window-focus')
-    // }
   }, [])
 
   const handleClickMinimize = () => {
@@ -46,7 +39,9 @@ export function FocusPage(): JSX.Element {
       />
 
       {/* TODO : 아이콘 어디있는지 찾기 힘듬 */}
-      <Wrapper>{isTimerEnd ? <Completed /> : <Process minute={currentTask.taskMinute} />}</Wrapper>
+      <Wrapper>
+        {isTimerEnd ? <Completed /> : <Process duration={currentTask.taskMinute * 60} />}
+      </Wrapper>
     </FocusPageWrapper>
   )
 }
