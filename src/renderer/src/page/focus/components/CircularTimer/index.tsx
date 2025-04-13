@@ -1,29 +1,19 @@
 import React from 'react'
-import PauseIcon from '@assets/timer_pause.svg'
-import PlayIcon from '@assets/timer_play.svg'
 
-import {
-  CircleBackground,
-  CircleProgress,
-  PauseWrap,
-  PlayWrap,
-  Svg,
-  TimerText,
-  TimerWrapper
-} from './styled'
+import { CircleBackground, CircleProgress, Svg, TimerWrapper } from '../styled'
 import theme from '@renderer/styles/theme'
 import type { StateType } from '@renderer/hooks/useCircularTimer'
 
 export type TimerProps = {
   duration: number
   setToastMessage: (message: string) => void
-  initialTime?: number
   strokeWidth?: number
   size?: number
   iconSize?: number
   timeLeft: number
   status: StateType
   handleStatus: (status: StateType) => void
+  children: React.ReactNode
 }
 
 const CircularTimer: React.FC<TimerProps> = ({
@@ -31,10 +21,11 @@ const CircularTimer: React.FC<TimerProps> = ({
   setToastMessage,
   strokeWidth = 4,
   size = 54,
-  iconSize = 24,
+
   timeLeft,
   status,
-  handleStatus
+  handleStatus,
+  children
 }) => {
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
@@ -63,15 +54,7 @@ const CircularTimer: React.FC<TimerProps> = ({
     }
   }
   // TODO : event handler를 hooks로 분리하기.
-  const handleClick = () => {
-    if (status === 'pause') {
-      handleStatus('play')
-      setToastMessage('타이머 재개')
-    } else {
-      handleStatus('pause')
-      setToastMessage('타이머 일시정지')
-    }
-  }
+
   const handleMouseEnter = () => {
     if (status === 'idle') {
       handleStatus('pause')
@@ -88,12 +71,7 @@ const CircularTimer: React.FC<TimerProps> = ({
     setToastMessage('')
   }
   return (
-    <TimerWrapper
-      $size={size}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
-    >
+    <TimerWrapper $size={size} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       {status !== 'end' && (
         <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
           <CircleBackground
@@ -115,23 +93,7 @@ const CircularTimer: React.FC<TimerProps> = ({
         </Svg>
       )}
 
-      <>
-        {status === 'idle' && (
-          <TimerText $size={size} $color={color[status].progress}>
-            {`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}
-          </TimerText>
-        )}
-        {status === 'play' && (
-          <PlayWrap $size={size} $iconSize={iconSize} onClick={handleClick}>
-            <PlayIcon />
-          </PlayWrap>
-        )}
-        {status === 'pause' && (
-          <PauseWrap $size={size} $iconSize={iconSize} onClick={handleClick}>
-            <PauseIcon />
-          </PauseWrap>
-        )}
-      </>
+      {children}
     </TimerWrapper>
   )
 }

@@ -35,7 +35,7 @@ const TimerText = styled.div<{ $size: number; $color: string }>`
   font-weight: bold;
   color: ${({ $color }) => $color};
 `
-const SvgWrap = styled.div<{ $size: number; $iconSize: number }>`
+export const SvgWrap = styled.div<{ $size: number; $iconSize: number }>`
   position: absolute;
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
@@ -50,14 +50,6 @@ const SvgWrap = styled.div<{ $size: number; $iconSize: number }>`
     top: 50%;
     left: 50%;
   }
-`
-
-const PauseWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
-  background-color: ${({ theme }) => theme.color.primary[300]};
-`
-
-const PlayWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
-  background-color: #e0e0e0;
 `
 
 const EndWrap = styled(TimerWrapper)<{ $size: number; $iconSize: number }>`
@@ -101,13 +93,4 @@ const EndWrap = styled(TimerWrapper)<{ $size: number; $iconSize: number }>`
   }
 `
 
-export {
-  TimerWrapper,
-  Svg,
-  CircleBackground,
-  CircleProgress,
-  TimerText,
-  PauseWrap,
-  PlayWrap,
-  EndWrap
-}
+export { TimerWrapper, Svg, CircleBackground, CircleProgress, TimerText, EndWrap }
