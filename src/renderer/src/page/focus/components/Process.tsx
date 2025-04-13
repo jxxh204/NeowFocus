@@ -9,14 +9,8 @@ import StatusIdle from './CircularTimer/StatusIdle'
 import StatusPlay from './CircularTimer/StatusPlay'
 import StatusPause from './CircularTimer/StatusPause'
 
-type Props = {
-  fullDuration: number
-}
-
-const Process = ({ fullDuration }: Props) => {
-  const { timeLeft, status, handleStatus } = useCircularTimer({
-    fullDuration: fullDuration
-  })
+const Process = () => {
+  const { timeLeft, fullTime, status, handleStatus } = useCircularTimer()
   const [toastMessage, setToastMessage] = useState('')
   const { openPopup } = usePopup()
 
@@ -47,7 +41,7 @@ const Process = ({ fullDuration }: Props) => {
       <TimerWrapper>
         {toastMessage && <ToastMessage message={toastMessage} />}
         <CircularTimer
-          fullDuration={fullDuration}
+          fullDuration={fullTime}
           iconSize={iconSize}
           size={size}
           currentDuration={timeLeft}
