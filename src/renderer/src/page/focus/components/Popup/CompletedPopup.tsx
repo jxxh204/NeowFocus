@@ -4,17 +4,17 @@ import styled from 'styled-components'
 import { usePopup } from '@renderer/context/PopupContext'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTimerContext } from '@renderer/context/TimerContext'
+import { useTaskContext } from '@renderer/context/TaskContext'
 
 const CompletedPopup = () => {
   const { closePopup } = usePopup()
-  const { initTimer } = useTimerContext()
   const navigate = useNavigate()
+  const { resetCurrentTask } = useTaskContext()
 
   useEffect(() => {
     setTimeout(() => {
       closePopup()
-      initTimer()
+      resetCurrentTask()
       navigate('/')
     }, 1500)
   }, [])

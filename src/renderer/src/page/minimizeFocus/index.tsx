@@ -27,13 +27,12 @@ const MiniMizeFocus = () => {
     setWindowSize({ windowName: 'minimize_focus' })
   }, [])
 
-  // TODO : 컴포넌트 구조 리팩터링 필요
   return (
     <Wrapper gap={8}>
       <ClickArea gap={8} onClick={() => navigate('/focus')}>
         <TextField placeholder={currentTask.taskName} stretch disabled p_color="white" />
         <CircularTimer
-          duration={currentTask.taskMinute * 60} // 25분
+          fullDuration={currentTask.fullDuration}
           size={36}
           strokeWidth={3}
           bgColor={theme.color.gray[300]}

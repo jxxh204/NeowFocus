@@ -5,31 +5,30 @@ import theme from '@renderer/styles/theme'
 import type { StateType } from '@renderer/hooks/useCircularTimer'
 
 export type TimerProps = {
-  duration: number
+  fullDuration: number
   setToastMessage: (message: string) => void
   strokeWidth?: number
   size?: number
   iconSize?: number
-  timeLeft: number
+  currentDuration: number
   status: StateType
   handleStatus: (status: StateType) => void
   children: React.ReactNode
 }
 
 const CircularTimer: React.FC<TimerProps> = ({
-  duration,
+  fullDuration,
   setToastMessage,
   strokeWidth = 4,
   size = 54,
-
-  timeLeft,
+  currentDuration,
   status,
   handleStatus,
   children
 }) => {
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
-  const progress = (timeLeft / duration) * circumference
+  const progress = (currentDuration / fullDuration) * circumference
 
   const color = {
     idle: {

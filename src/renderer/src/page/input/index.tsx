@@ -16,12 +16,12 @@ const MainStyle = styled.form`
 function InputPage() {
   const navigate = useNavigate()
   const { setWindowSize } = useWindowSize()
-  const { updateCurrentTask } = useTaskContext()
+  const { initCurrentTask } = useTaskContext()
   const [text, setText] = useState('')
 
   const onClickHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    updateCurrentTask(text)
+    initCurrentTask(text)
     navigate('/focus')
   }
 

@@ -1,20 +1,20 @@
 import Button from '@renderer/component/Button'
 import Overlay from '@renderer/component/Overlay'
 import { usePopup } from '@renderer/context/PopupContext'
-import { useTimerContext } from '@renderer/context/TimerContext'
+import { useTaskContext } from '@renderer/context/TaskContext'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 const AskPopup = () => {
+  const { resetCurrentTask } = useTaskContext()
   const { closePopup } = usePopup()
-  const { initTimer } = useTimerContext()
   const navigate = useNavigate()
   const handleClickCancel = () => {
     closePopup()
   }
   const handleClickDelete = () => {
     closePopup()
-    initTimer()
+    resetCurrentTask()
     navigate('/')
   }
   return (
