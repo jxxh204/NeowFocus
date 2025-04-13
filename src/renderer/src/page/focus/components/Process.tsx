@@ -5,20 +5,18 @@ import CircularTimer from './CircularTimer'
 import { useState } from 'react'
 import { usePopup } from '@renderer/context/PopupContext'
 import useCircularTimer from '@renderer/hooks/useCircularTimer'
-import { useTaskContext } from '@renderer/context/TaskContext'
 import StatusIdle from './CircularTimer/StatusIdle'
 import StatusPlay from './CircularTimer/StatusPlay'
 import StatusPause from './CircularTimer/StatusPause'
 
 type Props = {
-  duration: number
+  fullDuration: number
 }
 
-const Process = ({ duration }: Props) => {
+const Process = ({ fullDuration }: Props) => {
   const { timeLeft, status, handleStatus } = useCircularTimer({
-    duration
+    fullDuration: fullDuration
   })
-  const { currentTask } = useTaskContext()
   const [toastMessage, setToastMessage] = useState('')
   const { openPopup } = usePopup()
 
@@ -31,15 +29,14 @@ const Process = ({ duration }: Props) => {
   }
 
   const handleClickPlay = () => {
-    handleStatus('play')
-    setToastMessage('타이머 재개')
-  }
-
-  const handleClickPause = () => {
     handleStatus('pause')
     setToastMessage('타이머 일시정지')
   }
 
+  const handleClickPause = () => {
+    handleStatus('play')
+    setToastMessage('타이머 재개')
+  }
   return (
     <>
       <TrashIcon onClick={handleClickTrash}>
@@ -50,10 +47,10 @@ const Process = ({ duration }: Props) => {
       <TimerWrapper>
         {toastMessage && <ToastMessage message={toastMessage} />}
         <CircularTimer
-          duration={currentTask.taskMinute * 60} // 25분
+          fullDuration={fullDuration}
           iconSize={iconSize}
           size={size}
-          timeLeft={timeLeft}
+          currentDuration={timeLeft}
           setToastMessage={setToastMessage}
           status={status}
           handleStatus={handleStatus}

@@ -5,15 +5,13 @@ import WindowMinimizeSvg from '@assets/window_minimize.svg'
 import PawDarkGraySvg from '@assets/paw_dark_gray.svg'
 import { FocusPageWrapper, WindowMinimizeIcon, Wrapper } from './styled'
 import { useNavigate } from 'react-router-dom'
-import { useTimerContext } from '@renderer/context/TimerContext'
 import Completed from './components/Completed'
 import Process from './components/Process'
 import { useTaskContext } from '@renderer/context/TaskContext'
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
   const navigate = useNavigate()
-  const { currentTask } = useTaskContext()
-  const { isTimerEnd } = useTimerContext()
+  const { currentTask, isTaskEnd } = useTaskContext()
 
   useEffect(() => {
     setWindowSize({ windowName: 'focus' })
@@ -40,7 +38,7 @@ export function FocusPage(): JSX.Element {
 
       {/* TODO : 아이콘 어디있는지 찾기 힘듬 */}
       <Wrapper>
-        {isTimerEnd ? <Completed /> : <Process duration={currentTask.taskMinute * 60} />}
+        {isTaskEnd ? <Completed /> : <Process fullDuration={currentTask.fullDuration} />}
       </Wrapper>
     </FocusPageWrapper>
   )

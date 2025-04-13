@@ -6,7 +6,7 @@ import useWindowSize from '@renderer/hooks/useWindowSize'
 
 export type TimerProps = {
   children: React.ReactNode
-  duration: number
+  fullDuration: number
   strokeWidth?: number
   size?: number
   bgColor?: string
@@ -16,22 +16,23 @@ export type TimerProps = {
 
 const CircularTimer: React.FC<TimerProps> = ({
   children,
-  duration,
+  fullDuration,
   strokeWidth = 4,
   size = 54,
   bgColor = 'none',
   progressColor = 'black'
 }) => {
-  const { timeLeft, status } = useCircularTimer({ duration })
+  const { timeLeft, status } = useCircularTimer({ fullDuration })
   const { setWindowSize } = useWindowSize()
   useEffect(() => {
     if (status === 'end') {
       setWindowSize({ windowName: 'focus' })
     }
   }, [status])
+
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
-  const progress = (timeLeft / duration) * circumference
+  const progress = (timeLeft / fullDuration) * circumference
 
   return (
     <TimerWrapper size={size}>
