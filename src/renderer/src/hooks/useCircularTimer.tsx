@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useTaskContext } from '@renderer/context/TaskContext'
 export type StateType = 'idle' | 'play' | 'pause' | 'end'
-type Props = {
-  fullDuration: number
-}
 
-const useCircularTimer = ({ fullDuration }: Props) => {
-  // TODO : timerContext와 중복되므로 상태 관리 중복 제거 필요
-  const [timeLeft, setTimeLeft] = useState(fullDuration)
-  const { updateDuration } = useTaskContext()
+// TODO : TASK가 의존되어있음. Duration을 분리하여 의존성 제거 필요.
+const useCircularTimer = () => {
+  const { updateDuration, currentTask } = useTaskContext()
+  const [timeLeft, setTimeLeft] = useState(
+    currentTask.taskDuration ? currentTask.taskDuration : currentTask.fullDuration
+  )
   const [status, setStatus] = useState<StateType>('idle')
 
   const handleStatus = (newStatus: StateType) => {
@@ -22,7 +21,6 @@ const useCircularTimer = ({ fullDuration }: Props) => {
       setStatus('end')
       return
     }
-    console.log('timeLeft', timeLeft)
     updateDuration(timeLeft)
     const interval = setInterval(() => {
       setTimeLeft((prev) => prev - 1)
@@ -31,7 +29,7 @@ const useCircularTimer = ({ fullDuration }: Props) => {
     return () => clearInterval(interval)
   }, [status, timeLeft])
 
-  return { timeLeft, status, handleStatus }
+  return { timeLeft, fullTime: currentTask.fullDuration, status, handleStatus }
 }
 
 export default useCircularTimer

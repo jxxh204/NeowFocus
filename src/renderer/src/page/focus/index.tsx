@@ -37,9 +37,7 @@ export function FocusPage(): JSX.Element {
       />
 
       {/* TODO : 아이콘 어디있는지 찾기 힘듬 */}
-      <Wrapper>
-        {isTaskEnd ? <Completed /> : <Process fullDuration={currentTask.fullDuration} />}
-      </Wrapper>
+      <Wrapper>{isTaskEnd ? <Completed /> : <Process />}</Wrapper>
     </FocusPageWrapper>
   )
 }
