@@ -8,10 +8,10 @@ import useCircularTimer from '@renderer/hooks/useCircularTimer'
 import StatusIdle from './CircularTimer/StatusIdle'
 import StatusPlay from './CircularTimer/StatusPlay'
 import StatusPause from './CircularTimer/StatusPause'
-import type { Task } from '@renderer/context/TaskContext'
+import type { Task, TaskStatus } from '@renderer/context/TaskContext'
 
 type Props = {
-  updateTask: (duration: number) => void
+  updateTask: (duration: number, status?: TaskStatus) => void
   currentTask: Task
 }
 
@@ -24,7 +24,12 @@ const Process = ({ updateTask, currentTask }: Props) => {
   const iconSize = useRef(24)
 
   useEffect(() => {
-    updateTask(timeLeft)
+    if (status == 'play') return
+    if (timeLeft < 0) {
+      handleStatus('end')
+      updateTask(0, 'end')
+      return
+    }
   }, [timeLeft])
 
   const handleClickTrash = () => {
