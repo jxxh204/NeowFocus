@@ -9,7 +9,7 @@ type PopupType = 'ask' | 'completed'
 
 const PopupContext = createContext({
   isPopupOpen: false,
-  openPopup: (popup: PopupType) => {},
+  openPopup: (_popup: PopupType) => {},
   closePopup: () => {}
 })
 
