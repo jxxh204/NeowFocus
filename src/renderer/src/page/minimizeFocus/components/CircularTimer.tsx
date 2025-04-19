@@ -13,7 +13,6 @@ export type TimerProps = {
   progressColor?: string
   iconSize?: number
   fullDuration?: number
-  taskStatus?: TaskStatus
 }
 
 const CircularTimer: React.FC<TimerProps> = ({
@@ -22,10 +21,9 @@ const CircularTimer: React.FC<TimerProps> = ({
   size = 54,
   bgColor = 'none',
   progressColor = 'black',
-  fullDuration = 1600,
-  taskStatus = 'idle'
+  fullDuration = 1600
 }) => {
-  const { timeLeft, status } = useCircularTimer(fullDuration, taskStatus)
+  const { timeLeft, status } = useCircularTimer(fullDuration)
   const { setWindowSize } = useWindowSize()
   useEffect(() => {
     if (status === 'end') {

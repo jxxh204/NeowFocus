@@ -11,11 +11,6 @@ const useCircularTimer = (fullDuration: number) => {
   }
 
   useEffect(() => {
-    if (status == 'play') return
-    if (timeLeft < 0) {
-      setStatus('end')
-      return
-    }
     const interval = setInterval(() => {
       setTimeLeft((prev) => prev - 1)
     }, 1000)
