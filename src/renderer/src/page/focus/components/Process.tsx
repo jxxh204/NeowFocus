@@ -46,6 +46,22 @@ const Process = ({ updateTask, currentTask }: Props) => {
     handleStatus('play')
     setToastMessage('타이머 재개')
   }
+
+  const CircularTimerMouseHover = () => {
+    if (status === 'idle') {
+      handleStatus('pause')
+      setToastMessage('타이머 일시정지')
+    }
+    if (status === 'play') {
+      setToastMessage('타이머 재개')
+    }
+  }
+  const CircularTimerMouseLeave = () => {
+    if (status === 'pause') {
+      handleStatus('idle')
+    }
+    setToastMessage('')
+  }
   return (
     <>
       <TrashIcon onClick={handleClickTrash}>
@@ -60,9 +76,9 @@ const Process = ({ updateTask, currentTask }: Props) => {
           iconSize={iconSize.current}
           size={size.current}
           currentDuration={timeLeft}
-          setToastMessage={setToastMessage}
           status={status}
-          handleStatus={handleStatus}
+          handleMouseEnter={CircularTimerMouseHover}
+          handleMouseLeave={CircularTimerMouseLeave}
         >
           <>
             <StatusIdle size={size.current} timeLeft={timeLeft} status={status} />
