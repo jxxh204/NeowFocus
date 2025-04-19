@@ -36,7 +36,7 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       date: '',
       taskName: '',
       taskDuration: 0,
-      fullDuration: 0,
+      fullDuration: 100,
       taskStatus: 'idle'
     })
   }

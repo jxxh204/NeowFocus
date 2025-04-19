@@ -6,25 +6,25 @@ import type { TimerStatus } from '@renderer/hooks/useCircularTimer'
 
 export type TimerProps = {
   fullDuration: number
-  setToastMessage: (message: string) => void
   strokeWidth?: number
   size?: number
   iconSize?: number
   currentDuration: number
   status: TimerStatus
-  handleStatus: (status: TimerStatus) => void
   children: React.ReactNode
+  handleMouseEnter: () => void
+  handleMouseLeave: () => void
 }
 
 const CircularTimer: React.FC<TimerProps> = ({
   fullDuration,
-  setToastMessage,
   strokeWidth = 4,
   size = 54,
   currentDuration,
   status,
-  handleStatus,
-  children
+  children,
+  handleMouseEnter,
+  handleMouseLeave
 }) => {
   const radius = useRef((size - strokeWidth) / 2)
   const circumference = useRef(2 * Math.PI * radius.current)
@@ -54,21 +54,6 @@ const CircularTimer: React.FC<TimerProps> = ({
   }
   // TODO : event handler를 hooks로 분리하기.
 
-  const handleMouseEnter = () => {
-    if (status === 'idle') {
-      handleStatus('pause')
-      setToastMessage('타이머 일시정지')
-    }
-    if (status === 'play') {
-      setToastMessage('타이머 재개')
-    }
-  }
-  const handleMouseLeave = () => {
-    if (status === 'pause') {
-      handleStatus('idle')
-    }
-    setToastMessage('')
-  }
   return (
     <TimerWrapper $size={size} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       {status !== 'end' && (
