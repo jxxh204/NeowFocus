@@ -6,13 +6,12 @@ type Props = {
   size: number
   iconSize: number
   status: TimerStatus
-  handleClick: () => void
 }
 
-const StatusPlay = ({ size, iconSize, status, handleClick }: Props) => {
+const StatusPlay = ({ size, iconSize, status }: Props) => {
   if (status !== 'play') return null
   return (
-    <PlayWrap $size={size} $iconSize={iconSize} onClick={handleClick}>
+    <PlayWrap $size={size} $iconSize={iconSize}>
       <PlayIcon />
     </PlayWrap>
   )
@@ -20,6 +19,7 @@ const StatusPlay = ({ size, iconSize, status, handleClick }: Props) => {
 
 const PlayWrap = styled(SvgWrap)<{ $size: number; $iconSize: number }>`
   background-color: #e0e0e0;
+  z-index: 1;
 `
 
 export default StatusPlay

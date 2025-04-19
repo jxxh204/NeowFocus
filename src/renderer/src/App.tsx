@@ -6,13 +6,13 @@ import { TaskProvider } from './context/TaskContext'
 function App() {
   return (
     <div className="App">
-      <HashRouter>
-        <TaskProvider>
+      <TaskProvider>
+        <HashRouter>
           <PopupProvider>
             <Router />
           </PopupProvider>
-        </TaskProvider>
-      </HashRouter>
+        </HashRouter>
+      </TaskProvider>
     </div>
   )
 }
