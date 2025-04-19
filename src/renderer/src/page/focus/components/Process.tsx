@@ -2,24 +2,34 @@ import ToastMessage from '@renderer/component/ToastMessage'
 import { TimerWrapper, TrashIcon } from '../styled'
 import TrashSvg from '@assets/trash.svg'
 import CircularTimer from './CircularTimer'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePopup } from '@renderer/context/PopupContext'
 import useCircularTimer from '@renderer/hooks/useCircularTimer'
 import StatusIdle from './CircularTimer/StatusIdle'
 import StatusPlay from './CircularTimer/StatusPlay'
 import StatusPause from './CircularTimer/StatusPause'
+import type { Task } from '@renderer/context/TaskContext'
 
-const Process = () => {
-  const { timeLeft, fullTime, status, handleStatus } = useCircularTimer()
+type Props = {
+  updateTask: (duration: number) => void
+  currentTask: Task
+}
+
+const Process = ({ updateTask, currentTask }: Props) => {
+  const { timeLeft, status, handleStatus } = useCircularTimer(currentTask.fullDuration)
   const [toastMessage, setToastMessage] = useState('')
   const { openPopup } = usePopup()
 
-  const size = 54
-  const iconSize = 24
+  const size = useRef(54)
+  const iconSize = useRef(24)
+
+  useEffect(() => {
+    updateTask(timeLeft)
+  }, [timeLeft])
 
   const handleClickTrash = () => {
-    openPopup('ask')
-    handleStatus('pause')
+    openPopup('ask') // TODO : 팝업의 내용을 모르겠음. 리팩터링 필요
+    handleStatus('idle')
   }
 
   const handleClickPlay = () => {
@@ -41,25 +51,25 @@ const Process = () => {
       <TimerWrapper>
         {toastMessage && <ToastMessage message={toastMessage} />}
         <CircularTimer
-          fullDuration={fullTime}
-          iconSize={iconSize}
-          size={size}
+          fullDuration={currentTask.fullDuration}
+          iconSize={iconSize.current}
+          size={size.current}
           currentDuration={timeLeft}
           setToastMessage={setToastMessage}
           status={status}
           handleStatus={handleStatus}
         >
           <>
-            <StatusIdle size={size} timeLeft={timeLeft} status={status} />
+            <StatusIdle size={size.current} timeLeft={timeLeft} status={status} />
             <StatusPlay
-              size={size}
-              iconSize={iconSize}
+              size={size.current}
+              iconSize={iconSize.current}
               status={status}
               handleClick={handleClickPlay}
             />
             <StatusPause
-              size={size}
-              iconSize={iconSize}
+              size={size.current}
+              iconSize={iconSize.current}
               status={status}
               handleClick={handleClickPause}
             />

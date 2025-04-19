@@ -1,9 +1,9 @@
 import { TimerText } from '../styled'
-import { StateType } from '@renderer/hooks/useCircularTimer'
+import type { TimerStatus } from '@renderer/hooks/useCircularTimer'
 type Props = {
   size: number
   timeLeft: number
-  status: StateType
+  status: TimerStatus
 }
 
 const StatusIdle = ({ size, timeLeft, status }: Props) => {

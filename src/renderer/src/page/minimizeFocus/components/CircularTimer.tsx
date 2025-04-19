@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { CircleBackground, CircleProgress, Svg, TimerWrapper } from './styled'
 import useCircularTimer from '@renderer/hooks/useCircularTimer'
 import useWindowSize from '@renderer/hooks/useWindowSize'
+import { TaskStatus } from '@renderer/context/TaskContext'
 
 export type TimerProps = {
   children: React.ReactNode
@@ -11,6 +12,8 @@ export type TimerProps = {
   bgColor?: string
   progressColor?: string
   iconSize?: number
+  fullDuration?: number
+  taskStatus?: TaskStatus
 }
 
 const CircularTimer: React.FC<TimerProps> = ({
@@ -18,9 +21,11 @@ const CircularTimer: React.FC<TimerProps> = ({
   strokeWidth = 4,
   size = 54,
   bgColor = 'none',
-  progressColor = 'black'
+  progressColor = 'black',
+  fullDuration = 1600,
+  taskStatus = 'idle'
 }) => {
-  const { timeLeft, fullTime, status } = useCircularTimer()
+  const { timeLeft, status } = useCircularTimer(fullDuration, taskStatus)
   const { setWindowSize } = useWindowSize()
   useEffect(() => {
     if (status === 'end') {
@@ -30,7 +35,7 @@ const CircularTimer: React.FC<TimerProps> = ({
 
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
-  const progress = (timeLeft / fullTime) * circumference
+  const progress = (timeLeft / fullDuration) * circumference
 
   return (
     <TimerWrapper size={size}>
