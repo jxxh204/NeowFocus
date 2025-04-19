@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useRef } from 'react'
 import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
 
 export type TaskStatus = 'idle' | 'play' | 'end'
@@ -17,16 +17,19 @@ type TaskContextType = {
   resetCurrentTask: () => void
   updateTask: (duration: number, status?: TaskStatus) => void
   startTask: (taskName: string) => void
+  reStartTask: () => void
 }
 
 const TaskContext = createContext<TaskContextType | null>(null)
 
 const TaskProvider = ({ children }: { children: React.ReactNode }) => {
+  const taskDuration = useRef(100)
+
   const [currentTask, setCurrentTask] = useLocalStorage<Task>('currentTask', {
     date: '', // 태스크가 생성된 날짜 (ISO 문자열 형식)
     taskName: '', // 태스크 이름
     taskDuration: 0, // 현재까지 진행된 시간
-    fullDuration: 100, // 태스크 총 시간
+    fullDuration: taskDuration.current, // 태스크 총 시간
     taskStatus: 'idle' // 태스크 상태
   })
 
@@ -38,10 +41,24 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       date: '',
       taskName: '',
       taskDuration: 0,
-      fullDuration: 100,
+      fullDuration: taskDuration.current,
       taskStatus: 'idle'
     })
   }
+
+  const reStartTask = () => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('reStartTask')
+    }
+    setCurrentTask({
+      date: new Date().toISOString(),
+      taskName: currentTask?.taskName ?? '',
+      taskDuration: currentTask?.fullDuration ?? 0,
+      fullDuration: currentTask?.fullDuration ?? 0,
+      taskStatus: 'play'
+    })
+  }
+
   const startTask = (taskName: string) => {
     if (process.env.NODE_ENV === 'development') {
       console.log('startTask', taskName)
@@ -49,11 +66,12 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     setCurrentTask({
       date: new Date().toISOString(),
       taskName: taskName,
-      taskDuration: currentTask.fullDuration,
-      fullDuration: currentTask.fullDuration,
+      taskDuration: currentTask?.fullDuration ?? 0,
+      fullDuration: currentTask?.fullDuration ?? 0,
       taskStatus: 'play'
     })
   }
+
   const updateTask = (duration: number, status?: TaskStatus) => {
     if (process.env.NODE_ENV === 'development') {
       console.log('updateTask', duration)
@@ -61,19 +79,20 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     const updatedTask = {
       ...currentTask,
       taskDuration: duration,
-      taskStatus: status ?? currentTask.taskStatus
+      taskStatus: status ?? currentTask?.taskStatus ?? 'idle'
     }
-    setCurrentTask(updatedTask)
+    setCurrentTask(updatedTask as Task)
   }
 
   return (
     <TaskContext.Provider
       value={{
-        currentTask,
-        taskStatus: currentTask.taskStatus,
+        currentTask: currentTask as Task,
+        taskStatus: currentTask?.taskStatus ?? 'idle',
         resetCurrentTask,
         updateTask,
-        startTask
+        startTask,
+        reStartTask
       }}
     >
       {children}
