@@ -32,6 +32,8 @@ const MiniMizeFocus = () => {
       <ClickArea gap={8} onClick={() => navigate('/focus')}>
         <TextField placeholder={currentTask.taskName} stretch disabled p_color="white" />
         <CircularTimer
+          fullDuration={currentTask.fullDuration}
+          taskStatus={currentTask.taskStatus}
           size={36}
           strokeWidth={3}
           bgColor={theme.color.gray[300]}

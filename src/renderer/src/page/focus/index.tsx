@@ -11,8 +11,7 @@ import { useTaskContext } from '@renderer/context/TaskContext'
 export function FocusPage(): JSX.Element {
   const { setWindowSize } = useWindowSize()
   const navigate = useNavigate()
-  const { currentTask, isTaskEnd } = useTaskContext()
-
+  const { currentTask, taskStatus, updateTask } = useTaskContext()
   useEffect(() => {
     setWindowSize({ windowName: 'focus' })
   }, [])
@@ -37,7 +36,13 @@ export function FocusPage(): JSX.Element {
       />
 
       {/* TODO : 아이콘 어디있는지 찾기 힘듬 */}
-      <Wrapper>{isTaskEnd ? <Completed /> : <Process />}</Wrapper>
+      <Wrapper>
+        {taskStatus === 'end' ? (
+          <Completed />
+        ) : (
+          <Process updateTask={updateTask} currentTask={currentTask} />
+        )}
+      </Wrapper>
     </FocusPageWrapper>
   )
 }

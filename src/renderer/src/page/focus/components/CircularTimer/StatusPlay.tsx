@@ -1,11 +1,11 @@
 import styled from 'styled-components'
 import { SvgWrap } from '../styled'
 import PlayIcon from '@assets/timer_play.svg'
-import { StateType } from '@renderer/hooks/useCircularTimer'
+import type { TimerStatus } from '@renderer/hooks/useCircularTimer'
 type Props = {
   size: number
   iconSize: number
-  status: StateType
+  status: TimerStatus
   handleClick: () => void
 }
 

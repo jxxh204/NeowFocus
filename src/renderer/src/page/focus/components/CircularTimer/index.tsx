@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
 import { CircleBackground, CircleProgress, Svg, TimerWrapper } from '../styled'
 import theme from '@renderer/styles/theme'
-import type { StateType } from '@renderer/hooks/useCircularTimer'
+import type { TimerStatus } from '@renderer/hooks/useCircularTimer'
 
 export type TimerProps = {
   fullDuration: number
@@ -11,8 +11,8 @@ export type TimerProps = {
   size?: number
   iconSize?: number
   currentDuration: number
-  status: StateType
-  handleStatus: (status: StateType) => void
+  status: TimerStatus
+  handleStatus: (status: TimerStatus) => void
   children: React.ReactNode
 }
 
@@ -26,9 +26,9 @@ const CircularTimer: React.FC<TimerProps> = ({
   handleStatus,
   children
 }) => {
-  const radius = (size - strokeWidth) / 2
-  const circumference = 2 * Math.PI * radius
-  const progress = (currentDuration / fullDuration) * circumference
+  const radius = useRef((size - strokeWidth) / 2)
+  const circumference = useRef(2 * Math.PI * radius.current)
+  const progress = useRef((currentDuration / fullDuration) * circumference.current)
 
   const color = {
     idle: {
@@ -76,17 +76,17 @@ const CircularTimer: React.FC<TimerProps> = ({
           <CircleBackground
             cx={size / 2}
             cy={size / 2}
-            r={radius}
+            r={radius.current}
             $strokeWidth={strokeWidth}
             $color={color[status].background}
           />
           <CircleProgress
             cx={size / 2}
             cy={size / 2}
-            r={radius}
+            r={radius.current}
             $strokeWidth={strokeWidth}
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference - progress}
+            strokeDasharray={circumference.current}
+            strokeDashoffset={circumference.current - progress.current}
             $color={color[status].progress}
           />
         </Svg>
