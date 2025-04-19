@@ -1,39 +1,34 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import { CircleBackground, CircleProgress, Svg, TimerWrapper } from './styled'
-import useCircularTimer from '@renderer/hooks/useCircularTimer'
-import useWindowSize from '@renderer/hooks/useWindowSize'
-import { TaskStatus } from '@renderer/context/TaskContext'
+import { IconWrapper } from '../styled'
+import PawGraySvg from '@assets/paw_gray.svg'
 
 export type TimerProps = {
-  children: React.ReactNode
   strokeWidth?: number
   size?: number
   bgColor?: string
   progressColor?: string
   iconSize?: number
   fullDuration?: number
+  timeLeft?: number
 }
 
 const CircularTimer: React.FC<TimerProps> = ({
-  children,
   strokeWidth = 4,
   size = 54,
   bgColor = 'none',
   progressColor = 'black',
-  fullDuration = 1600
+  fullDuration = 1600,
+  timeLeft = 1600
 }) => {
-  const { timeLeft, status } = useCircularTimer(fullDuration)
-  const { setWindowSize } = useWindowSize()
-  useEffect(() => {
-    if (status === 'end') {
-      setWindowSize({ windowName: 'focus' })
-    }
-  }, [status])
-
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const progress = (timeLeft / fullDuration) * circumference
+
+  const calculatePercentage = (initialTime: number, duration: number) => {
+    return ((duration - initialTime) / duration) * 100
+  }
 
   return (
     <TimerWrapper size={size}>
@@ -55,7 +50,9 @@ const CircularTimer: React.FC<TimerProps> = ({
           color={progressColor}
         />
       </Svg>
-      {children}
+      <IconWrapper size={16} percentage={calculatePercentage(timeLeft, fullDuration)}>
+        <PawGraySvg />
+      </IconWrapper>
     </TimerWrapper>
   )
 }

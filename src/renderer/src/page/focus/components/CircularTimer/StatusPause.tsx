@@ -7,13 +7,12 @@ type Props = {
   size: number
   iconSize: number
   status: TimerStatus
-  handleClick: () => void
 }
 
-const StatusPause = ({ size, iconSize, status, handleClick }: Props) => {
+const StatusPause = ({ size, iconSize, status }: Props) => {
   if (status !== 'pause') return null
   return (
-    <PauseWrap $size={size} $iconSize={iconSize} onClick={handleClick}>
+    <PauseWrap $size={size} $iconSize={iconSize}>
       <PauseIcon />
     </PauseWrap>
   )

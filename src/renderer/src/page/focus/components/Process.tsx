@@ -16,7 +16,7 @@ type Props = {
 }
 
 const Process = ({ updateTask, currentTask }: Props) => {
-  const { timeLeft, status, handleStatus } = useCircularTimer(currentTask.fullDuration)
+  const { timeLeft, status, handleStatus } = useCircularTimer(currentTask.taskDuration)
   const [toastMessage, setToastMessage] = useState('')
   const { openPopup } = usePopup()
 
@@ -24,7 +24,7 @@ const Process = ({ updateTask, currentTask }: Props) => {
   const iconSize = useRef(24)
 
   useEffect(() => {
-    if (status == 'play') return
+    updateTask(timeLeft)
     if (timeLeft < 0) {
       handleStatus('end')
       updateTask(0, 'end')
@@ -37,14 +37,15 @@ const Process = ({ updateTask, currentTask }: Props) => {
     handleStatus('idle')
   }
 
-  const handleClickPlay = () => {
-    handleStatus('pause')
-    setToastMessage('타이머 일시정지')
-  }
-
-  const handleClickPause = () => {
-    handleStatus('play')
-    setToastMessage('타이머 재개')
+  const handleClickCircularTimer = () => {
+    if (status === 'pause') {
+      handleStatus('play')
+      setToastMessage('타이머 재개')
+    }
+    if (status === 'play') {
+      handleStatus('pause')
+      setToastMessage('타이머 일시정지')
+    }
   }
 
   const CircularTimerMouseHover = () => {
@@ -69,7 +70,7 @@ const Process = ({ updateTask, currentTask }: Props) => {
       </TrashIcon>
 
       {/* TODO : 리팩터링 필요 */}
-      <TimerWrapper>
+      <TimerWrapper onClick={handleClickCircularTimer}>
         {toastMessage && <ToastMessage message={toastMessage} />}
         <CircularTimer
           fullDuration={currentTask.fullDuration}
@@ -80,21 +81,9 @@ const Process = ({ updateTask, currentTask }: Props) => {
           handleMouseEnter={CircularTimerMouseHover}
           handleMouseLeave={CircularTimerMouseLeave}
         >
-          <>
-            <StatusIdle size={size.current} timeLeft={timeLeft} status={status} />
-            <StatusPlay
-              size={size.current}
-              iconSize={iconSize.current}
-              status={status}
-              handleClick={handleClickPlay}
-            />
-            <StatusPause
-              size={size.current}
-              iconSize={iconSize.current}
-              status={status}
-              handleClick={handleClickPause}
-            />
-          </>
+          <StatusIdle size={size.current} timeLeft={timeLeft} status={status} />
+          <StatusPlay size={size.current} iconSize={iconSize.current} status={status} />
+          <StatusPause size={size.current} iconSize={iconSize.current} status={status} />
         </CircularTimer>
       </TimerWrapper>
     </>

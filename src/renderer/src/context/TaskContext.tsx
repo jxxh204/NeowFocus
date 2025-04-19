@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext } from 'react'
+import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
 
 export type TaskStatus = 'idle' | 'play' | 'end'
 
@@ -21,13 +22,14 @@ type TaskContextType = {
 const TaskContext = createContext<TaskContextType | null>(null)
 
 const TaskProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentTask, setCurrentTask] = useState<Task>({
+  const [currentTask, setCurrentTask] = useLocalStorage<Task>('currentTask', {
     date: '', // 태스크가 생성된 날짜 (ISO 문자열 형식)
     taskName: '', // 태스크 이름
     taskDuration: 0, // 현재까지 진행된 시간
     fullDuration: 100, // 태스크 총 시간
     taskStatus: 'idle' // 태스크 상태
   })
+
   const resetCurrentTask = () => {
     if (process.env.NODE_ENV === 'development') {
       console.log('resetCurrentTask')
@@ -56,11 +58,12 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     if (process.env.NODE_ENV === 'development') {
       console.log('updateTask', duration)
     }
-    setCurrentTask({
+    const updatedTask = {
       ...currentTask,
       taskDuration: duration,
       taskStatus: status ?? currentTask.taskStatus
-    })
+    }
+    setCurrentTask(updatedTask)
   }
 
   return (
