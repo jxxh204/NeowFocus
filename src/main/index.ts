@@ -29,7 +29,8 @@ function createWindow(): BrowserWindow {
       nodeIntegration: true,
       backgroundThrottling: false,
       contextIsolation: true
-    }
+    },
+    alwaysOnTop: true
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -102,6 +103,12 @@ app.whenReady().then(() => {
     globalShortcut.unregister('CommandOrControl+R')
     globalShortcut.unregister('F5')
     mainWindow.webContents.send('browser-window-blur')
+  })
+
+  // Handle window dragging
+  ipcMain.on('window-move', (_event, { deltaX, deltaY }) => {
+    const [currentX, currentY] = mainWindow.getPosition()
+    mainWindow.setPosition(currentX + deltaX, currentY + deltaY)
   })
 })
 app.on('window-all-closed', () => {

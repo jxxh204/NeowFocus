@@ -8,17 +8,24 @@ import { useNavigate } from 'react-router-dom'
 import DragHandleSvg from '@assets/drag_handle.svg'
 import { useTaskContext } from '@renderer/context/TaskContext'
 import useCircularTimer from '@renderer/hooks/useCircularTimer'
+import { useDrag } from '@renderer/hooks/useDrag'
 
 const MiniMizeFocus = () => {
   const navigate = useNavigate()
   const { setWindowSize } = useWindowSize()
   const { currentTask, updateTask } = useTaskContext()
   const { timeLeft } = useCircularTimer(currentTask.taskDuration)
-
-  const handleClickDragHandle = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation()
-    console.log('drag handle', e.clientX, e.clientY)
-  }
+  const { dragRef, isDragging } = useDrag({
+    onDragStart: () => {
+      console.log('Drag started')
+    },
+    onDrag: (deltaX, deltaY) => {
+      console.log('Dragging:', deltaX, deltaY)
+    },
+    onDragEnd: () => {
+      console.log('Drag ended')
+    }
+  })
 
   useEffect(() => {
     setWindowSize({ windowName: 'minimize_focus' })
@@ -47,7 +54,7 @@ const MiniMizeFocus = () => {
           progressColor="black"
         />
       </ClickArea>
-      <DragHandleWrapper onDrag={handleClickDragHandle}>
+      <DragHandleWrapper ref={dragRef} style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
         <DragHandleSvg />
       </DragHandleWrapper>
     </Wrapper>

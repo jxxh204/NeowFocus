@@ -10,12 +10,18 @@ const message = {
   receive: (channel, callback) => ipcRenderer.on(channel, (_event, value) => callback(value))
 }
 
+const windowAPI = {
+  windowMove: (deltaX: number, deltaY: number) => {
+    ipcRenderer.send('window-move', { deltaX, deltaY })
+  }
+}
+
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
+    contextBridge.exposeInMainWorld('electron', { ...electronAPI, ...windowAPI })
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('message', message)
   } catch (error) {
@@ -23,7 +29,7 @@ if (process.contextIsolated) {
   }
 } else {
   // @ts-ignore (define in dts)
-  window.electron = electronAPI
+  window.electron = { ...electronAPI, ...windowAPI }
   // @ts-ignore (define in dts)
   window.api = api
 }

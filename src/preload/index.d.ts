@@ -6,7 +6,9 @@ declare global {
       send: (action: string, args: any) => void
       receive: (channel: string, callback: any) => Electron.IpcRenderer
     }
-    electron: ElectronAPI
+    electron: ElectronAPI & {
+      windowMove: (deltaX: number, deltaY: number) => void
+    }
     api: unknown
   }
 }
