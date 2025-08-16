@@ -8,6 +8,8 @@ declare global {
     }
     electron: ElectronAPI & {
       windowMove: (deltaX: number, deltaY: number) => void
+      setWindowPosition: (x: number, y: number) => void
+      getWindowPosition: () => Promise<{ x: number; y: number }>
     }
     api: unknown
   }

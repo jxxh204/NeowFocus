@@ -13,6 +13,12 @@ const message = {
 const windowAPI = {
   windowMove: (deltaX: number, deltaY: number) => {
     ipcRenderer.send('window-move', { deltaX, deltaY })
+  },
+  setWindowPosition: (x: number, y: number) => {
+    ipcRenderer.send('window-set-position', { x, y })
+  },
+  getWindowPosition: () => {
+    return ipcRenderer.invoke('window-get-position')
   }
 }
 
