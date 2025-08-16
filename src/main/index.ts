@@ -110,6 +110,17 @@ app.whenReady().then(() => {
     const [currentX, currentY] = mainWindow.getPosition()
     mainWindow.setPosition(currentX + deltaX, currentY + deltaY)
   })
+
+  // Set window position absolutely
+  ipcMain.on('window-set-position', (_event, { x, y }) => {
+    mainWindow.setPosition(x, y)
+  })
+
+  // Get window position
+  ipcMain.handle('window-get-position', () => {
+    const [x, y] = mainWindow.getPosition()
+    return { x, y }
+  })
 })
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
