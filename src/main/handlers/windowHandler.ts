@@ -2,14 +2,9 @@ import { BrowserWindow } from 'electron'
 
 export const handleWindow = (mainWindow: BrowserWindow): void => {
   if (mainWindow) {
-    // 항상 위
     mainWindow.setAlwaysOnTop(true, 'screen-saver')
-    // 화면 변경하더라도 항상 위
-    mainWindow.setVisibleOnAllWorkspaces(true)
-    // 포커스를 잃었을 경우
-    // mainWindow.on("blur", () => {
-    //   mainWindow?.hide();
-    // });
+    mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
+    mainWindow.setAlwaysOnTop(true, 'screen-saver')
   }
 }
 

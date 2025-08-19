@@ -18,17 +18,6 @@ export function useLocalStorage<T>(
     return initialValue
   })
 
-  // useEffect(() => {
-  //   try {
-  //     const storedValue = localStorage.getItem(key)
-  //     if (storedValue !== null) {
-  //       setValue(JSON.parse(storedValue))
-  //     }
-  //   } catch (error) {
-  //     console.error('로컬스토리지에 없는 Key입니다.:', error)
-  //   }
-  // }, [key])
-
   const setStoredValue = (newValue: T) => {
     try {
       localStorage.setItem(key, JSON.stringify(newValue))

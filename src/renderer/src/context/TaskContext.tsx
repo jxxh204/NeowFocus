@@ -23,12 +23,12 @@ type TaskContextType = {
 const TaskContext = createContext<TaskContextType | null>(null)
 
 const TaskProvider = ({ children }: { children: React.ReactNode }) => {
-  const taskDuration = useRef(100)
+  const taskDuration = useRef(1500)
 
   const [currentTask, setCurrentTask] = useLocalStorage<Task>('currentTask', {
     date: '', // 태스크가 생성된 날짜 (ISO 문자열 형식)
     taskName: '', // 태스크 이름
-    taskDuration: 0, // 현재까지 진행된 시간
+    taskDuration: taskDuration.current, // 현재까지 진행된 시간
     fullDuration: taskDuration.current, // 태스크 총 시간
     taskStatus: 'idle' // 태스크 상태
   })
