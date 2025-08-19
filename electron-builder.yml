@@ -1,4 +1,4 @@
-appId: com.electron.app
+appId: com.neowfocus.pomodorotimer
 productName: NeowFocus
 directories:
   buildResources: build
@@ -19,14 +19,29 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  category: public.app-category.productivity
+  icon: resources/icon.icns
+  entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  darkModeSupport: true
+  target:
+    - target: mas
+      arch:
+        - x64
+        - arm64
+    - target: dmg
+      arch:
+        - x64
+        - arm64
   extendInfo:
-    - NSCameraUsageDescription: Application requests access to the device's camera.
-    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
-    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
-    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-  notarize: false
-  icon: ./resources/icon.png
+    NSRequiresAquaSystemAppearance: false
+    LSMinimumSystemVersion: '10.13.0'
+    NSAppleEventsUsageDescription: This app needs to send Apple events.
+    NSCalendarsUsageDescription: This app needs calendar access to track your focus sessions.
+  notarize:
+    teamId: YOUR_TEAM_ID
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:

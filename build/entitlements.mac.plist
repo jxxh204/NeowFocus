@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-  <dict>
+<dict>
+    <!-- 앱 샌드박스 활성화 (앱스토어 필수) -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+    
+    <!-- 네트워크 권한 (업데이트 체크 등) -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    
+    <!-- 파일 접근 권한 -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    
+    <!-- 하드웨어 가속 -->
     <key>com.apple.security.cs.allow-jit</key>
     <true/>
-    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    
+    <!-- 앱스토어용 서명 -->
+    <key>com.apple.security.cs.disable-library-validation</key>
     <true/>
-    <key>com.apple.security.cs.allow-dyld-environment-variables</key>
+    
+    <!-- 애플 이벤트 (선택사항) -->
+    <key>com.apple.security.automation.apple-events</key>
     <true/>
-  </dict>
+</dict>
 </plist>
