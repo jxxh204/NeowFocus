@@ -4,4 +4,35 @@ out
 .DS_Store
 *.log*
 
-electron-builder.yml
+# Environment and security files
+.env
+.env.*
+*.p12
+*.p8
+*.cer
+*.key
+*.pem
+*.crt
+
+# Certificates directory (contains sensitive signing certificates)
+certificates/
+
+# Provisioning profiles
+*.provisionprofile
+*.mobileprovision
+
+# Build outputs and backups
+build-output/
+out.backup*/
+temp-out/
+
+# IDE and development files
+.claude/
+.taskmanager/
+
+# Installation scripts (may contain sensitive info)
+install-certificates.sh
+manual-fix-certificate.sh
+
+# Keep electron-builder.yml since it's needed for builds
+# electron-builder.yml

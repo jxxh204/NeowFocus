@@ -21,11 +21,13 @@ nsis:
 mac:
   category: public.app-category.productivity
   icon: resources/icon.icns
+  identity: "Apple Distribution: JaeHwan Kim (L67FAG9382)"
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
   hardenedRuntime: true
   gatekeeperAssess: false
   darkModeSupport: true
+  preAutoEntitlements: false
   target:
     - target: mas
       arch:
@@ -41,7 +43,26 @@ mac:
     NSAppleEventsUsageDescription: This app needs to send Apple events.
     NSCalendarsUsageDescription: This app needs calendar access to track your focus sessions.
   notarize:
-    teamId: YOUR_TEAM_ID
+    teamId: L67FAG9382
+mas:
+  category: public.app-category.productivity
+  icon: resources/icon.icns
+  identity: "Apple Distribution: JaeHwan Kim (L67FAG9382)"
+  entitlements: build/entitlements.mas.plist
+  entitlementsInherit: build/entitlements.mas.inherit.plist
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  provisioningProfile: build/NeowFocus_Mac_App_Store.provisionprofile
+  type: distribution
+  binaries: []
+  extendInfo:
+    NSRequiresAquaSystemAppearance: false
+    LSMinimumSystemVersion: '10.13.0'
+    NSAppleEventsUsageDescription: This app needs to send Apple events.
+    NSCalendarsUsageDescription: This app needs calendar access to track your focus sessions.
+pkg:
+  identity: "5E3159F0429DB49B7C3761C9081A4B1F1E72A70C"
+  installLocation: "/Applications"
 dmg:
   artifactName: ${name}-${version}.${ext}
 linux:
