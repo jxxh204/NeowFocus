@@ -2,43 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>com.apple.security.app-sandbox</key><true/>
-    <key>com.apple.security.application-groups</key>
-    <array>
-      <string>L67FAG9382.com.neowfocus.pomodorotimer</string>
-    </array>
-    
-    <!-- 네트워크 권한 (업데이트 체크 등) -->
-    <key>com.apple.security.network.client</key>
-    <true/>
-    <key>com.apple.security.network.server</key>
-    <true/>
-    
-    <!-- 파일 접근 권한 -->
-    <key>com.apple.security.files.user-selected.read-write</key>
-    <true/>
-    
-    <!-- 하드웨어 가속 -->
-    <key>com.apple.security.cs.allow-jit</key>
-    <false/>
-    
-    <!-- Disable unsigned memory for MAS -->
-    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
-    <false/>
-    
-    <!-- 앱스토어용 서명 -->
-    <key>com.apple.security.cs.disable-library-validation</key>
-    <true/>
-    
-    <!-- 애플 이벤트 (선택사항) -->
-    <key>com.apple.security.automation.apple-events</key>
-    <true/>
-    
-    <!-- 푸시 알림 -->
-    <key>com.apple.developer.aps-environment</key>
-    <string>production</string>
-
-    <key>ElectronTeamID</key>
-    <string>L67FAG9382</string>
+  <!-- Mac App Store 필수 -->
+  <key>com.apple.security.app-sandbox</key>
+  <true/>
+  
+  <!-- TEAM_ID를 실제 팀 ID로 교체 -->
+  <key>com.apple.security.application-groups</key>
+  <array>
+    <string>L67FAG9382.com.neowfocus.pomodorotimer</string>
+  </array>
+  
+  <!-- 네트워크 접근 -->
+  <key>com.apple.security.network.client</key>
+  <true/>
+  
+  <!-- 파일 접근 -->
+  <key>com.apple.security.files.user-selected.read-write</key>
+  <true/>
 </dict>
 </plist>

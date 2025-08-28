@@ -1,6 +1,6 @@
 {
   "name": "neow-focus-vite",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -13,14 +13,9 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev --watch --sourcemap",
-    "build": "npm run typecheck && electron-vite build",
-    "postinstall": "electron-builder install-app-deps",
-    "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win",
-    "build:mac": "electron-vite build && electron-builder --mac",
+    "build": "electron-vite build && electron-builder",
     "build:mas": "electron-vite build && electron-builder --mac mas",
     "build:mas-dev": "electron-vite build && electron-builder --mac mas-dev",
-    "build:linux": "electron-vite build && electron-builder --linux",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -45,7 +40,7 @@
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
     "electron": "^28.2.0",
-    "electron-builder": "^24.9.1",
+    "electron-builder": "^26.0.12",
     "electron-vite": "^2.0.0",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
@@ -59,5 +54,73 @@
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
     "vite-plugin-svgr": "^4.3.0"
+  },
+  "build": {
+    "appId": "com.neowfocus.pomodorotimer",
+    "productName": "NeowFocus",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "mas",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "pkg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "entitlements": "build/entitlements.mas.plist",
+      "entitlementsInherit": "build/entitlements.mas.inherit.plist",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "type": "distribution"
+    },
+    "mas": {
+      "type": "distribution",
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "entitlements": "build/entitlements.mas.plist",
+      "entitlementsInherit": "build/entitlements.mas.inherit.plist",
+      "provisioningProfile": "build/NeowFocus_Mac_App_Store.provisionprofile",
+      "hardenedRuntime": false,
+      "extendInfo": {
+        "CFBundleIconName": "icon",
+        "CFBundleIconFile": "icon.icns",
+        "LSMinimumSystemVersion": "10.15.0"
+      }
+    },
+    "pkg": {
+      "installLocation": "/Applications",
+      "allowAnywhere": false,
+      "allowCurrentUserHome": false,
+      "allowRootDirectory": false,
+      "background": {
+        "alignment": "center",
+        "scaling": "tofit"
+      },
+      "license": null,
+      "isRelocatable": false,
+      "isVersionChecked": true,
+      "overwriteAction": "upgrade"
+    },
+    "masDev": {
+      "type": "development",
+      "provisioningProfile": "build/NeowFocus_Mac_App_Store.provisionprofile",
+      "entitlements": "build/entitlements.mas.plist",
+      "entitlementsInherit": "build/entitlements.mas.inherit.plist"
+    }
   }
 }

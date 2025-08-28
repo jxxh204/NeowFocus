@@ -5,12 +5,40 @@ import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      sourcemap: false,
+      minify: process.env.NODE_ENV === 'production',
+      outDir: 'dist-electron',
+      rollupOptions: {
+        external: Object.keys(require('./package.json').dependencies || {})
+      }
+    }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      sourcemap: false,
+      minify: process.env.NODE_ENV === 'production',
+      outDir: 'dist-electron',
+      rollupOptions: {
+        external: Object.keys(require('./package.json').dependencies || {})
+      }
+    }
   },
   renderer: {
+    root: 'src/renderer',
+    build: {
+      sourcemap: false,
+      minify: process.env.NODE_ENV === 'production',
+      outDir: 'dist-electron',
+      rollupOptions: {
+        input: {
+          index: resolve(__dirname, 'src/renderer/index.html')
+        },
+        external: Object.keys(require('./package.json').dependencies || {})
+      }
+    },
     resolve: {
       alias: {
         '@renderer': resolve('src/renderer/src'),
