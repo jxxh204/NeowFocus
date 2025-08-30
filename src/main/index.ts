@@ -19,7 +19,7 @@ function createWindow(): BrowserWindow {
     darkTheme: false,
     // movable: true,
     transparent: false,
-    icon: join(__dirname, '/resources/icon.png'),
+    icon: join(__dirname, '../../build/icon.png'),
     vibrancy: 'popover',
     visualEffectState: 'followWindow',
     webPreferences: {
@@ -128,7 +128,7 @@ app.on('window-all-closed', () => {
   }
 })
 
-const setDevTools = (mainWindow) => {
+const setDevTools = (mainWindow: BrowserWindow) => {
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
     mainWindow.webContents.openDevTools({ mode: 'detach' }) // DevTools를 엽니다.
