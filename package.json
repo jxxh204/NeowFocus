@@ -14,7 +14,8 @@
     "start": "electron-vite preview",
     "dev": "electron-vite dev --watch --sourcemap",
     "build": "electron-vite build && electron-builder",
-    "build:mas": "electron-vite build && electron-builder --mac mas",
+    "build:mas": "electron-vite build && electron-builder -- --mac mas pkg --universal",
+    "build:pkg": "electron-vite build && electron-builder -- --mac pkg --universal",
     "build:mas-dev": "electron-vite build && electron-builder --mac mas-dev",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -114,7 +115,7 @@
     },
     "masDev": {
       "type": "development",
-      "provisioningProfile": "build/NeowFocus_Mac_App_Store_Dev.provisionprofile",
+      "provisioningProfile": "build/NeowFocus_Mac_App_Store.provisionprofile",
       "entitlements": "build/entitlements.mas.plist",
       "entitlementsInherit": "build/entitlements.mas.inherit.plist"
     }
