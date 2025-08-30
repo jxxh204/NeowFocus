@@ -63,7 +63,8 @@
       "buildResources": "build"
     },
     "files": [
-      "out/**/*"
+      "out/**/*",
+      "!out/**/*.map"
     ],
     "mac": {
       "category": "public.app-category.productivity",
@@ -82,24 +83,24 @@
           ]
         }
       ],
-      "entitlements": "build/entitlements.mas.plist",
-      "entitlementsInherit": "build/entitlements.mas.inherit.plist",
-      "hardenedRuntime": false,
+      "hardenedRuntime": true,
       "gatekeeperAssess": false,
-      "type": "distribution"
+      "extendInfo": {
+        "CFBundleIconName": "icon",
+        "CFBundleIconFile": "icon.icns",
+        "LSMinimumSystemVersion": "11.0.0",
+        "NSHighResolutionCapable": true
+      }
     },
     "mas": {
       "type": "distribution",
       "category": "public.app-category.productivity",
-      "icon": "build/icon.icns",
       "entitlements": "build/entitlements.mas.plist",
       "entitlementsInherit": "build/entitlements.mas.inherit.plist",
       "provisioningProfile": "build/NeowFocus_Mac_App_Store.provisionprofile",
-      "hardenedRuntime": false,
+      "hardenedRuntime": true,
       "extendInfo": {
-        "CFBundleIconName": "icon",
-        "CFBundleIconFile": "icon.icns",
-        "LSMinimumSystemVersion": "10.15.0"
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "pkg": {
@@ -107,18 +108,13 @@
       "allowAnywhere": false,
       "allowCurrentUserHome": false,
       "allowRootDirectory": false,
-      "background": {
-        "alignment": "center",
-        "scaling": "tofit"
-      },
-      "license": null,
       "isRelocatable": false,
       "isVersionChecked": true,
       "overwriteAction": "upgrade"
     },
     "masDev": {
       "type": "development",
-      "provisioningProfile": "build/NeowFocus_Mac_App_Store.provisionprofile",
+      "provisioningProfile": "build/NeowFocus_Mac_App_Store_Dev.provisionprofile",
       "entitlements": "build/entitlements.mas.plist",
       "entitlementsInherit": "build/entitlements.mas.inherit.plist"
     }

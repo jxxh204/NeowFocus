@@ -36,3 +36,7 @@ manual-fix-certificate.sh
 
 # Keep electron-builder.yml since it's needed for builds
 # electron-builder.yml
+
+
+# build 캐시
+.electron-builder
