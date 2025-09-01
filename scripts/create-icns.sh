@@ -28,7 +28,8 @@ cp "$ICON_PATH/1024.png" "$ICONSET_DIR/icon_512x512@2x.png"
 # ICNS 파일 생성
 iconutil -c icns "$ICONSET_DIR" -o "$OUTPUT_DIR/icon.icns"
 
-# Resources 디렉토리에도 복사
+
+에도 복사
 cp "$OUTPUT_DIR/icon.icns" "resources/icon.icns"
 
 # 임시 디렉토리 삭제

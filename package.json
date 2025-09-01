@@ -1,6 +1,6 @@
 {
   "name": "neow-focus-vite",
-  "version": "1.0.1",
+  "version": "0.0.33",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -14,7 +14,7 @@
     "start": "electron-vite preview",
     "dev": "electron-vite dev --watch --sourcemap",
     "build": "electron-vite build && electron-builder",
-    "build:mas": "electron-vite build && electron-builder -- --mac mas pkg --universal",
+    "build:mas": "node scripts/increment-version.js && electron-vite build && electron-builder -- --mac mas pkg --universal",
     "build:pkg": "electron-vite build && electron-builder -- --mac pkg --universal",
     "build:mas-dev": "electron-vite build && electron-builder --mac mas-dev",
     "test": "jest",
@@ -87,8 +87,8 @@
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "extendInfo": {
-        "CFBundleIconName": "icon",
-        "CFBundleIconFile": "icon.icns",
+        "CFBundleIconName": "AppIcon",
+        "CFBundleIconFile": "AppIcon",
         "LSMinimumSystemVersion": "11.0.0",
         "NSHighResolutionCapable": true
       }
@@ -96,12 +96,25 @@
     "mas": {
       "type": "distribution",
       "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
       "entitlements": "build/entitlements.mas.plist",
       "entitlementsInherit": "build/entitlements.mas.inherit.plist",
       "provisioningProfile": "build/NeowFocus_Mac_App_Store.provisionprofile",
-      "hardenedRuntime": true,
+      "hardenedRuntime": false,
+      "extraResources": [
+        {
+          "from": "build/compiled/Assets.car",
+          "to": "Assets.car"
+        },
+        {
+          "from": "build/compiled/AppIcon.icns",
+          "to": "AppIcon.icns"
+        }
+      ],
       "extendInfo": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleIconName": "AppIcon",
+        "CFBundleIconFile": "AppIcon"
       }
     },
     "pkg": {
