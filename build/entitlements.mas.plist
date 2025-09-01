@@ -2,22 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <!-- Mac App Store 필수 -->
-  <key>com.apple.security.app-sandbox</key>
-  <true/>
-  
-  <!-- TEAM_ID를 실제 팀 ID로 교체 -->
-  <key>com.apple.security.application-groups</key>
-  <array>
-    <string>L67FAG9382.com.neowfocus.pomodorotimer</string>
-  </array>
-  
-  <!-- 네트워크 접근 -->
-  <key>com.apple.security.network.client</key>
-  <true/>
-  
-  <!-- 파일 접근 -->
-  <key>com.apple.security.files.user-selected.read-write</key>
-  <true/>
+    <!-- 앱 샌드박스 (필수) -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+    
+    <!-- 네트워크 접근 -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    
+    <!-- 사용자 파일 읽기/쓰기 -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+    
+    <!-- Application Groups -->
+    <key>com.apple.security.application-groups</key>
+    <array>
+        <string>L67FAG9382.com.neowfocus.pomodorotimer</string>
+    </array>
+    
+ 
 </dict>
 </plist>
