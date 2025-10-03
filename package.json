@@ -1,6 +1,6 @@
 {
   "name": "neow-focus-vite",
-  "version": "0.0.33",
+  "version": "0.0.36",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -17,6 +17,7 @@
     "build:mas": "node scripts/increment-version.js && electron-vite build && electron-builder -- --mac mas pkg --universal",
     "build:pkg": "electron-vite build && electron-builder -- --mac pkg --universal",
     "build:mas-dev": "electron-vite build && electron-builder --mac mas-dev",
+    "resign": " ./scripts/resign-helpers.sh",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -59,6 +60,7 @@
   "build": {
     "appId": "com.neowfocus.pomodorotimer",
     "productName": "NeowFocus",
+    "afterSign": "scripts/afterSignHook.js",
     "directories": {
       "output": "dist",
       "buildResources": "build"
