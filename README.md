@@ -65,9 +65,35 @@ pnpm run build:linux    # Linux
 pnpm run build:mas
 ```
 
+### 환경 변수
+
+#### Mac App Store 코드 사이닝
+
+Mac App Store 빌드를 위한 코드 사이닝 시 다음 환경 변수를 설정할 수 있습니다:
+
+```bash
+# 코드 사이닝 인증서
+export CSC_NAME="Apple Distribution: Your Name (TEAM_ID)"
+
+# 설치 패키지 서명 인증서
+export CSC_INSTALLER_NAME="3rd Party Mac Developer Installer: Your Name (TEAM_ID)"
+
+# 인증서 파일 경로 (선택사항)
+export CSC_LINK="/path/to/certificate.p12"
+export CSC_KEY_PASSWORD="certificate-password"
+
+# 빌드 실행
+pnpm run build:mas
+```
+
+**주의사항:**
+
+- `.env` 파일이나 인증서 파일(`.p12`, `.cer`, `.provisionprofile` 등)은 절대 커밋하지 마세요
+- 이러한 파일들은 `.gitignore`에 의해 자동으로 제외됩니다
+
 ## 프로젝트 구조
 
-```
+```txt
 NeowFocus/
 ├── src/
 │   ├── main/              # Electron 메인 프로세스
