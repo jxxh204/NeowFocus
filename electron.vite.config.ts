@@ -9,7 +9,6 @@ export default defineConfig({
     build: {
       sourcemap: false,
       minify: process.env.NODE_ENV === 'production',
-      outDir: 'dist-electron',
       rollupOptions: {
         external: Object.keys(require('./package.json').dependencies || {})
       }
@@ -20,7 +19,6 @@ export default defineConfig({
     build: {
       sourcemap: false,
       minify: process.env.NODE_ENV === 'production',
-      outDir: 'dist-electron',
       rollupOptions: {
         external: Object.keys(require('./package.json').dependencies || {})
       }
@@ -31,12 +29,10 @@ export default defineConfig({
     build: {
       sourcemap: false,
       minify: process.env.NODE_ENV === 'production',
-      outDir: 'dist-electron',
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'src/renderer/index.html')
-        },
-        external: Object.keys(require('./package.json').dependencies || {})
+        }
       }
     },
     resolve: {

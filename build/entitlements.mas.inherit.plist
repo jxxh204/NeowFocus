@@ -13,5 +13,12 @@
     <!-- 네트워크 권한도 상속 -->
     <key>com.apple.security.network.client</key>
     <true/>
+    
+    <!-- Application Groups 상속 -->
+    <key>com.apple.security.application-groups</key>
+    <array>
+        <string>L67FAG9382.com.neowfocus.pomodorotimer</string>
+    </array>
+    
 </dict>
 </plist>
