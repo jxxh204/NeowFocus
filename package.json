@@ -1,6 +1,6 @@
 {
   "name": "neow-focus-vite",
-  "version": "0.0.36",
+  "version": "0.0.85",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -14,9 +14,10 @@
     "start": "electron-vite preview",
     "dev": "electron-vite dev --watch --sourcemap",
     "build": "electron-vite build && electron-builder",
-    "build:mas": "node scripts/increment-version.js && electron-vite build && electron-builder -- --mac mas pkg --universal",
+    "build:mas": "node scripts/increment-version.js && electron-vite build && electron-builder -- --mac mas --universal",
     "build:pkg": "electron-vite build && electron-builder -- --mac pkg --universal",
     "build:mas-dev": "electron-vite build && electron-builder --mac mas-dev",
+    "deploy:testflight": "./scripts/deploy-testflight.sh",
     "resign": " ./scripts/resign-helpers.sh",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -71,16 +72,11 @@
     ],
     "mac": {
       "category": "public.app-category.productivity",
-      "icon": "build/icon.icns",
+      "icon": "icon.icns",
+      "preAutoEntitlements": false,
       "target": [
         {
           "target": "mas",
-          "arch": [
-            "universal"
-          ]
-        },
-        {
-          "target": "pkg",
           "arch": [
             "universal"
           ]
@@ -98,7 +94,8 @@
     "mas": {
       "type": "distribution",
       "category": "public.app-category.productivity",
-      "icon": "build/icon.icns",
+      "icon": "icon.icns",
+      "preAutoEntitlements": false,
       "entitlements": "build/entitlements.mas.plist",
       "entitlementsInherit": "build/entitlements.mas.inherit.plist",
       "provisioningProfile": "build/NeowFocus_Mac_App_Store.provisionprofile",
