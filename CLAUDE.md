@@ -17,11 +17,31 @@ npm run typecheck    # Run TypeScript type checking for both Node and Web
 
 ### Building
 ```bash
-npm run build        # Production build with type checking
-npm run build:mac    # Build for macOS
-npm run build:win    # Build for Windows
-npm run build:linux  # Build for Linux
+pnpm run build        # Build source code with electron-vite
+pnpm run package      # Package app with Electron Forge
+pnpm run make         # Create distributable packages
+pnpm run build:mas    # Build universal .app for Mac App Store (auto version bump)
+pnpm run build:pkg    # Build and create signed PKG installer for MAS
 ```
+
+### Deployment
+```bash
+pnpm run deploy:testflight  # Full TestFlight deployment workflow:
+                            # 1. Clean previous builds
+                            # 2. Build MAS universal binary
+                            # 3. Verify signatures and provisioning
+                            # 4. Create signed PKG
+                            # 5. Open Transporter for upload
+                            # 6. Guide through App Store Connect
+```
+
+### Build System Details
+- **Packaging**: Uses @electron/forge (Apple's official tool)
+- **Source compilation**: electron-vite
+- **Output directory**: `out/` (not `dist/`)
+- **Universal binaries**: Supports both x64 and arm64 architectures
+- **Code signing**: Automatic via Forge with custom postPackage hook for Helper apps
+- **Version management**: Automatic patch version increment on each build:mas
 
 ## Architecture
 
@@ -57,7 +77,15 @@ The application uses Electron's multi-process architecture:
    - Frameless with transparency support
    - Keyboard shortcuts disabled during focus sessions
 
-4. **Path Aliases**: Use these imports:
+4. **Mac App Store Build Process**:
+   - **prePackage hook**: Removes MAS-incompatible files (Squirrel, Login Helper, crashpad)
+   - **osxSign (during packaging)**: Signs main app and frameworks with MAS distribution cert
+   - **postPackage hook**: Embeds provisioning profiles in Helper apps and re-signs all apps
+   - **maker-pkg**: Creates signed PKG installer for App Store submission
+   - All provisioning profiles must be embedded before final signing
+   - Universal builds combine x64 + arm64 architectures
+
+5. **Path Aliases**: Use these imports:
    - `@renderer/*` for renderer source files
    - `@components/*` for UI components
    - `@hooks/*` for custom hooks
@@ -65,6 +93,14 @@ The application uses Electron's multi-process architecture:
    - `@assets/*` for assets
 
 ## Development Guidelines
+
+### Build & Package System
+- **Package manager**: pnpm (with hoisted node-linker)
+- **Forge config**: `forge.config.js` (replaces electron-builder)
+- **entitlements**: `build/entitlements.mas.plist` (main) and `build/entitlements.mas.inherit.plist` (helpers)
+- **Provisioning**: `build/NeowFocus_Mac_App_Store.provisionprofile`
+- **Icons**: Compiled to `build/compiled/Assets.car` and `AppIcon.icns`
+- **Scripts**: Version management (`increment-version.js`), deployment (`deploy-testflight.sh`), verification (`verify-mas-build.sh`)
 
 ### TypeScript Configuration
 - Separate configs for Node (main/preload) and Web (renderer)
@@ -81,6 +117,13 @@ The application uses Electron's multi-process architecture:
 - Handle window events through established handlers
 
 ### Build Process
-- Uses electron-vite for development and building
-- electron-builder for packaging
-- Platform-specific builds available for Windows, macOS, and Linux
+- **electron-vite**: Source code compilation (main/preload/renderer)
+- **@electron/forge**: App packaging and distribution
+  - Config file: `forge.config.js`
+  - Output directory: `out/`
+  - Makers: PKG (Mac App Store), ZIP
+- **Mac App Store Build**:
+  - Forge's `osxSign` handles all signing automatically
+  - Entitlements: `build/entitlements.mas.plist` and `build/entitlements.mas.inherit.plist`
+  - Provisioning profile: `build/NeowFocus_Mac_App_Store.provisionprofile`
+  - `postPackage` hook removes MAS-incompatible components (Squirrel, crashpad_handler, Login Helper)

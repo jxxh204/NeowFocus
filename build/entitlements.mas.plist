@@ -2,17 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Application Identifier -->
-    <key>com.apple.application-identifier</key>
-    <string>L67FAG9382.com.neowfocus.pomodorotimer</string>
-
-    <!-- 앱 샌드박스 (필수) -->
     <key>com.apple.security.app-sandbox</key>
     <true/>
-
-    <!-- Team Identifier -->
-    <key>com.apple.developer.team-identifier</key>
-    <string>L67FAG9382</string>
-
+    <key>com.apple.security.application-groups</key>
+    <array>
+        <string>L67FAG9382.com.neowfocus.pomodorotimer</string>
+    </array>
 </dict>
 </plist>
