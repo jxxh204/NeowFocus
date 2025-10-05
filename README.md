@@ -63,7 +63,34 @@ pnpm run build:linux    # Linux
 
 # Mac App Store 빌드
 pnpm run build:mas
+
+# 🚀 TestFlight 자동 배포 (빌드 + 검증 + 업로드)
+npm run deploy:testflight
 ```
+
+### 🚀 TestFlight 배포
+
+Mac App Store용 빌드를 생성하고 TestFlight에 자동으로 배포하는 통합 명령어:
+
+```bash
+npm run deploy:testflight
+```
+
+**배포 프로세스:**
+1. ✅ 이전 빌드 정리
+2. ✅ Mac App Store용 빌드 생성 (버전 자동 증가)
+3. ✅ 서명 및 entitlements 검증
+4. ✅ PKG 인스톨러 생성
+5. ✅ Transporter로 App Store Connect 업로드
+6. ✅ 각 단계마다 macOS 알림으로 진행 상황 표시
+
+**필수 요구사항:**
+- Apple Developer 계정
+- Mac App Store Distribution 인증서
+- Provisioning Profile (`build/NeowFocus_Mac_App_Store.provisionprofile`)
+- Transporter 앱 설치 ([App Store에서 다운로드](https://apps.apple.com/app/transporter/id1450874784))
+
+배포 완료 후 App Store Connect에서 빌드 처리를 기다린 후 TestFlight에서 테스트할 수 있습니다.
 
 ### 환경 변수
 
