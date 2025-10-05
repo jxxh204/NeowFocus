@@ -1,6 +1,6 @@
 {
   "name": "neow-focus-vite",
-  "version": "0.0.85",
+  "version": "0.1.112",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -10,15 +10,14 @@
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
-    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "typecheck": "pnpm run typecheck:node && pnpm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev --watch --sourcemap",
-    "build": "electron-vite build && electron-builder",
-    "build:mas": "node scripts/increment-version.js && electron-vite build && electron-builder -- --mac mas --universal",
-    "build:pkg": "electron-vite build && electron-builder -- --mac pkg --universal",
-    "build:mas-dev": "electron-vite build && electron-builder --mac mas-dev",
-    "deploy:testflight": "./scripts/deploy-testflight.sh",
-    "resign": " ./scripts/resign-helpers.sh",
+    "build": "electron-vite build",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "build:mas": "pnpm run build && electron-forge package --arch=universal --platform=mas",
+    "build:pkg": "rm -rf out/ && pnpm run build:mas && electron-forge make --arch=universal --platform=mas",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -31,9 +30,14 @@
     "styled-components": "^6.1.8"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.9.0",
+    "@electron-forge/maker-pkg": "^7.9.0",
+    "@electron-forge/maker-zip": "^7.9.0",
+    "@electron-forge/plugin-vite": "^7.9.0",
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@electron-toolkit/eslint-config-ts": "^1.0.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
+    "@electron/osx-sign": "^2.2.0",
     "@testing-library/jest-dom": "^6.7.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -43,8 +47,7 @@
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
     "electron": "^28.2.0",
-    "electron-builder": "^26.0.12",
-    "electron-vite": "^2.0.0",
+    "electron-vite": "^2.3.0",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "jest": "^30.0.5",
@@ -58,78 +61,7 @@
     "vite": "^5.0.12",
     "vite-plugin-svgr": "^4.3.0"
   },
-  "build": {
-    "appId": "com.neowfocus.pomodorotimer",
-    "productName": "NeowFocus",
-    "afterSign": "scripts/afterSignHook.js",
-    "directories": {
-      "output": "dist",
-      "buildResources": "build"
-    },
-    "files": [
-      "out/**/*",
-      "!out/**/*.map"
-    ],
-    "mac": {
-      "category": "public.app-category.productivity",
-      "icon": "icon.icns",
-      "preAutoEntitlements": false,
-      "target": [
-        {
-          "target": "mas",
-          "arch": [
-            "universal"
-          ]
-        }
-      ],
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "extendInfo": {
-        "CFBundleIconName": "AppIcon",
-        "CFBundleIconFile": "AppIcon",
-        "LSMinimumSystemVersion": "11.0.0",
-        "NSHighResolutionCapable": true
-      }
-    },
-    "mas": {
-      "type": "distribution",
-      "category": "public.app-category.productivity",
-      "icon": "icon.icns",
-      "preAutoEntitlements": false,
-      "entitlements": "build/entitlements.mas.plist",
-      "entitlementsInherit": "build/entitlements.mas.inherit.plist",
-      "provisioningProfile": "build/NeowFocus_Mac_App_Store.provisionprofile",
-      "hardenedRuntime": false,
-      "extraResources": [
-        {
-          "from": "build/compiled/Assets.car",
-          "to": "Assets.car"
-        },
-        {
-          "from": "build/compiled/AppIcon.icns",
-          "to": "AppIcon.icns"
-        }
-      ],
-      "extendInfo": {
-        "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleIconName": "AppIcon",
-        "CFBundleIconFile": "AppIcon"
-      }
-    },
-    "pkg": {
-      "installLocation": "/Applications",
-      "allowAnywhere": false,
-      "allowCurrentUserHome": false,
-      "allowRootDirectory": false,
-      "isRelocatable": false,
-      "isVersionChecked": true,
-      "overwriteAction": "upgrade"
-    },
-    "masDev": {
-      "type": "development",
-      "provisioningProfile": "build/NeowFocus_Mac_App_Store.provisionprofile",
-      "entitlements": "build/entitlements.mas.plist",
-      "entitlementsInherit": "build/entitlements.mas.inherit.plist"
-    }
+  "config": {
+    "forge": "./forge.config.js"
   }
 }
