@@ -2,23 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- 앱 샌드박스 (필수) -->
     <key>com.apple.security.app-sandbox</key>
     <true/>
-    
-    <!-- 상속 권한 (필수) -->
     <key>com.apple.security.inherit</key>
     <true/>
-    
-    <!-- 네트워크 권한도 상속 -->
-    <key>com.apple.security.network.client</key>
-    <true/>
-    
-    <!-- Application Groups 상속 -->
-    <key>com.apple.security.application-groups</key>
-    <array>
-        <string>L67FAG9382.com.neowfocus.pomodorotimer</string>
-    </array>
-    
 </dict>
 </plist>

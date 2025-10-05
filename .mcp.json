@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "notionMCP": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote@0.1.20", "https://mcp.notion.com/mcp"]
+    },
+    "context7":{
+      "command": "npx",
+      "args":["-y","@upstash/context7-mcp@latest"]
+    }
+  }
+}
