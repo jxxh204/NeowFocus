@@ -10,7 +10,30 @@ const color = {
   },
   gray: {
     500: '#8D8D8D',
+    400: '#9CA3AF',
     300: '#D9D9D9'
+  },
+  // Container colors
+  container: {
+    background: 'rgba(39, 39, 39, 0.7)',
+    border: 'rgba(255, 255, 255, 0.1)'
+  },
+  // Text colors
+  text: {
+    primary: 'rgba(255, 255, 255, 0.9)',
+    secondary: 'rgba(255, 255, 255, 0.3)',
+    disabled: 'rgba(255, 255, 255, 0.3)'
+  },
+  // Input colors
+  input: {
+    background: 'rgba(255, 255, 255, 0.04)',
+    placeholder: 'rgba(255, 255, 255, 0.3)'
+  },
+  // Button colors
+  button: {
+    hover: 'rgba(255, 255, 255, 0.05)',
+    active: 'rgba(255, 255, 255, 0.1)',
+    iconHover: 'rgba(123, 123, 123, 0.2)'
   }
 }
 const border = {
