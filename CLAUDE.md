@@ -3,11 +3,13 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
+
 NeowFocus is an Electron-based Pomodoro timer desktop application with React and TypeScript. It features a cute cat-themed UI with system tray integration and always-on-top floating timer functionality.
 
 ## Essential Commands
 
 ### Development
+
 ```bash
 npm run dev          # Start development server with hot reload and sourcemaps
 npm run format       # Format code with Prettier
@@ -16,6 +18,7 @@ npm run typecheck    # Run TypeScript type checking for both Node and Web
 ```
 
 ### Building
+
 ```bash
 pnpm run build        # Build source code with electron-vite
 pnpm run package      # Package app with Electron Forge
@@ -25,6 +28,7 @@ pnpm run build:pkg    # Build and create signed PKG installer for MAS
 ```
 
 ### Deployment
+
 ```bash
 pnpm run deploy:testflight  # Full TestFlight deployment workflow:
                             # 1. Clean previous builds
@@ -36,6 +40,7 @@ pnpm run deploy:testflight  # Full TestFlight deployment workflow:
 ```
 
 ### Build System Details
+
 - **Packaging**: Uses @electron/forge (Apple's official tool)
 - **Source compilation**: electron-vite
 - **Output directory**: `out/` (not `dist/`)
@@ -46,6 +51,7 @@ pnpm run deploy:testflight  # Full TestFlight deployment workflow:
 ## Architecture
 
 ### Process Structure
+
 The application uses Electron's multi-process architecture:
 
 - **Main Process** (`src/main/`): Manages window creation, system tray, and OS-level interactions
@@ -54,7 +60,7 @@ The application uses Electron's multi-process architecture:
   - IPC protocols defined in `IpcProtocol.ts`
 
 - **Renderer Process** (`src/renderer/src/`): React application for UI
-  - Router setup with 3 routes: `/` (input), `/focus` (timer), `/minimize_focus` (mini view)
+  - Router setup with 3 routes: `/` (input), `/focus` (timer), `/tiny_window` (mini view)
   - State management via TaskContext and PopupContext
   - Custom hooks for timer logic and local storage persistence
 
@@ -66,7 +72,7 @@ The application uses Electron's multi-process architecture:
    - TaskContext manages task name, duration, and timer state
    - Tasks persist between app sessions via useLocalStorage hook
 
-2. **Timer Implementation**: 
+2. **Timer Implementation**:
    - Default 25-minute (1500 seconds) Pomodoro sessions
    - Circular progress visualization with SVG
    - States: idle, play, end
@@ -95,6 +101,7 @@ The application uses Electron's multi-process architecture:
 ## Development Guidelines
 
 ### Build & Package System
+
 - **Package manager**: pnpm (with hoisted node-linker)
 - **Forge config**: `forge.config.js` (replaces electron-builder)
 - **entitlements**: `build/entitlements.mas.plist` (main) and `build/entitlements.mas.inherit.plist` (helpers)
@@ -103,20 +110,24 @@ The application uses Electron's multi-process architecture:
 - **Scripts**: Version management (`increment-version.js`), deployment (`deploy-testflight.sh`), verification (`verify-mas-build.sh`)
 
 ### TypeScript Configuration
+
 - Separate configs for Node (main/preload) and Web (renderer)
 - Always run `npm run typecheck` before committing
 
 ### Component Structure
+
 - Components in `src/renderer/src/component/`
 - Use styled-components for styling
 - Follow existing patterns for state management with Context API
 
 ### IPC Communication
+
 - Define protocols in `src/main/IpcProtocol.ts`
 - Use contextBridge in preload for secure communication
 - Handle window events through established handlers
 
 ### Build Process
+
 - **electron-vite**: Source code compilation (main/preload/renderer)
 - **@electron/forge**: App packaging and distribution
   - Config file: `forge.config.js`
