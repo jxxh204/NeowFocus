@@ -4,36 +4,37 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { handleWindow, showWindow } from './handlers/windowHandler'
 import { createTray } from './handlers/trayhandler'
 import { windowSizeChange } from './IpcProtocol'
+import { WINDOW_SIZE, APP_CONFIG, WINDOW_OPTIONS, SHORTCUTS, IPC_CHANNELS } from './constants'
 
 function createWindow(): BrowserWindow {
   // Force dark mode
-  nativeTheme.themeSource = 'dark'
+  nativeTheme.themeSource = APP_CONFIG.THEME
 
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 402,
-    height: 158,
-    minHeight: 158,
-    maxHeight: 900,
-    hasShadow: true,
-    frame: false,
-    fullscreenable: false,
-    resizable: false,
-    darkTheme: true,
+    width: WINDOW_SIZE.DEFAULT_WIDTH,
+    height: WINDOW_SIZE.DEFAULT_HEIGHT,
+    minHeight: WINDOW_SIZE.MIN_HEIGHT,
+    maxHeight: WINDOW_SIZE.MAX_HEIGHT,
+    hasShadow: WINDOW_OPTIONS.HAS_SHADOW,
+    frame: WINDOW_OPTIONS.FRAME,
+    fullscreenable: WINDOW_OPTIONS.FULLSCREENABLE,
+    resizable: WINDOW_OPTIONS.RESIZABLE,
+    darkTheme: WINDOW_OPTIONS.DARK_THEME,
     // movable: true,
-    transparent: true,
-    icon: join(__dirname, '../../build/icon.png'),
-    vibrancy: 'under-window',
-    visualEffectState: 'active',
+    transparent: WINDOW_OPTIONS.TRANSPARENT,
+    icon: join(__dirname, APP_CONFIG.ICON_PATH),
+    vibrancy: APP_CONFIG.VIBRANCY,
+    visualEffectState: APP_CONFIG.VISUAL_EFFECT_STATE,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
-      devTools: true,
-      nodeIntegration: true,
-      backgroundThrottling: false,
-      contextIsolation: true
+      preload: join(__dirname, APP_CONFIG.PRELOAD_PATH),
+      sandbox: WINDOW_OPTIONS.SANDBOX,
+      devTools: WINDOW_OPTIONS.DEV_TOOLS,
+      nodeIntegration: WINDOW_OPTIONS.NODE_INTEGRATION,
+      backgroundThrottling: WINDOW_OPTIONS.BACKGROUND_THROTTLING,
+      contextIsolation: WINDOW_OPTIONS.CONTEXT_ISOLATION
     },
-    alwaysOnTop: true
+    alwaysOnTop: WINDOW_OPTIONS.ALWAYS_ON_TOP
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -65,7 +66,7 @@ function createWindow(): BrowserWindow {
   windowSizeChange(mainWindow)
 
   // Window minimize handler - use hide() instead of minimize() to prevent app quit on macOS
-  ipcMain.on('window-minimize', () => {
+  ipcMain.on(IPC_CHANNELS.WINDOW_MINIMIZE, () => {
     mainWindow?.minimize()
   })
 
@@ -74,14 +75,14 @@ function createWindow(): BrowserWindow {
 
 app.whenReady().then(() => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId(APP_CONFIG.USER_MODEL_ID)
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  ipcMain.on(IPC_CHANNELS.PING, () => console.log('pong'))
 
   const mainWindow = createWindow()
 
@@ -92,41 +93,41 @@ app.whenReady().then(() => {
   })
 
   app.on('browser-window-focus', () => {
-    globalShortcut.register('CommandOrControl+W', () => {
+    globalShortcut.register(SHORTCUTS.CLOSE_WINDOW, () => {
       // Prevent the default behavior
-      console.log('CommandOrControl+W is disabled')
+      console.log(`${SHORTCUTS.CLOSE_WINDOW} is disabled`)
     })
     //mac
-    globalShortcut.register('CommandOrControl+R', () => {
-      console.log('CommandOrControl+R is pressed: Shortcut Disabled')
+    globalShortcut.register(SHORTCUTS.RELOAD, () => {
+      console.log(`${SHORTCUTS.RELOAD} is pressed: Shortcut Disabled`)
     })
     //window
-    globalShortcut.register('F5', () => {
-      console.log('F5 is pressed: Shortcut Disabled')
+    globalShortcut.register(SHORTCUTS.REFRESH, () => {
+      console.log(`${SHORTCUTS.REFRESH} is pressed: Shortcut Disabled`)
     })
 
     // mainWindow.webContents.send('browser-window-focus')
   })
   app.on('browser-window-blur', () => {
-    globalShortcut.unregister('CommandOrControl+W')
-    globalShortcut.unregister('CommandOrControl+R')
-    globalShortcut.unregister('F5')
-    mainWindow.webContents.send('browser-window-blur')
+    globalShortcut.unregister(SHORTCUTS.CLOSE_WINDOW)
+    globalShortcut.unregister(SHORTCUTS.RELOAD)
+    globalShortcut.unregister(SHORTCUTS.REFRESH)
+    mainWindow.webContents.send(IPC_CHANNELS.BROWSER_WINDOW_BLUR)
   })
 
   // Handle window dragging
-  ipcMain.on('window-move', (_event, { deltaX, deltaY }) => {
+  ipcMain.on(IPC_CHANNELS.WINDOW_MOVE, (_event, { deltaX, deltaY }) => {
     const [currentX, currentY] = mainWindow.getPosition()
     mainWindow.setPosition(currentX + deltaX, currentY + deltaY)
   })
 
   // Set window position absolutely
-  ipcMain.on('window-set-position', (_event, { x, y }) => {
+  ipcMain.on(IPC_CHANNELS.WINDOW_SET_POSITION, (_event, { x, y }) => {
     mainWindow.setPosition(x, y)
   })
 
   // Get window position
-  ipcMain.handle('window-get-position', () => {
+  ipcMain.handle(IPC_CHANNELS.WINDOW_GET_POSITION, () => {
     const [x, y] = mainWindow.getPosition()
     return { x, y }
   })
@@ -142,6 +143,6 @@ const setDevTools = (mainWindow: BrowserWindow) => {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
     mainWindow.webContents.openDevTools({ mode: 'detach' }) // DevTools를 엽니다.
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(join(__dirname, APP_CONFIG.RENDERER_PATH))
   }
 }

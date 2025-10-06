@@ -153,7 +153,7 @@ const TaskNameText = styled.div`
 `
 
 const TimerWrapper = styled.div`
-  width: 98px;
+  width: 88px;
   display: flex;
   justify-content: center;
 `

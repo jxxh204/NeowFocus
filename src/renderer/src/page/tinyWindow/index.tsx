@@ -6,6 +6,7 @@ import useWindowSize from '@renderer/hooks/useWindowSize'
 import { useTimer } from '../focus/hooks/useTimer'
 import { TIME, WINDOW_SIZE, ROUTES } from '@renderer/constants'
 import CircularTimer from '@renderer/component/CircularTimer'
+import Icon from '@renderer/component/Icon'
 
 export function TinyWindowPage(): JSX.Element {
   const navigate = useNavigate()
@@ -37,7 +38,7 @@ export function TinyWindowPage(): JSX.Element {
       width: WINDOW_SIZE.TINY_WINDOW_WIDTH,
       height: WINDOW_SIZE.TINY_WINDOW_HEIGHT
     })
-  }, [setWindowSize])
+  }, [])
 
   useEffect(() => {
     if (textRef.current) {
@@ -46,21 +47,21 @@ export function TinyWindowPage(): JSX.Element {
     }
   }, [currentTask?.taskName])
 
-  const handleTimerClick = () => {
+  const handleContainerClick = () => {
     navigate(ROUTES.FOCUS)
   }
 
   const isPaused = timerState === 'pause'
 
   return (
-    <Container>
-      <TaskNameArea $centered={!isTruncated} onClick={handleTimerClick}>
+    <Container onClick={handleContainerClick}>
+      <TaskNameArea $centered={!isTruncated}>
         <TaskName ref={textRef}>{currentTask?.taskName || 'Focus Time'}</TaskName>
       </TaskNameArea>
-      <TimerArea onClick={handleTimerClick}>
-        <CircularTimer percentage={percentage} size={24} paused={isPaused} />
+      <TimerArea>
+        <CircularTimer percentage={percentage} size={36} paused={isPaused} />
       </TimerArea>
-      <MenuButton>⋮</MenuButton>
+      <Icon name="drag" size={36} />
     </Container>
   )
 }
@@ -74,15 +75,19 @@ const Container = styled.div`
   border: 1px solid ${({ theme }) => theme.color.container.border};
   border-radius: 8px;
   overflow: hidden;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
 `
 
 const TaskNameArea = styled.div<{ $centered: boolean }>`
-  flex: 1;
+  width: ${WINDOW_SIZE.TINY_TASK_NAME_WIDTH}px;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-start')};
-  padding: 0 12px;
   cursor: pointer;
   overflow: hidden;
 
@@ -99,34 +104,16 @@ const TaskName = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 236px;
+  max-width: ${WINDOW_SIZE.TINY_TASK_NAME_TEXT_WIDTH}px;
 `
 
 const TimerArea = styled.div`
-  width: 36px;
-  height: 36px;
+  width: ${WINDOW_SIZE.TINY_TIMER_CONTAINER_SIZE}px;
+  height: ${WINDOW_SIZE.TINY_TIMER_CONTAINER_SIZE}px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
-`
-
-const MenuButton = styled.button`
-  width: 24px;
-  height: 36px;
-  background: transparent;
-  border: none;
-  color: ${({ theme }) => theme.color.text.secondary};
-  cursor: pointer;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 6px;
-  font-size: 16px;
 
   &:hover {
     background: rgba(255, 255, 255, 0.05);

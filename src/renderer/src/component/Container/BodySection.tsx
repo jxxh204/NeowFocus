@@ -5,9 +5,11 @@ const StyledBodySection = styled.div<{ $height?: number; $padding?: string }>`
   height: ${({ $height }) => $height || 64}px;
   display: flex;
   align-items: center;
+  gap: 8px;
   padding: ${({ $padding }) => $padding || '10px'};
   border-bottom: 1px solid ${({ theme }) => theme.color.container.border};
   background: transparent;
+  box-sizing: border-box;
 `
 
 type BodySectionProps = {

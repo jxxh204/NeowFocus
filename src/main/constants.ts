@@ -1,7 +1,8 @@
 // 윈도우 크기 상수
 export const WINDOW_SIZE = {
   DEFAULT_WIDTH: 402,
-  MIN_HEIGHT: 158,
+  DEFAULT_HEIGHT: 158,
+  MIN_HEIGHT: 35,
   MAX_HEIGHT: 900
 } as const
 
@@ -27,5 +28,25 @@ export const SHORTCUTS = {
 export const APP_CONFIG = {
   USER_MODEL_ID: 'com.electron',
   ICON_PATH: '../../build/icon.png',
-  THEME: 'dark'
+  PRELOAD_PATH: '../preload/index.js',
+  RENDERER_PATH: '../renderer/index.html',
+  THEME: 'dark',
+  VIBRANCY: 'under-window',
+  VISUAL_EFFECT_STATE: 'active'
+} as const
+
+// 윈도우 옵션
+export const WINDOW_OPTIONS = {
+  HAS_SHADOW: true,
+  FRAME: false,
+  FULLSCREENABLE: false,
+  RESIZABLE: false,
+  DARK_THEME: true,
+  TRANSPARENT: true,
+  ALWAYS_ON_TOP: true,
+  SANDBOX: false,
+  DEV_TOOLS: true,
+  NODE_INTEGRATION: true,
+  BACKGROUND_THROTTLING: false,
+  CONTEXT_ISOLATION: true
 } as const
