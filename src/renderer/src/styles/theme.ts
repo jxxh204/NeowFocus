@@ -34,6 +34,11 @@ const color = {
     hover: 'rgba(255, 255, 255, 0.05)',
     active: 'rgba(255, 255, 255, 0.1)',
     iconHover: 'rgba(123, 123, 123, 0.2)'
+  },
+  // Timer colors
+  Timer: {
+    progress: '#FFFFFF',
+    background: 'rgba(255, 255, 255, 0.1)'
   }
 }
 const border = {
