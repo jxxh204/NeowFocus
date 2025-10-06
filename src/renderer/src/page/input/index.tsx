@@ -1,26 +1,19 @@
-import Button from '@renderer/component/Button'
-import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import InputTextField from './components/TextField'
-import { useEffect, useState } from 'react'
-import useWindowSize from '@renderer/hooks/useWindowSize'
+import { useState } from 'react'
 import { useTaskContext } from '@renderer/context/TaskContext'
-
-const MainStyle = styled.form`
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  height: 100%;
-`
+import Container from '@components/Container'
+import Icon from '@components/Icon'
+import MinimizeButton from '@components/MinimizeButton'
+import catFaceIcon from '@renderer/assets/icon_cat_face.svg'
+import timerIcon from '@renderer/assets/icon_timer.svg'
+import TextField from '@components/TextField'
 
 function InputPage() {
   const navigate = useNavigate()
-  const { setWindowSize } = useWindowSize()
   const { startTask } = useTaskContext()
   const [text, setText] = useState('')
 
-  const onClickHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const onSubmitHandler = () => {
     startTask(text)
     navigate('/focus')
   }
@@ -29,20 +22,27 @@ function InputPage() {
     setText(e.target.value)
   }
 
-  useEffect(() => {
-    setWindowSize({ windowName: 'input' })
-  }, [])
-
   return (
-    <MainStyle onSubmit={onClickHandler}>
-      <InputTextField
-        placeholder="지금 집중할 일을 적어볼까요?"
-        maxLength={22}
-        onChangeHandler={onChangeHandler}
-        value={text}
-      />
-      <Button value="시작" type="filled" disabled={text.length === 0} />
-    </MainStyle>
+    <Container>
+      <Container.Top height={30}>
+        <Icon src={catFaceIcon} alt="cat" size={24} />
+        <MinimizeButton />
+      </Container.Top>
+      <Container.Body height={84} padding="0 12px">
+        <TextField
+          placeholder="집중이 필요한 일 하나를 적어주세요."
+          maxLength={54}
+          value={text}
+          onChange={onChangeHandler}
+        />
+      </Container.Body>
+      <Container.Bottom height={48}>
+        <Container.Button type="submit" onClick={onSubmitHandler} disabled={text.length === 0}>
+          뽀모도로 시작
+          <Icon src={timerIcon} alt="timer" size={16} />
+        </Container.Button>
+      </Container.Bottom>
+    </Container>
   )
 }
 
