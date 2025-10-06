@@ -19,6 +19,9 @@ const windowAPI = {
   },
   getWindowPosition: () => {
     return ipcRenderer.invoke('window-get-position')
+  },
+  minimizeWindow: () => {
+    ipcRenderer.send('window-minimize')
   }
 }
 

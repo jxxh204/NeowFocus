@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, globalShortcut, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { handleWindow, showWindow } from './handlers/windowHandler'
@@ -6,22 +6,25 @@ import { createTray } from './handlers/trayhandler'
 import { windowSizeChange } from './IpcProtocol'
 
 function createWindow(): BrowserWindow {
+  // Force dark mode
+  nativeTheme.themeSource = 'dark'
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 384,
-    height: 60,
-    minHeight: 60,
+    width: 402,
+    height: 158,
+    minHeight: 158,
     maxHeight: 900,
-    show: false,
+    hasShadow: true,
     frame: false,
     fullscreenable: false,
     resizable: false,
-    darkTheme: false,
+    darkTheme: true,
     // movable: true,
-    transparent: false,
+    transparent: true,
     icon: join(__dirname, '../../build/icon.png'),
-    vibrancy: 'popover',
-    visualEffectState: 'followWindow',
+    vibrancy: 'under-window',
+    visualEffectState: 'active',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -60,6 +63,12 @@ function createWindow(): BrowserWindow {
   mainWindow?.isDestroyed()
   // mouseIpcProtocol(mainWindow)
   windowSizeChange(mainWindow)
+
+  // Window minimize handler - use hide() instead of minimize() to prevent app quit on macOS
+  ipcMain.on('window-minimize', () => {
+    mainWindow?.hide()
+  })
+
   return mainWindow
 }
 
