@@ -1,97 +1,52 @@
 import styled from 'styled-components'
 
-const TextFieldContainer = styled.div`
-  position: relative;
+const InputWrapper = styled.div`
+  flex: 1;
+  padding: 12px;
+  height: 40px;
   display: flex;
-  align-items: center;
-  width: 100%;
+  align-items: flex-start;
+  background-color: ${({ theme }) => theme.color.input.background};
+  border-radius: 12px;
 `
 
-const TextFieldStyle = styled.input<{ $hovered: boolean; $stretch?: boolean }>`
-  width: ${({ $stretch }) => ($stretch ? '100%' : '260px')};
-  padding: 8px 0px 8px 30px;
-  border-radius: 6px;
+const StyledInput = styled.input`
+  flex: 1;
+  background: transparent;
+  border: none;
   outline: none;
-  border: 1px solid #e8e8e8;
-
-  ${({ $hovered }) =>
-    !$hovered &&
-    `
-      color: ${({ theme }) => theme.color.gray[500]};`}
-
-  &:focus + div span,
-  &:not(:placeholder-shown) + div span {
-    display: none;
-  }
-  &:focus {
-    border: 1px solid black;
-    color: black;
-  }
-  &:disabled {
-    background-color: black;
-    color: white;
-  }
-`
-
-const Placeholder = styled.div`
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  color: ${({ theme }) => theme.color.gray[500]};
+  color: ${({ theme }) => theme.color.text.primary};
   font-size: 14px;
-  pointer-events: none;
+  padding: 0;
+  line-height: 1.5;
 
-  svg {
-    width: 14px;
-    height: 14px;
-    margin-right: 6px;
+  &::placeholder {
+    color: ${({ theme }) => theme.color.input.placeholder};
+  }
+
+  &:focus::placeholder {
+    opacity: 0.5;
   }
 `
 
-type Props = {
+type TextFieldProps = {
   placeholder: string
-  p_color?: string
-  svg?: React.ReactNode
-  hovered?: boolean
   maxLength?: number
-  value?: string
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-  stretch?: boolean
-  disabled?: boolean
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function TextField({
-  placeholder,
-  p_color = 'gray',
-  svg,
-  onChange = () => {},
-  maxLength,
-  hovered = false,
-  value,
-  stretch = false,
-  disabled = false
-}: Props) {
-  // TODO : TextField에 도메인 정보가 많으므로 분리 필요.
+const TextField = ({ placeholder, maxLength, value, onChange }: TextFieldProps) => {
   return (
-    <TextFieldContainer>
-      <TextFieldStyle
+    <InputWrapper>
+      <StyledInput
         type="text"
-        placeholder=" "
+        placeholder={placeholder}
+        maxLength={maxLength}
         value={value}
         onChange={onChange}
-        maxLength={maxLength}
-        $hovered={hovered}
-        $stretch={stretch}
-        disabled={disabled}
       />
-      <Placeholder>
-        {svg && svg}
-        <span style={{ color: p_color }}>{placeholder}</span>
-      </Placeholder>
-    </TextFieldContainer>
+    </InputWrapper>
   )
 }
 
