@@ -24,6 +24,23 @@ export const mouseIpcProtocol = (mainWindow): void => {
 export const windowSizeChange = (mainWindow): void => {
   ipcMain.on('WINDOW_SIZE_CHANGE', (_e: Electron.IpcMainEvent, size) => {
     const bounds = mainWindow?.getBounds()
-    if (bounds.height !== size) mainWindow.setBounds({ height: size })
+
+    // size가 객체인 경우 (width, height 모두 변경)
+    if (typeof size === 'object' && size !== null) {
+      const newBounds: { width?: number; height?: number } = {}
+      if (size.width !== undefined && bounds.width !== size.width) {
+        newBounds.width = size.width
+      }
+      if (size.height !== undefined && bounds.height !== size.height) {
+        newBounds.height = size.height
+      }
+      if (Object.keys(newBounds).length > 0) {
+        mainWindow.setBounds(newBounds)
+      }
+    }
+    // size가 숫자인 경우 (height만 변경, 기존 동작 유지)
+    else if (typeof size === 'number' && bounds.height !== size) {
+      mainWindow.setBounds({ height: size })
+    }
   })
 }

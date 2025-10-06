@@ -66,7 +66,7 @@ function createWindow(): BrowserWindow {
 
   // Window minimize handler - use hide() instead of minimize() to prevent app quit on macOS
   ipcMain.on('window-minimize', () => {
-    mainWindow?.hide()
+    mainWindow?.minimize()
   })
 
   return mainWindow

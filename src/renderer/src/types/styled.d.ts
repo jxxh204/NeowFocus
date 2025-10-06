@@ -33,6 +33,10 @@ declare module 'styled-components' {
         active: string
         iconHover: string
       }
+      Timer: {
+        progress: string
+        background: string
+      }
     }
     border: {
       radius: string
