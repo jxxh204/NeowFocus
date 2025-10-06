@@ -1,6 +1,5 @@
 import { HashRouter } from 'react-router-dom'
 import Router from './router/router'
-import { PopupProvider } from './context/PopupContext'
 import { TaskProvider } from './context/TaskContext'
 
 function App() {
@@ -8,9 +7,7 @@ function App() {
     <div className="App">
       <TaskProvider>
         <HashRouter>
-          <PopupProvider>
-            <Router />
-          </PopupProvider>
+          <Router />
         </HashRouter>
       </TaskProvider>
     </div>
