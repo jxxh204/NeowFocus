@@ -26,11 +26,19 @@ const MinimizeLine = styled.div`
   opacity: 0.6;
 `
 
-const MinimizeButton = () => {
+interface MinimizeButtonProps {
+  onClick?: () => void
+}
+
+const MinimizeButton = ({ onClick }: MinimizeButtonProps) => {
   const handleMinimize = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     e.stopPropagation()
-    window.electron.minimizeWindow()
+    if (onClick) {
+      onClick()
+    } else {
+      window.electron.minimizeWindow()
+    }
   }
 
   return (
