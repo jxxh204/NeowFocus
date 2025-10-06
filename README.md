@@ -77,6 +77,7 @@ npm run deploy:testflight
 ```
 
 **배포 프로세스:**
+
 1. ✅ 이전 빌드 정리
 2. ✅ Mac App Store용 빌드 생성 (버전 자동 증가)
 3. ✅ 서명 및 entitlements 검증
@@ -85,6 +86,7 @@ npm run deploy:testflight
 6. ✅ 각 단계마다 macOS 알림으로 진행 상황 표시
 
 **필수 요구사항:**
+
 - Apple Developer 계정
 - Mac App Store Distribution 인증서
 - Provisioning Profile (`build/NeowFocus_Mac_App_Store.provisionprofile`)
@@ -160,7 +162,7 @@ React Context API를 사용하여 상태를 관리합니다:
 
 - `/` - 작업 입력 페이지
 - `/focus` - 타이머 실행 페이지
-- `/minimize_focus` - 미니 뷰 모드
+- `/tiny_window` - 미니 뷰 모드
 
 ### Path Aliases
 
