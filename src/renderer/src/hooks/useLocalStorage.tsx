@@ -4,7 +4,7 @@ import { LocalStorageValue } from '@renderer/types/task'
 export function useLocalStorage<T>(
   key: string,
   initialValue: T
-): [LocalStorageValue<T>, (newValue: T) => void] {
+): [LocalStorageValue<T>, (newValue: T | ((prev: T) => T)) => void] {
   const [value, setValue] = useState<LocalStorageValue<T>>(() => {
     try {
       const storedValue = localStorage.getItem(key)
@@ -18,10 +18,11 @@ export function useLocalStorage<T>(
     return initialValue
   })
 
-  const setStoredValue = (newValue: T) => {
+  const setStoredValue = (newValue: T | ((prev: T) => T)) => {
     try {
-      localStorage.setItem(key, JSON.stringify(newValue))
-      setValue(newValue)
+      const valueToStore = newValue instanceof Function ? newValue(value as T) : newValue
+      localStorage.setItem(key, JSON.stringify(valueToStore))
+      setValue(valueToStore)
     } catch (error) {
       console.error('Error storing data in localStorage:', error)
     }

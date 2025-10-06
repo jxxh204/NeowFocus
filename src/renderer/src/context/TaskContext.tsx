@@ -1,4 +1,4 @@
-import { createContext, useContext, useRef } from 'react'
+import { createContext, useContext, useRef, useCallback } from 'react'
 import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
 
 export type TaskStatus = 'idle' | 'play' | 'end'
@@ -9,6 +9,7 @@ export type Task = {
   taskDuration: number
   fullDuration: number
   taskStatus: TaskStatus
+  sessionCount: number
 }
 
 type TaskContextType = {
@@ -18,6 +19,7 @@ type TaskContextType = {
   updateTask: (duration: number, status?: TaskStatus) => void
   startTask: (taskName: string) => void
   reStartTask: () => void
+  incrementSession: () => void
 }
 
 const TaskContext = createContext<TaskContextType | null>(null)
@@ -30,7 +32,8 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     taskName: '', // 태스크 이름
     taskDuration: taskDuration.current, // 현재까지 진행된 시간
     fullDuration: taskDuration.current, // 태스크 총 시간
-    taskStatus: 'idle' // 태스크 상태
+    taskStatus: 'idle', // 태스크 상태
+    sessionCount: 1 // 세션 카운트
   })
 
   const resetCurrentTask = () => {
@@ -42,7 +45,8 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       taskName: '',
       taskDuration: 0,
       fullDuration: taskDuration.current,
-      taskStatus: 'idle'
+      taskStatus: 'idle',
+      sessionCount: 1
     })
   }
 
@@ -55,7 +59,8 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       taskName: currentTask?.taskName ?? '',
       taskDuration: currentTask?.fullDuration ?? 0,
       fullDuration: currentTask?.fullDuration ?? 0,
-      taskStatus: 'play'
+      taskStatus: 'play',
+      sessionCount: currentTask?.sessionCount ?? 1
     })
   }
 
@@ -68,21 +73,34 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       taskName: taskName,
       taskDuration: currentTask?.fullDuration ?? 0,
       fullDuration: currentTask?.fullDuration ?? 0,
-      taskStatus: 'play'
+      taskStatus: 'play',
+      sessionCount: 1
     })
   }
 
-  const updateTask = (duration: number, status?: TaskStatus) => {
+  const incrementSession = useCallback(() => {
     if (process.env.NODE_ENV === 'development') {
-      console.log('updateTask', duration)
+      console.log('incrementSession')
     }
-    const updatedTask = {
-      ...currentTask,
-      taskDuration: duration,
-      taskStatus: status ?? currentTask?.taskStatus ?? 'idle'
-    }
-    setCurrentTask(updatedTask as Task)
-  }
+    setCurrentTask((prevTask: Task) => ({
+      ...prevTask,
+      sessionCount: Math.min((prevTask.sessionCount || 1) + 1, 1000)
+    }))
+  }, [setCurrentTask])
+
+  const updateTask = useCallback(
+    (duration: number, status?: TaskStatus) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('updateTask', duration)
+      }
+      setCurrentTask((prevTask: Task) => ({
+        ...prevTask,
+        taskDuration: duration,
+        taskStatus: status ?? prevTask.taskStatus
+      }))
+    },
+    [setCurrentTask]
+  )
 
   return (
     <TaskContext.Provider
@@ -92,7 +110,8 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         resetCurrentTask,
         updateTask,
         startTask,
-        reStartTask
+        reStartTask,
+        incrementSession
       }}
     >
       {children}
