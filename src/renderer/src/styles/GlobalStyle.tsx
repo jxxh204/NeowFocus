@@ -7,7 +7,8 @@ const GlobalStyle = createGlobalStyle`
   body {
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255);
+    background: transparent;
+    -webkit-app-region: drag;
   }
   #root {
     position: relative;
@@ -15,16 +16,16 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
     top: 0;
     left: 0;
-    /* 테마 적용할때 제거 */
-    /* background-size: cover; */
-    
+    background: transparent;
+
     font-family: "Pretendard-Regular";
   }
   .App {
     /* width: 100%; */
     display: flex;
     flex-direction: column;
-    padding:12px;
+    width: 100%;
+    height: 100%;
     /* gap: ${({ theme }) => theme.size.gap}; */
   }
   html, body, div, span, applet, object, iframe,
