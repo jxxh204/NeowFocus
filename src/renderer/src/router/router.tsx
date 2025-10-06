@@ -1,14 +1,15 @@
 import { FocusPage } from '@renderer/page/focus'
 import InputPage from '@renderer/page/input'
-import MiniMizeFocus from '@renderer/page/minimizeFocus'
+import { TinyWindowPage } from '@renderer/page/tinyWindow'
 import { Route, Routes } from 'react-router-dom'
+import { ROUTES } from '@renderer/constants'
 
 function Router() {
   return (
     <Routes>
-      <Route path="/" element={<InputPage />} />
-      <Route path="/focus" element={<FocusPage />} />
-      <Route path="/minimize_focus" element={<MiniMizeFocus />} />
+      <Route path={ROUTES.INPUT} element={<InputPage />} />
+      <Route path={ROUTES.FOCUS} element={<FocusPage />} />
+      <Route path={ROUTES.TINY_WINDOW} element={<TinyWindowPage />} />
     </Routes>
   )
 }
