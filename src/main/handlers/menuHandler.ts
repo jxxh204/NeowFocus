@@ -88,6 +88,7 @@ export const setupApplicationMenu = (): void => {
       submenu: [
         { label: '최소화', accelerator: 'Cmd+M', role: 'minimize' },
         { label: '확대/축소', role: 'zoom' },
+        { label: '닫기', accelerator: 'Cmd+W', role: 'close' },
         { type: 'separator' },
         { label: '앞으로 가져오기', role: 'front' }
       ]
