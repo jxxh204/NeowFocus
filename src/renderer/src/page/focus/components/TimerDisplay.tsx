@@ -90,20 +90,25 @@ const PauseOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
   border-radius: 50%;
 `
 
 const PlayButton = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
+  height: 24px;
+  padding: 0 6px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
 `
 
 const PlayLabel = styled.span`
   font-size: 10px;
+  font-weight: 400;
+  line-height: 14px;
   color: #ffffff;
 `
 

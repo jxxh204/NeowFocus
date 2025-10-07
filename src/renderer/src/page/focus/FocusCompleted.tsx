@@ -10,17 +10,25 @@ import Icon from '@renderer/component/Icon'
 
 export default function FocusCompleted(): JSX.Element {
   const navigate = useNavigate()
-  const { currentTask, resetCurrentTask, reStartTask, incrementSession } = useTaskContext()
+  const { currentTask, resetCurrentTask, reStartTask, saveTaskToList, groupedTaskList } =
+    useTaskContext()
+
+  // 현재 작업의 누적 반복 회차 계산
+  const getCurrentSessionCount = () => {
+    const group = groupedTaskList.find((g) => g.taskName === currentTask.taskName)
+    return group ? group.totalCount + 1 : 1
+  }
 
   // 이벤트 핸들러: 새 작업 시작
   const handleNewTask = () => {
+    saveTaskToList()
     resetCurrentTask()
     navigate('/')
   }
 
   // 이벤트 핸들러: 같은 작업 반복
   const handleRepeat = () => {
-    incrementSession()
+    saveTaskToList()
     reStartTask()
   }
 
@@ -40,7 +48,7 @@ export default function FocusCompleted(): JSX.Element {
         </TaskNameBox>
         <TimerWrapper>
           <TimerCompletion
-            sessionCount={currentTask?.sessionCount || 1}
+            sessionCount={getCurrentSessionCount()}
             onNewTask={handleNewTask}
             onRepeat={handleRepeat}
           />
@@ -66,6 +74,8 @@ const TaskNameBox = styled.div`
   align-items: center;
   width: 292px;
   height: 88px;
+  padding: 10px;
+  box-sizing: border-box;
   background: rgba(187, 187, 187, 0.04);
   border-radius: 8px;
 `

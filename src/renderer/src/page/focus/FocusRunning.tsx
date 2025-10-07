@@ -117,6 +117,8 @@ const TaskNameBox = styled.div`
   align-items: center;
   width: 292px;
   height: 88px;
+  padding: 10px;
+  box-sizing: border-box;
   background: rgba(187, 187, 187, 0.04);
   border-radius: 8px;
 `
