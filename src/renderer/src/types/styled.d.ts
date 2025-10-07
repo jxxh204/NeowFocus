@@ -8,6 +8,7 @@ declare module 'styled-components' {
       clickColor: string
       primary: {
         500: string
+        400: string
         300: string
       }
       gray: {
@@ -15,6 +16,8 @@ declare module 'styled-components' {
         400: string
         300: string
       }
+      black: string
+      white: string
       container: {
         background: string
         border: string
@@ -23,6 +26,8 @@ declare module 'styled-components' {
         primary: string
         secondary: string
         disabled: string
+        light: string
+        muted: string
       }
       input: {
         background: string
@@ -32,11 +37,24 @@ declare module 'styled-components' {
         hover: string
         active: string
         iconHover: string
+        disabled: {
+          background: string
+          text: string
+          border: string
+        }
+        ghost: {
+          hover: string
+          hoverBorder: string
+        }
       }
       Timer: {
         progress: string
         background: string
         paused: string
+      }
+      toast: {
+        background: string
+        border: string
       }
     }
     border: {
