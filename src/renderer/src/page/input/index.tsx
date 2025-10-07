@@ -17,12 +17,12 @@ function InputPage() {
     navigate(ROUTES.FOCUS)
   }
 
-  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value)
   }
 
   return (
-    <Container>
+    <Container width={400}>
       <Container.Top height={WINDOW_SIZE.TOP_SECTION_HEIGHT}>
         <Icon name="cat_face" alt="cat" size={24} />
         <MinimizeButton />
