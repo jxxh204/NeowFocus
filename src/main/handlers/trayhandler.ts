@@ -1,5 +1,6 @@
 import { nativeImage, Tray, Menu, BrowserWindow, app } from 'electron'
 import path from 'path'
+import { APP_INFO } from '../constants'
 
 export const createTray = (mainWindow: BrowserWindow): Tray => {
   // 프로덕션과 개발 환경에서 다른 경로 사용
@@ -17,18 +18,32 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
 
   const tray = new Tray(icon)
 
-  tray.setToolTip('냐우포커스')
+  tray.setToolTip(APP_INFO.DISPLAY_NAME)
 
   // 컨텍스트 메뉴 생성
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: '냐우포커스 열기',
+      label: `${APP_INFO.DISPLAY_NAME} 열기`,
       click: () => {
+        if (!mainWindow || mainWindow.isDestroyed()) {
+          console.log('Window was destroyed, cannot show')
+          return
+        }
         mainWindow.show()
         if (mainWindow.isMinimized()) {
           mainWindow.restore()
         }
         mainWindow.focus()
+      }
+    },
+    {
+      label: '가리기',
+      click: () => {
+        if (!mainWindow || mainWindow.isDestroyed()) {
+          console.log('Window was destroyed, cannot hide')
+          return
+        }
+        mainWindow.hide()
       }
     },
     {
@@ -44,7 +59,23 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
 
   // 오른쪽 클릭 시에만 컨텍스트 메뉴 표시 (macOS에서는 Ctrl+클릭도 포함)
   tray.on('right-click', (_event, bounds) => {
-    tray.popUpContextMenu(contextMenu, bounds)
+    // 메뉴가 창 뒤로 가지 않도록 창의 레벨을 잠시 낮춤
+    if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
+      const currentLevel = mainWindow.isAlwaysOnTop()
+      mainWindow.setAlwaysOnTop(false)
+
+      // 메뉴 표시
+      tray.popUpContextMenu(contextMenu, bounds)
+
+      // 메뉴가 닫힌 후 원래 레벨로 복구
+      setTimeout(() => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.setAlwaysOnTop(currentLevel)
+        }
+      }, 100)
+    } else {
+      tray.popUpContextMenu(contextMenu, bounds)
+    }
   })
 
   return tray
