@@ -15,7 +15,8 @@ export const ANIMATION = {
 // 윈도우 크기 상수
 export const WINDOW_SIZE = {
   DEFAULT_WIDTH: 402,
-  MIN_HEIGHT: 158,
+  DEFAULT_HEIGHT: 162, // input 페이지: 30 + 84 + 48 = 162
+  MIN_HEIGHT: 162,
   MAX_HEIGHT: 900,
   TOP_SECTION_HEIGHT: 30,
   BODY_SECTION_HEIGHT: 84,
