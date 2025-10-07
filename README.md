@@ -110,9 +110,14 @@ pnpm run build:mas
 ## 🆘 Support
 
 If you encounter any issues or have questions:
-- 📧 Email: support@neowfocus.app
-- 🐛 Report bugs: [GitHub Issues](https://github.com/your-repo/NeowFocus/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/your-repo/NeowFocus/discussions)
+
+- 📧 Email: <ahhancom@gmail.com>
+- 🐛 Report bugs: [GitHub Issues](https://github.com/jxxh204/NeowFocus/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/jxxh204/NeowFocus/discussions)
+
+## 🔐 Privacy Policy
+
+- [Privacy Policy](PRIVACY_POLICY_URL) - Your link here
 
 ## 📋 System Requirements
 
