@@ -4,14 +4,19 @@ interface CircularTimerProps {
   percentage: number
   size?: number
   paused?: boolean
+  color?: 'white' | 'green'
+  strokeWidth?: number
+  handStrokeWidth?: number
 }
 
 export default function CircularTimer({
   percentage,
   size = 64,
-  paused = false
+  paused = false,
+  color = 'white',
+  strokeWidth = 6,
+  handStrokeWidth = 6
 }: CircularTimerProps) {
-  const strokeWidth = 6
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   // 흰줄이 줄어들어야 함: percentage가 증가하면 offset이 감소 (남은 부분만 표시)
@@ -50,6 +55,7 @@ export default function CircularTimer({
         strokeLinecap="round"
         transform={`rotate(-90 ${centerX} ${centerY})`}
         $paused={paused}
+        $color={color}
       />
       {/* 시계바늘 */}
       <ClockHand
@@ -57,9 +63,10 @@ export default function CircularTimer({
         y1={centerY}
         x2={handEndX}
         y2={handEndY}
-        strokeWidth={6}
+        strokeWidth={handStrokeWidth}
         strokeLinecap="round"
         $paused={paused}
+        $color={color}
       />
     </svg>
   )
@@ -69,14 +76,20 @@ const Circle = styled.circle`
   stroke: ${({ theme }) => theme.color.Timer.background};
 `
 
-const ProgressCircle = styled.circle<{ $paused: boolean }>`
-  stroke: ${({ theme, $paused }) => ($paused ? theme.color.Timer.paused : theme.color.Timer.progress)};
+const ProgressCircle = styled.circle<{ $paused: boolean; $color: 'white' | 'green' }>`
+  stroke: ${({ theme, $paused, $color }) => {
+    if ($paused) return theme.color.Timer.paused
+    return $color === 'green' ? theme.color.primary[500] : theme.color.Timer.progress
+  }};
   transition:
     stroke-dashoffset 0.3s ease,
     stroke 0.3s ease;
 `
 
-const ClockHand = styled.line<{ $paused: boolean }>`
-  stroke: ${({ theme, $paused }) => ($paused ? theme.color.Timer.paused : theme.color.Timer.progress)};
+const ClockHand = styled.line<{ $paused: boolean; $color: 'white' | 'green' }>`
+  stroke: ${({ theme, $paused, $color }) => {
+    if ($paused) return theme.color.Timer.paused
+    return $color === 'green' ? theme.color.primary[500] : theme.color.Timer.progress
+  }};
   transition: stroke 0.3s ease;
 `

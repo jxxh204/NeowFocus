@@ -128,7 +128,7 @@ const TimeText = styled.div`
   height: 20px;
   font-size: 12px;
   font-weight: 500;
-  color: #858585;
+  color: #FFFFFF;
   text-align: center;
   line-height: 20px;
 `
