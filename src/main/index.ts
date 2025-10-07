@@ -17,6 +17,7 @@ function createWindow(): BrowserWindow {
     height: WINDOW_SIZE.DEFAULT_HEIGHT,
     minHeight: WINDOW_SIZE.MIN_HEIGHT,
     maxHeight: WINDOW_SIZE.MAX_HEIGHT,
+    show: false, // 초기 위치 설정 후 수동으로 표시
     hasShadow: WINDOW_OPTIONS.HAS_SHADOW,
     frame: WINDOW_OPTIONS.FRAME,
     fullscreenable: WINDOW_OPTIONS.FULLSCREENABLE,
@@ -37,8 +38,6 @@ function createWindow(): BrowserWindow {
     },
     alwaysOnTop: WINDOW_OPTIONS.ALWAYS_ON_TOP
   })
-
-  // Don't show window here - wait for position to be set
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
