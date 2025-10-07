@@ -26,9 +26,10 @@ const ContainerForm = styled.form`
 type ContainerProps = {
   children: React.ReactNode
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void
+  width?: number
 }
 
-const Container = ({ children, onSubmit }: ContainerProps) => {
+const Container = ({ children, onSubmit, width }: ContainerProps) => {
   const containerRef = useRef<HTMLFormElement>(null)
   const { setWindowSize } = useWindowSize()
 
@@ -44,10 +45,14 @@ const Container = ({ children, onSubmit }: ContainerProps) => {
       const totalHeight = topHeight + bodyHeight + bottomHeight
 
       if (totalHeight > 0) {
-        setWindowSize(totalHeight)
+        if (width !== undefined) {
+          setWindowSize({ width, height: totalHeight })
+        } else {
+          setWindowSize(totalHeight)
+        }
       }
     }
-  }, [children, setWindowSize])
+  }, [children, width, setWindowSize])
 
   return (
     <ContainerForm ref={containerRef} onSubmit={onSubmit}>
