@@ -1,5 +1,7 @@
+import Icon from '@renderer/component/Icon'
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
+import { ANIMATION } from '@renderer/constants'
 
 interface TimerCompletionProps {
   sessionCount: number
@@ -13,7 +15,7 @@ export default function TimerCompletion({ sessionCount }: TimerCompletionProps) 
   useEffect(() => {
     const interval = setInterval(() => {
       setPawColor((prev) => (prev + 1) % 2)
-    }, 300)
+    }, ANIMATION.PAW_COLOR_CHANGE_INTERVAL)
 
     return () => clearInterval(interval)
   }, [])
@@ -23,7 +25,7 @@ export default function TimerCompletion({ sessionCount }: TimerCompletionProps) 
   return (
     <Container>
       <TimerCircle $color={pawColor}>
-        <PawIcon>🐾</PawIcon>
+        <Icon name="paw_white" size={28} />
       </TimerCircle>
       <SessionCount>{displayCount}회차</SessionCount>
     </Container>
@@ -47,11 +49,7 @@ const TimerCircle = styled.div<{ $color: number }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 300ms linear;
-`
-
-const PawIcon = styled.div`
-  font-size: 28px;
+  transition: background-color ${ANIMATION.PAW_TRANSITION_DURATION}ms linear;
 `
 
 const SessionCount = styled.div`

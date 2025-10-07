@@ -1,6 +1,16 @@
 import styled from 'styled-components'
 
-type IconName = 'cat_face' | 'timer' | 'play' | 'pause' | 'close' | 'bubble' | 'icon_mini' | 'drag'
+type IconName =
+  | 'cat_face'
+  | 'timer'
+  | 'play'
+  | 'pause'
+  | 'close'
+  | 'bubble'
+  | 'icon_mini'
+  | 'drag'
+  | 'paw_white'
+  | 'plus_box'
 
 interface IconProps {
   name?: IconName
@@ -24,7 +34,9 @@ const ICON_MAP: Record<IconName, string> = {
   close: '/assets/icon_close.svg',
   bubble: '/assets/icon_bubble_focus.svg',
   icon_mini: '/assets/icon_mini.svg',
-  drag: '/assets/icon_drag.svg'
+  drag: '/assets/icon_drag.svg',
+  paw_white: '/assets/icon_paw_white.svg',
+  plus_box: 'assets/icon_plus_box.svg'
 }
 
 const Icon = ({ name, src, alt = '', size = 16, width, height }: IconProps) => {

@@ -33,19 +33,20 @@ export default function TimerDisplay({
 
   const isPaused = timerState === 'pause'
   const isPlaying = timerState === 'play'
-  const shouldShowMenu = isPlaying && isHovering
+  const shouldShowPlayMenu = isPaused && isHovering
+  const shouldShowPauseMenu = isPlaying && isHovering
 
   return (
     <TimerWrapper
       onClick={handleTimerClick}
       $clickable={isPaused}
-      onMouseEnter={() => isPlaying && setIsHovering(true)}
+      onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       <TimerCircleWrapper>
         <CircularTimer percentage={percentage} size={64} paused={isPaused} />
 
-        {isPaused && (
+        {shouldShowPlayMenu && (
           <PauseOverlay>
             <PlayButton>
               <Icon name="play" size={14} />
@@ -54,7 +55,7 @@ export default function TimerDisplay({
           </PauseOverlay>
         )}
 
-        {shouldShowMenu && onPause && onStop && (
+        {shouldShowPauseMenu && onPause && onStop && (
           <MenuOverlay>
             <TimerMenu onPause={onPause} onStop={onStop} />
           </MenuOverlay>

@@ -61,7 +61,9 @@ export function TinyWindowPage(): JSX.Element {
       <TimerArea>
         <CircularTimer percentage={percentage} size={36} paused={isPaused} />
       </TimerArea>
-      <Icon name="drag" size={36} />
+      <DragHandle>
+        <Icon name="drag" size={36} />
+      </DragHandle>
     </Container>
   )
 }
@@ -76,10 +78,19 @@ const Container = styled.div`
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
+  -webkit-app-region: no-drag;
 
   &:hover {
     background: rgba(255, 255, 255, 0.03);
   }
+`
+
+const DragHandle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-app-region: drag;
+  cursor: move;
 `
 
 const TaskNameArea = styled.div<{ $centered: boolean }>`
@@ -88,17 +99,13 @@ const TaskNameArea = styled.div<{ $centered: boolean }>`
   display: flex;
   align-items: center;
   justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-start')};
-  cursor: pointer;
+  padding: 0 12px;
   overflow: hidden;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
 `
 
 const TaskName = styled.div`
   color: ${({ theme }) => theme.color.text.primary};
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 400;
   line-height: 20px;
   white-space: nowrap;
@@ -113,9 +120,4 @@ const TimerArea = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-  }
 `

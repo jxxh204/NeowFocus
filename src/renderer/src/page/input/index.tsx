@@ -18,7 +18,14 @@ function InputPage() {
   }
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value)
+    const newValue = e.target.value
+    // 줄바꿈(\n) 개수 세기
+    const newlineCount = (newValue.match(/\n/g) || []).length
+
+    // 줄바꿈이 1개 이하일 때만 허용
+    if (newlineCount <= 1) {
+      setText(newValue)
+    }
   }
 
   return (
