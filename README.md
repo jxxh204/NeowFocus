@@ -4,12 +4,14 @@
 
 ![NeowFocus](./resources/icon.png)
 
-**귀여운 고양이와 함께하는 뽀모도로 타이머**
+**A Pomodoro Timer with Cute Cat Companion**
 
 [![Electron](https://img.shields.io/badge/Electron-28.x-47848F?logo=electron)](https://www.electronjs.org/)
 [![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Mac App Store](https://img.shields.io/badge/Mac_App_Store-Ready-0D96F6?logo=apple)](https://www.apple.com/app-store/)
+
+**[English](#)** | **[한국어](./README.ko.md)**
 
 </div>
 
@@ -18,8 +20,6 @@
 ## 🎯 Overview
 
 NeowFocus is a Pomodoro timer application for macOS that helps users maintain focus and boost productivity. Complete focus sessions and collect cute cat paw stamps as visual rewards for your accomplishments!
-
-**NeowFocus는 macOS용 뽀모도로 타이머 애플리케이션입니다.** 집중 세션을 완료할 때마다 귀여운 고양이 발바닥 도장을 찍어가며 생산적인 하루를 만들어보세요!
 
 ## ✨ Key Features
 
