@@ -2,6 +2,7 @@ import Icon from '@renderer/component/Icon'
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { ANIMATION } from '@renderer/constants'
+import theme from '@renderer/styles/theme'
 
 interface TimerCompletionProps {
   sessionCount: number
@@ -39,7 +40,7 @@ const Container = styled.div`
   gap: 4px;
 `
 
-const colors = ['#00FF85', '#1FAA67']
+const colors = [theme.color.primary[500], theme.color.primary[400]]
 
 const TimerCircle = styled.div<{ $color: number }>`
   width: 64px;
@@ -55,6 +56,6 @@ const TimerCircle = styled.div<{ $color: number }>`
 const SessionCount = styled.div`
   font-size: 12px;
   font-weight: 500;
-  color: #858585;
+  color: ${theme.color.text.muted};
   text-align: center;
 `

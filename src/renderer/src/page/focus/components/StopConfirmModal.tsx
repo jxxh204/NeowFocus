@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import theme from '@renderer/styles/theme'
 
 interface StopConfirmModalProps {
   isOpen: boolean
@@ -53,7 +54,7 @@ const ModalContainer = styled.div`
 const ModalText = styled.div`
   font-family: 'Pretendard', sans-serif;
   font-size: 14px;
-  color: #ffffff;
+  color: ${theme.color.white};
   text-align: center;
   line-height: 22px;
   white-space: pre;
@@ -72,7 +73,7 @@ const ModalButton = styled.button<{ $primary?: boolean }>`
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   border-right: ${({ $primary }) => ($primary ? '1px' : '1px')} solid rgba(255, 255, 255, 0.1);
-  color: #f5f5f5;
+  color: ${theme.color.text.light};
   font-family: 'Pretendard', sans-serif;
   font-size: 12px;
   font-weight: ${({ $primary }) => ($primary ? '700' : '500')};

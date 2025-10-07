@@ -50,6 +50,13 @@ export const useTimer = (
 
         if (prev <= 1) {
           setTimerState('end')
+          // 알림 표시 및 창 띄우기
+          if (window.electron?.showNotification) {
+            window.electron.showNotification('작업 완료! 🎉', '25분 집중 시간이 끝났습니다.')
+          }
+          if (window.electron?.showWindow) {
+            window.electron.showWindow()
+          }
         }
         return newTime
       })

@@ -11,6 +11,8 @@ declare global {
       setWindowPosition: (x: number, y: number) => void
       getWindowPosition: () => Promise<{ x: number; y: number }>
       minimizeWindow: () => void
+      showNotification: (title: string, body: string) => void
+      showWindow: () => void
     }
     api: unknown
   }

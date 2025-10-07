@@ -7,6 +7,7 @@ import { useTimer } from '../focus/hooks/useTimer'
 import { TIME, WINDOW_SIZE, ROUTES } from '@renderer/constants'
 import CircularTimer from '@renderer/component/CircularTimer'
 import Icon from '@renderer/component/Icon'
+import theme from '@renderer/styles/theme'
 
 export function TinyWindowPage(): JSX.Element {
   const navigate = useNavigate()
@@ -98,7 +99,7 @@ const TaskNameArea = styled.div`
 `
 
 const TaskName = styled.div`
-  color: #ffffff;
+  color: ${theme.color.white};
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;

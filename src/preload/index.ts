@@ -22,6 +22,12 @@ const windowAPI = {
   },
   minimizeWindow: () => {
     ipcRenderer.send('window-minimize')
+  },
+  showNotification: (title: string, body: string) => {
+    ipcRenderer.send('SHOW_NOTIFICATION', { title, body })
+  },
+  showWindow: () => {
+    ipcRenderer.send('SHOW_WINDOW')
   }
 }
 
