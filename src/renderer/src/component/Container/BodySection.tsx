@@ -7,7 +7,7 @@ const StyledBodySection = styled.div<{ $height?: number; $padding?: string }>`
   align-items: center;
   gap: 8px;
   padding: ${({ $padding }) => $padding || '10px'};
-  border-bottom: 1px solid ${({ theme }) => theme.color.container.border};
+  box-shadow: inset 0 -1px 0 0 ${({ theme }) => theme.color.container.border};
   background: transparent;
   box-sizing: border-box;
 `
