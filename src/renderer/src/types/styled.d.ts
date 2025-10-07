@@ -36,6 +36,7 @@ declare module 'styled-components' {
       Timer: {
         progress: string
         background: string
+        paused: string
       }
     }
     border: {
