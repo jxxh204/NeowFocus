@@ -150,10 +150,16 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
 
     // 완료된 task만 저장
     if (currentTask.taskStatus === 'end' && currentTask.taskName) {
-      // 같은 이름의 task 개수 계산 (전체 누적)
-      const sameTasks = taskList.filter((task) => task.taskName === currentTask.taskName)
+      // 오늘 날짜 (YYYY-MM-DD 형식)
+      const today = new Date().toISOString().split('T')[0]
 
-      // sessionCount 업데이트 (누적 반복 횟수)
+      // 같은 날짜, 같은 이름의 task 개수 계산
+      const sameTasks = taskList.filter((task) => {
+        const taskDate = task.date ? new Date(task.date).toISOString().split('T')[0] : ''
+        return task.taskName === currentTask.taskName && taskDate === today
+      })
+
+      // sessionCount 업데이트 (당일 반복 횟수)
       const updatedTask = {
         ...currentTask,
         sessionCount: sameTasks.length + 1

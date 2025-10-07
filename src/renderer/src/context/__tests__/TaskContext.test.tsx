@@ -152,15 +152,212 @@ describe('TaskContext', () => {
     })
   })
 
+  describe('saveTaskToList', () => {
+    it('should save completed task to task list', () => {
+      const { result } = renderHook(() => useTaskContext(), { wrapper })
+
+      act(() => {
+        result.current.startTask('Test Task')
+      })
+
+      act(() => {
+        result.current.updateTask(0, 'end')
+      })
+
+      act(() => {
+        result.current.saveTaskToList()
+      })
+
+      expect(result.current.taskList).toHaveLength(1)
+      expect(result.current.taskList[0].taskName).toBe('Test Task')
+      expect(result.current.taskList[0].sessionCount).toBe(1)
+    })
+
+    it('should calculate session count based on same date and same task name', () => {
+      const { result } = renderHook(() => useTaskContext(), { wrapper })
+      const today = new Date().toISOString()
+
+      // First session
+      act(() => {
+        result.current.startTask('Test Task')
+      })
+
+      act(() => {
+        result.current.updateTask(0, 'end')
+      })
+
+      act(() => {
+        result.current.saveTaskToList()
+      })
+
+      expect(result.current.taskList[0].sessionCount).toBe(1)
+
+      // Second session (same day, same task)
+      act(() => {
+        result.current.reStartTask()
+      })
+
+      act(() => {
+        result.current.updateTask(0, 'end')
+      })
+
+      act(() => {
+        result.current.saveTaskToList()
+      })
+
+      expect(result.current.taskList).toHaveLength(2)
+      expect(result.current.taskList[1].sessionCount).toBe(2)
+
+      // Third session (same day, same task)
+      act(() => {
+        result.current.reStartTask()
+      })
+
+      act(() => {
+        result.current.updateTask(0, 'end')
+      })
+
+      act(() => {
+        result.current.saveTaskToList()
+      })
+
+      expect(result.current.taskList).toHaveLength(3)
+      expect(result.current.taskList[2].sessionCount).toBe(3)
+    })
+
+    it('should reset session count for different task name on same day', () => {
+      const { result } = renderHook(() => useTaskContext(), { wrapper })
+
+      // First task - first session
+      act(() => {
+        result.current.startTask('Task A')
+      })
+
+      act(() => {
+        result.current.updateTask(0, 'end')
+      })
+
+      act(() => {
+        result.current.saveTaskToList()
+      })
+
+      expect(result.current.taskList[0].sessionCount).toBe(1)
+
+      // First task - second session
+      act(() => {
+        result.current.reStartTask()
+      })
+
+      act(() => {
+        result.current.updateTask(0, 'end')
+      })
+
+      act(() => {
+        result.current.saveTaskToList()
+      })
+
+      expect(result.current.taskList[1].sessionCount).toBe(2)
+
+      // Different task - should start from 1
+      act(() => {
+        result.current.startTask('Task B')
+      })
+
+      act(() => {
+        result.current.updateTask(0, 'end')
+      })
+
+      act(() => {
+        result.current.saveTaskToList()
+      })
+
+      expect(result.current.taskList).toHaveLength(3)
+      expect(result.current.taskList[2].sessionCount).toBe(1)
+    })
+
+    it('should reset session count for same task name on different day', () => {
+      const { result } = renderHook(() => useTaskContext(), { wrapper })
+
+      // Mock yesterday's date
+      const yesterday = new Date()
+      yesterday.setDate(yesterday.getDate() - 1)
+
+      // Create a task from yesterday
+      const yesterdayTask = {
+        id: 'test-id-1',
+        date: yesterday.toISOString(),
+        taskName: 'Test Task',
+        taskDuration: 0,
+        fullDuration: 1500,
+        taskStatus: 'end' as const,
+        sessionCount: 2 // Had 2 sessions yesterday
+      }
+
+      // Manually add yesterday's task to localStorage
+      localStorage.setItem('taskList', JSON.stringify([yesterdayTask]))
+
+      // Re-render to load the saved task list
+      const { result: newResult } = renderHook(() => useTaskContext(), { wrapper })
+
+      expect(newResult.current.taskList).toHaveLength(1)
+      expect(newResult.current.taskList[0].sessionCount).toBe(2)
+
+      // Start same task today
+      act(() => {
+        newResult.current.startTask('Test Task')
+      })
+
+      act(() => {
+        newResult.current.updateTask(0, 'end')
+      })
+
+      act(() => {
+        newResult.current.saveTaskToList()
+      })
+
+      // Should start from 1 for today (not 3)
+      expect(newResult.current.taskList).toHaveLength(2)
+      expect(newResult.current.taskList[1].sessionCount).toBe(1)
+    })
+
+    it('should not save task if status is not end', () => {
+      const { result } = renderHook(() => useTaskContext(), { wrapper })
+
+      act(() => {
+        result.current.startTask('Test Task')
+      })
+
+      act(() => {
+        result.current.saveTaskToList()
+      })
+
+      expect(result.current.taskList).toHaveLength(0)
+    })
+
+    it('should not save task if taskName is empty', () => {
+      const { result } = renderHook(() => useTaskContext(), { wrapper })
+
+      act(() => {
+        result.current.updateTask(0, 'end')
+      })
+
+      act(() => {
+        result.current.saveTaskToList()
+      })
+
+      expect(result.current.taskList).toHaveLength(0)
+    })
+  })
+
   describe('error handling', () => {
     it('should throw error when useTaskContext is used outside provider', () => {
       // Suppress console.error for this test
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
-      
+
       expect(() => {
         renderHook(() => useTaskContext())
       }).toThrow('useTaskContext must be used within a TaskProvider')
-      
+
       consoleErrorSpy.mockRestore()
     })
   })
