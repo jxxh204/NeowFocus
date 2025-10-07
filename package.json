@@ -1,7 +1,7 @@
 {
   "name": "neow-focus-vite",
   "productName": "NeowFocus",
-  "version": "0.1.112",
+  "version": "0.1.118",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -17,7 +17,12 @@
     "build": "electron-vite build",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "build:mas": "pnpm run build && electron-forge package --arch=universal --platform=mas",
+    "version:major": "node scripts/increment-version.js major",
+    "version:minor": "node scripts/increment-version.js minor",
+    "version:patch": "node scripts/increment-version.js patch",
+    "build:mas": "node scripts/increment-version.js patch && pnpm run build && electron-forge package --arch=universal --platform=mas",
+    "build:mas:minor": "node scripts/increment-version.js minor && pnpm run build && electron-forge package --arch=universal --platform=mas",
+    "build:mas:major": "node scripts/increment-version.js major && pnpm run build && electron-forge package --arch=universal --platform=mas",
     "build:pkg": "rm -rf out/ && pnpm run build:mas && electron-forge make --arch=universal --platform=mas",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -26,7 +31,6 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
-    "electron-updater": "^6.1.7",
     "react-router-dom": "^6.22.3",
     "styled-components": "^6.1.8",
     "uuid": "^13.0.0"

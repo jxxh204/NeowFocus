@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import theme from '../styles/theme'
 
 interface ToastProps {
   message: string
@@ -23,8 +24,8 @@ const ToastWrapper = styled.div`
 `
 
 const ToastContainer = styled.div`
-  background-color: #333;
-  color: white;
+  background-color: ${theme.color.toast.background};
+  color: ${theme.color.white};
   font-size: 12px;
   font-weight: 500;
   padding: 8px;
@@ -38,6 +39,6 @@ const Arrow = styled.div`
   height: 0;
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
-  border-left: 8px solid #333;
+  border-left: 8px solid ${theme.color.toast.border};
   margin-left: -4px;
 `

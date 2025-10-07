@@ -44,3 +44,25 @@ export const windowSizeChange = (mainWindow): void => {
     }
   })
 }
+
+export const notificationProtocol = (): void => {
+  ipcMain.on('SHOW_NOTIFICATION', (_e: Electron.IpcMainEvent, { title, body }) => {
+    const { Notification } = require('electron')
+    if (Notification.isSupported()) {
+      new Notification({
+        title: title,
+        body: body,
+        silent: false
+      }).show()
+    }
+  })
+}
+
+export const showWindowProtocol = (mainWindow): void => {
+  ipcMain.on('SHOW_WINDOW', () => {
+    if (mainWindow && !mainWindow.isVisible()) {
+      mainWindow.show()
+      mainWindow.focus()
+    }
+  })
+}

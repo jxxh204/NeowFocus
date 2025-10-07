@@ -4,7 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { handleWindow, showWindow } from './handlers/windowHandler'
 import { createTray } from './handlers/trayhandler'
 import { createDockMenu } from './handlers/dockHandler'
-import { windowSizeChange } from './IpcProtocol'
+import { windowSizeChange, notificationProtocol, showWindowProtocol } from './IpcProtocol'
 import { WINDOW_SIZE, APP_CONFIG, WINDOW_OPTIONS, SHORTCUTS, IPC_CHANNELS } from './constants'
 
 function createWindow(): BrowserWindow {
@@ -65,6 +65,8 @@ function createWindow(): BrowserWindow {
   mainWindow?.isDestroyed()
   // mouseIpcProtocol(mainWindow)
   windowSizeChange(mainWindow)
+  notificationProtocol()
+  showWindowProtocol(mainWindow)
 
   // Dock 메뉴 설정
   createDockMenu(mainWindow)

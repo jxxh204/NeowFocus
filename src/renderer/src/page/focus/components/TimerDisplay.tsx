@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import CircularTimer from '@renderer/component/CircularTimer'
 import Icon from '@renderer/component/Icon'
 import TimerMenu from './TimerMenu'
+import theme from '@renderer/styles/theme'
 
 interface TimerDisplayProps {
   percentage: number
@@ -109,7 +110,7 @@ const PlayLabel = styled.span`
   font-size: 10px;
   font-weight: 400;
   line-height: 14px;
-  color: #ffffff;
+  color: ${theme.color.white};
 `
 
 const MenuOverlay = styled.div`
@@ -128,7 +129,7 @@ const TimeText = styled.div`
   height: 20px;
   font-size: 12px;
   font-weight: 500;
-  color: #FFFFFF;
+  color: ${theme.color.white};
   text-align: center;
   line-height: 20px;
 `

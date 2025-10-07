@@ -1,7 +1,8 @@
 import styled from 'styled-components'
+import theme from '../styles/theme'
 
 const ButtonStyle = styled.input<{ width?: string; size?: string }>`
-  border: 1px solid #000000;
+  border: 1px solid ${theme.color.black};
   height: ${({ size }) => size};
   padding: 0 16px;
   box-shadow: none;
@@ -13,28 +14,28 @@ const ButtonStyle = styled.input<{ width?: string; size?: string }>`
 `
 
 const FilledButtonStyle = styled(ButtonStyle)`
-  background-color: #000000;
-  color: #ffffff;
+  background-color: ${theme.color.black};
+  color: ${theme.color.white};
   border: none;
 
   &:hover {
-    background-color: #000000;
-    color: #00ff85;
+    background-color: ${theme.color.black};
+    color: ${theme.color.primary[500]};
   }
   &:active {
-    background-color: #00ff85;
-    color: #000000;
+    background-color: ${theme.color.primary[500]};
+    color: ${theme.color.black};
   }
   &:disabled {
-    background-color: #e8e8e8;
-    color: #8d8d8d;
-    border: 1px solid #8d8d8d;
+    background-color: ${theme.color.button.disabled.background};
+    color: ${theme.color.button.disabled.text};
+    border: 1px solid ${theme.color.button.disabled.border};
     cursor: not-allowed;
   }
 `
 const WhiteFilledButtonStyle = styled(ButtonStyle)`
-  background-color: #ffffff;
-  color: #000000;
+  background-color: ${theme.color.white};
+  color: ${theme.color.black};
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.8);
@@ -43,33 +44,33 @@ const WhiteFilledButtonStyle = styled(ButtonStyle)`
     background-color: rgba(255, 255, 255, 0.5);
   }
   &:disabled {
-    background-color: #e8e8e8;
-    color: #8d8d8d;
-    border: 1px solid #8d8d8d;
+    background-color: ${theme.color.button.disabled.background};
+    color: ${theme.color.button.disabled.text};
+    border: 1px solid ${theme.color.button.disabled.border};
     cursor: not-allowed;
   }
 `
 
 const OutlinedButtonStyle = styled(ButtonStyle)`
-  background-color: #ffffff;
-  color: #000000;
+  background-color: ${theme.color.white};
+  color: ${theme.color.black};
 `
 const WhiteOutlinedButtonStyle = styled(ButtonStyle)`
   background-color: transparent;
-  color: #ffffff;
-  border: 1px solid #ffffff;
+  color: ${theme.color.white};
+  border: 1px solid ${theme.color.white};
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: ${theme.color.button.hover};
   }
   &:active {
-    background-color: #838383;
-    border: 1px solid #969696;
+    background-color: ${theme.color.button.ghost.hover};
+    border: 1px solid ${theme.color.button.ghost.hoverBorder};
   }
   &:disabled {
-    background-color: #e8e8e8;
-    color: #8d8d8d;
-    border: 1px solid #8d8d8d;
+    background-color: ${theme.color.button.disabled.background};
+    color: ${theme.color.button.disabled.text};
+    border: 1px solid ${theme.color.button.disabled.border};
     cursor: not-allowed;
   }
 `

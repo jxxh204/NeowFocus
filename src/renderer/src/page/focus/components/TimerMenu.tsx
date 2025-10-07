@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import Icon from '@renderer/component/Icon'
+import theme from '@renderer/styles/theme'
 
 interface TimerMenuProps {
   onPause: () => void
@@ -65,6 +66,6 @@ const MenuDivider = styled.div`
 
 const MenuLabel = styled.span`
   font-size: 10px;
-  color: #ffffff;
+  color: ${theme.color.white};
   white-space: nowrap;
 `
