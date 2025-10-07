@@ -23,6 +23,19 @@ const getWindowPosition = (tray, mainWindow): void | object => {
       return { x: x, y: y }
     }
   }
+
+  // Tray가 없을 경우 화면 중앙에 배치
+  if (mainWindow) {
+    const { screen } = require('electron')
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const { width, height } = primaryDisplay.workAreaSize
+    const windowBounds = mainWindow.getBounds()
+
+    const x = Math.round((width - windowBounds.width) / 2)
+    const y = Math.round((height - windowBounds.height) / 2)
+
+    return { x, y }
+  }
 }
 
 export const showWindow = (tray, mainWindow: BrowserWindow): void => {

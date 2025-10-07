@@ -38,9 +38,7 @@ function createWindow(): BrowserWindow {
     alwaysOnTop: WINDOW_OPTIONS.ALWAYS_ON_TOP
   })
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
+  // Don't show window here - wait for position to be set
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
@@ -59,7 +57,9 @@ function createWindow(): BrowserWindow {
   const tray = createTray(mainWindow)
   tray.on('click', toggleWindow)
   tray.on('double-click', toggleWindow)
-  mainWindow.once('show', () => {
+
+  // Set initial position and show window when ready
+  mainWindow.webContents.on('did-finish-load', () => {
     showWindow(tray, mainWindow)
   })
   mainWindow?.isDestroyed()

@@ -10,23 +10,25 @@ module.exports = {
     icon: path.join(__dirname, 'build', 'icon'),
     dir: './out',
 
-    // Mac App Store 서명 설정
-    osxSign: {
-      identity: 'Apple Distribution: JaeHwan Kim (L67FAG9382)',
-      platform: 'mas',
-      type: 'distribution',
-      provisioningProfile: path.join(__dirname, 'build', 'NeowFocus_Mac_App_Store.provisionprofile'),
-      optionsForFile: (filePath) => {
-        // Helper 앱들과 프레임워크에는 inherit entitlements 사용
-        const entitlements = filePath.includes('.app/')
-          ? path.join(__dirname, 'build', 'entitlements.mas.inherit.plist')
-          : path.join(__dirname, 'build', 'entitlements.mas.plist');
-        return {
-          hardenedRuntime: false,
-          entitlements
-        };
+    // Mac App Store 서명 설정 (MAS 플랫폼일 때만 적용됨)
+    ...(process.env.PLATFORM === 'mas' ? {
+      osxSign: {
+        identity: 'Apple Distribution: JaeHwan Kim (L67FAG9382)',
+        platform: 'mas',
+        type: 'distribution',
+        provisioningProfile: path.join(__dirname, 'build', 'NeowFocus_Mac_App_Store.provisionprofile'),
+        optionsForFile: (filePath) => {
+          // Helper 앱들과 프레임워크에는 inherit entitlements 사용
+          const entitlements = filePath.includes('.app/')
+            ? path.join(__dirname, 'build', 'entitlements.mas.inherit.plist')
+            : path.join(__dirname, 'build', 'entitlements.mas.plist');
+          return {
+            hardenedRuntime: false,
+            entitlements
+          };
+        },
       },
-    },
+    } : {}),
     osxNotarize: false,
 
     // Extended Info.plist
@@ -42,6 +44,8 @@ module.exports = {
     extraResource: [
       path.join(__dirname, 'build', 'compiled', 'Assets.car'),
       path.join(__dirname, 'build', 'compiled', 'AppIcon.icns'),
+      path.join(__dirname, 'resources', 'tray.png'),
+      path.join(__dirname, 'resources', 'tray@2x.png'),
     ],
 
     ignore: [/\.map$/],

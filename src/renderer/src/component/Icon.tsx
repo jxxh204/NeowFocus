@@ -27,16 +27,16 @@ const IconImage = styled.img<{ $width: number; $height: number }>`
 `
 
 const ICON_MAP: Record<IconName, string> = {
-  cat_face: '/assets/icon_cat_face.svg',
-  timer: '/assets/icon_timer.svg',
-  play: '/assets/icon_play.svg',
-  pause: '/assets/icon_pause.svg',
-  close: '/assets/icon_close.svg',
-  bubble: '/assets/icon_bubble_focus.svg',
-  icon_mini: '/assets/icon_mini.svg',
-  drag: '/assets/icon_drag.svg',
-  paw_white: '/assets/icon_paw_white.svg',
-  plus_box: 'assets/icon_plus_box.svg'
+  cat_face: './assets/icon_cat_face.svg',
+  timer: './assets/icon_timer.svg',
+  play: './assets/icon_play.svg',
+  pause: './assets/icon_pause.svg',
+  close: './assets/icon_close.svg',
+  bubble: './assets/icon_bubble_focus.svg',
+  icon_mini: './assets/icon_mini.svg',
+  drag: './assets/icon_drag.svg',
+  paw_white: './assets/icon_paw_white.svg',
+  plus_box: './assets/icon_plus_box.svg'
 }
 
 const Icon = ({ name, src, alt = '', size = 16, width, height }: IconProps) => {
