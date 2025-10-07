@@ -38,7 +38,8 @@ const color = {
   // Timer colors
   Timer: {
     progress: '#FFFFFF',
-    background: 'rgba(255, 255, 255, 0.1)'
+    background: 'rgba(255, 255, 255, 0.1)',
+    paused: '#8C8C8C'
   }
 }
 const border = {
