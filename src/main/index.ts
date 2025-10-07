@@ -4,8 +4,19 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { handleWindow, showWindow } from './handlers/windowHandler'
 import { createTray } from './handlers/trayhandler'
 import { createDockMenu } from './handlers/dockHandler'
+import { setupApplicationMenu } from './handlers/menuHandler'
 import { windowSizeChange, notificationProtocol, showWindowProtocol } from './IpcProtocol'
-import { WINDOW_SIZE, APP_CONFIG, WINDOW_OPTIONS, SHORTCUTS, IPC_CHANNELS } from './constants'
+import {
+  WINDOW_SIZE,
+  APP_CONFIG,
+  WINDOW_OPTIONS,
+  SHORTCUTS,
+  IPC_CHANNELS,
+  APP_INFO
+} from './constants'
+
+// 앱 종료 플래그
+let isQuitting = false
 
 function createWindow(): BrowserWindow {
   // Force dark mode
@@ -18,6 +29,7 @@ function createWindow(): BrowserWindow {
     minHeight: WINDOW_SIZE.MIN_HEIGHT,
     maxHeight: WINDOW_SIZE.MAX_HEIGHT,
     show: false,
+    title: APP_INFO.NAME, // 창 제목 설정
     hasShadow: WINDOW_OPTIONS.HAS_SHADOW,
     frame: WINDOW_OPTIONS.FRAME,
     fullscreenable: WINDOW_OPTIONS.FULLSCREENABLE,
@@ -46,8 +58,12 @@ function createWindow(): BrowserWindow {
   setDevTools(mainWindow)
   handleWindow(mainWindow)
   const toggleWindow = () => {
-    if (mainWindow?.isVisible()) {
-      mainWindow?.hide()
+    if (!mainWindow || mainWindow.isDestroyed()) {
+      console.log('Window was destroyed, cannot toggle')
+      return
+    }
+    if (mainWindow.isVisible()) {
+      mainWindow.hide()
     } else {
       showWindow(tray, mainWindow)
     }
@@ -59,6 +75,15 @@ function createWindow(): BrowserWindow {
   mainWindow.webContents.on('did-finish-load', () => {
     showWindow(tray, mainWindow)
   })
+
+  // Command+W 처리: 창을 닫지 않고 숨기기
+  mainWindow.on('close', (event) => {
+    if (!isQuitting) {
+      event.preventDefault()
+      mainWindow.hide()
+    }
+  })
+
   mainWindow?.isDestroyed()
   windowSizeChange(mainWindow)
   notificationProtocol()
@@ -76,22 +101,29 @@ function createWindow(): BrowserWindow {
 app.whenReady().then(() => {
   electronApp.setAppUserModelId(APP_CONFIG.USER_MODEL_ID)
 
+  // Application Menu 설정
+  setupApplicationMenu()
+
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
 
   ipcMain.on(IPC_CHANNELS.PING, () => console.log('pong'))
 
-  const mainWindow = createWindow()
+  let mainWindow = createWindow()
 
   app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) {
+      mainWindow = createWindow()
+    }
+  })
+
+  // 앱 종료 전 플래그 설정
+  app.on('before-quit', () => {
+    isQuitting = true
   })
 
   app.on('browser-window-focus', () => {
-    globalShortcut.register(SHORTCUTS.CLOSE_WINDOW, () => {
-      console.log(`${SHORTCUTS.CLOSE_WINDOW} is disabled`)
-    })
     globalShortcut.register(SHORTCUTS.RELOAD, () => {
       console.log(`${SHORTCUTS.RELOAD} is pressed: Shortcut Disabled`)
     })
@@ -100,7 +132,6 @@ app.whenReady().then(() => {
     })
   })
   app.on('browser-window-blur', () => {
-    globalShortcut.unregister(SHORTCUTS.CLOSE_WINDOW)
     globalShortcut.unregister(SHORTCUTS.RELOAD)
     globalShortcut.unregister(SHORTCUTS.REFRESH)
     mainWindow.webContents.send(IPC_CHANNELS.BROWSER_WINDOW_BLUR)

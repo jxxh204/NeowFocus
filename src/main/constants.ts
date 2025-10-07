@@ -19,9 +19,15 @@ export const IPC_CHANNELS = {
 
 // 단축키
 export const SHORTCUTS = {
-  CLOSE_WINDOW: 'CommandOrControl+W',
   RELOAD: 'CommandOrControl+R',
   REFRESH: 'F5'
+} as const
+
+// 앱 정보
+export const APP_INFO = {
+  NAME: 'NeowFocus',
+  DISPLAY_NAME: '냐우포커스',
+  DESCRIPTION: '뽀모도로 타이머 앱'
 } as const
 
 // 앱 설정
