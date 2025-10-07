@@ -19,10 +19,10 @@ export function TinyWindowPage(): JSX.Element {
     currentTask?.taskDuration || TIME.DEFAULT_POMODORO_DURATION,
     currentTask?.fullDuration || TIME.DEFAULT_POMODORO_DURATION,
     {
+      initialState: currentTask?.taskStatus || 'play',
       onTick: (time, state) => {
-        // TimerState를 TaskStatus로 매핑 (pause는 play로 처리)
-        const taskStatus = state === 'pause' ? 'play' : state
-        updateTask(time, taskStatus)
+        // TimerState를 TaskStatus로 그대로 매핑 (pause도 유지)
+        updateTask(time, state)
 
         // 타이머 종료 시 focus 페이지로 이동
         if (state === 'end') {
@@ -45,6 +45,14 @@ export function TinyWindowPage(): JSX.Element {
 
   const isPaused = timerState === 'pause'
 
+  if (process.env.NODE_ENV === 'development') {
+    console.log('=== TinyWindow Debug ===')
+    console.log('currentTask.taskStatus:', currentTask?.taskStatus)
+    console.log('timerState:', timerState)
+    console.log('isPaused:', isPaused)
+    console.log('=======================')
+  }
+
   return (
     <Container onClick={handleContainerClick}>
       <TaskNameArea>
@@ -56,7 +64,7 @@ export function TinyWindowPage(): JSX.Element {
         paused={isPaused}
         color="green"
         strokeWidth={3}
-        handStrokeWidth={3}
+        handStrokeWidth={2}
       />
       <DragHandle>
         <Icon name="drag" size={36} />

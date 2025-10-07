@@ -3,7 +3,7 @@ import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
 import { TIME } from '@renderer/constants'
 import { v4 as uuidv4 } from 'uuid'
 
-export type TaskStatus = 'idle' | 'play' | 'end'
+export type TaskStatus = 'idle' | 'play' | 'pause' | 'end'
 
 export type Task = {
   id: string
