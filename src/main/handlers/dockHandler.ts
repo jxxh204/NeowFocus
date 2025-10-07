@@ -9,7 +9,7 @@ export const createDockMenu = (mainWindow: BrowserWindow): void => {
 
   const dockMenu = Menu.buildFromTemplate([
     {
-      label: 'Show',
+      label: '열기',
       click: () => {
         if (!mainWindow || mainWindow.isDestroyed()) {
           console.log('Window was destroyed, cannot show')
@@ -23,7 +23,7 @@ export const createDockMenu = (mainWindow: BrowserWindow): void => {
       }
     },
     {
-      label: 'Hide',
+      label: '가리기',
       click: () => {
         if (!mainWindow || mainWindow.isDestroyed()) {
           console.log('Window was destroyed, cannot hide')
@@ -36,7 +36,7 @@ export const createDockMenu = (mainWindow: BrowserWindow): void => {
       type: 'separator'
     },
     {
-      label: 'Quit',
+      label: '종료',
       click: () => {
         app.quit()
       }
