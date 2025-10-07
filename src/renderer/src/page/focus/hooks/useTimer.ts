@@ -5,6 +5,7 @@ export type TimerState = 'idle' | 'play' | 'pause' | 'end'
 
 interface UseTimerOptions {
   onTick?: (remainingTime: number, timerState: TimerState) => void
+  initialState?: TimerState
 }
 
 interface UseTimerReturn {
@@ -23,16 +24,16 @@ export const useTimer = (
   fullDuration: number,
   options?: UseTimerOptions
 ): UseTimerReturn => {
-  const [timerState, setTimerState] = useState<TimerState>('play')
+  const [timerState, setTimerState] = useState<TimerState>(options?.initialState || 'play')
   const [remainingTime, setRemainingTime] = useState(initialDuration)
 
   // initialDuration이 변경되면 타이머 리셋
   useEffect(() => {
     setRemainingTime(initialDuration)
     if (initialDuration === fullDuration) {
-      setTimerState('play')
+      setTimerState(options?.initialState || 'play')
     }
-  }, [initialDuration, fullDuration])
+  }, [initialDuration, fullDuration, options?.initialState])
 
   useEffect(() => {
     if (timerState !== 'play') return

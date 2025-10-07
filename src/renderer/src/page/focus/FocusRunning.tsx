@@ -27,9 +27,9 @@ export default function FocusRunning(): JSX.Element {
     currentTask?.taskDuration || TIME.DEFAULT_POMODORO_DURATION,
     currentTask?.fullDuration || TIME.DEFAULT_POMODORO_DURATION,
     {
+      initialState: currentTask?.taskStatus || 'play',
       onTick: (time, state) => {
-        const taskStatus = state === 'pause' ? 'play' : state
-        updateTask(time, taskStatus)
+        updateTask(time, state)
       }
     }
   )
@@ -57,6 +57,18 @@ export default function FocusRunning(): JSX.Element {
     setShowStopModal(false)
   }
 
+  // 이벤트 핸들러: 일시정지
+  const handlePauseClick = () => {
+    handlePause()
+    updateTask(remainingTime, 'pause')
+  }
+
+  // 이벤트 핸들러: 재개
+  const handleResumeClick = () => {
+    handleResume()
+    updateTask(remainingTime, 'play')
+  }
+
   // 이벤트 핸들러: 작은 창으로 전환
   const handleTinyWindowClick = () => {
     navigate('/tiny_window')
@@ -82,8 +94,8 @@ export default function FocusRunning(): JSX.Element {
             formatTime={formatTime}
             remainingTime={remainingTime}
             timerState={timerState}
-            onResume={handleResume}
-            onPause={handlePause}
+            onResume={handleResumeClick}
+            onPause={handlePauseClick}
             onStop={handleStopClick}
           />
         </TimerWrapper>
