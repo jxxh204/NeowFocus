@@ -2,7 +2,19 @@ import { nativeImage, Tray, Menu, BrowserWindow, app } from 'electron'
 import path from 'path'
 
 export const createTray = (mainWindow: BrowserWindow): Tray => {
-  const icon = nativeImage.createFromPath(path.join(__dirname, '../../resources/tray.png'))
+  // 프로덕션과 개발 환경에서 다른 경로 사용
+  const iconPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'tray.png')
+    : path.join(__dirname, '../../resources/tray.png')
+
+  let icon = nativeImage.createFromPath(iconPath)
+
+  // 아이콘 크기 조정 (22x22가 macOS tray의 표준 크기)
+  icon = icon.resize({ width: 17, height: 17 })
+
+  // Template 이미지로 설정하여 다크/라이트 모드에서 자동으로 색상 반전
+  icon.setTemplateImage(true)
+
   const tray = new Tray(icon)
 
   tray.setToolTip('냐우포커스')
