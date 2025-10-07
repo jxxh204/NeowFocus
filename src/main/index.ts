@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { handleWindow, showWindow } from './handlers/windowHandler'
 import { createTray } from './handlers/trayhandler'
+import { createDockMenu } from './handlers/dockHandler'
 import { windowSizeChange } from './IpcProtocol'
 import { WINDOW_SIZE, APP_CONFIG, WINDOW_OPTIONS, SHORTCUTS, IPC_CHANNELS } from './constants'
 
@@ -64,6 +65,9 @@ function createWindow(): BrowserWindow {
   mainWindow?.isDestroyed()
   // mouseIpcProtocol(mainWindow)
   windowSizeChange(mainWindow)
+
+  // Dock 메뉴 설정
+  createDockMenu(mainWindow)
 
   // Window minimize handler - use hide() instead of minimize() to prevent app quit on macOS
   ipcMain.on(IPC_CHANNELS.WINDOW_MINIMIZE, () => {
