@@ -33,35 +33,36 @@ const Overlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 `
 
 const ModalContainer = styled.div`
   width: 240px;
-  height: 108px;
   background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 20px;
+  gap: 18px;
+  padding-top: 20px;
+  padding-bottom: 0;
 `
 
 const ModalText = styled.div`
+  font-family: 'Pretendard', sans-serif;
   font-size: 14px;
   color: #ffffff;
   text-align: center;
-  line-height: 1.4;
+  line-height: 22px;
+  white-space: pre;
 `
 
 const ButtonContainer = styled.div`
   display: flex;
   width: 100%;
   height: 48px;
-  gap: 0;
 `
 
 const ModalButton = styled.button<{ $primary?: boolean }>`
@@ -69,11 +70,14 @@ const ModalButton = styled.button<{ $primary?: boolean }>`
   height: 100%;
   background: transparent;
   border: none;
-  border-right: ${({ $primary }) => ($primary ? 'none' : '1px solid rgba(255, 255, 255, 0.1)')};
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: ${({ $primary }) => ($primary ? '600' : '400')};
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: ${({ $primary }) => ($primary ? '1px' : '1px')} solid rgba(255, 255, 255, 0.1);
+  color: #f5f5f5;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 12px;
+  font-weight: ${({ $primary }) => ($primary ? '700' : '500')};
   cursor: pointer;
+  opacity: 0.8;
   transition: background-color 0.2s;
 
   &:hover {
