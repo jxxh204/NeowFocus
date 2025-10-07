@@ -15,6 +15,7 @@ interface UseTimerReturn {
   handlePause: () => void
   handleResume: () => void
   handleStop: () => void
+  handleReset: () => void
 }
 
 export const useTimer = (
@@ -24,6 +25,14 @@ export const useTimer = (
 ): UseTimerReturn => {
   const [timerState, setTimerState] = useState<TimerState>('play')
   const [remainingTime, setRemainingTime] = useState(initialDuration)
+
+  // initialDuration이 변경되면 타이머 리셋
+  useEffect(() => {
+    setRemainingTime(initialDuration)
+    if (initialDuration === fullDuration) {
+      setTimerState('play')
+    }
+  }, [initialDuration, fullDuration])
 
   useEffect(() => {
     if (timerState !== 'play') return
@@ -59,6 +68,10 @@ export const useTimer = (
   const handlePause = () => setTimerState('pause')
   const handleResume = () => setTimerState('play')
   const handleStop = () => setTimerState('end')
+  const handleReset = () => {
+    setRemainingTime(fullDuration)
+    setTimerState('play')
+  }
 
   return {
     timerState,
@@ -67,6 +80,7 @@ export const useTimer = (
     formatTime,
     handlePause,
     handleResume,
-    handleStop
+    handleStop,
+    handleReset
   }
 }
