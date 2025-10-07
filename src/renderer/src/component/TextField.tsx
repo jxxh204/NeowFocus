@@ -10,7 +10,7 @@ const InputWrapper = styled.div`
   border-radius: 12px;
 `
 
-const StyledInput = styled.input`
+const StyledTextarea = styled.textarea`
   flex: 1;
   background: transparent;
   border: none;
@@ -19,6 +19,11 @@ const StyledInput = styled.input`
   font-size: 14px;
   padding: 0;
   line-height: 1.5;
+  resize: none;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  height: 100%;
+  overflow: hidden;
 
   &::placeholder {
     color: ${({ theme }) => theme.color.input.placeholder};
@@ -33,18 +38,18 @@ type TextFieldProps = {
   placeholder: string
   maxLength?: number
   value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
 }
 
 const TextField = ({ placeholder, maxLength, value, onChange }: TextFieldProps) => {
   return (
     <InputWrapper>
-      <StyledInput
-        type="text"
+      <StyledTextarea
         placeholder={placeholder}
         maxLength={maxLength}
         value={value}
         onChange={onChange}
+        rows={1}
       />
     </InputWrapper>
   )
