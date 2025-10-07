@@ -112,8 +112,6 @@ pnpm run build:mas
 문제가 발생하거나 질문이 있으시면:
 
 - 📧 이메일: <ahhancom@gmail.com>
-- 🐛 버그 제보: [GitHub Issues](https://github.com/jxxh204/NeowFocus/issues)
-- 💬 토론: [GitHub Discussions](https://github.com/jxxh204/NeowFocus/discussions)
 
 ## 🔐 개인정보처리방침
 
