@@ -1,5 +1,6 @@
 import { createContext, useContext, useRef, useCallback } from 'react'
 import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
+import { TIME } from '@renderer/constants'
 
 export type TaskStatus = 'idle' | 'play' | 'end'
 
@@ -25,7 +26,7 @@ type TaskContextType = {
 const TaskContext = createContext<TaskContextType | null>(null)
 
 const TaskProvider = ({ children }: { children: React.ReactNode }) => {
-  const taskDuration = useRef(1500)
+  const taskDuration = useRef(TIME.DEFAULT_POMODORO_DURATION)
 
   const [currentTask, setCurrentTask] = useLocalStorage<Task>('currentTask', {
     date: '', // 태스크가 생성된 날짜 (ISO 문자열 형식)
@@ -57,8 +58,8 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     setCurrentTask({
       date: new Date().toISOString(),
       taskName: currentTask?.taskName ?? '',
-      taskDuration: currentTask?.fullDuration ?? 0,
-      fullDuration: currentTask?.fullDuration ?? 0,
+      taskDuration: taskDuration.current,
+      fullDuration: taskDuration.current,
       taskStatus: 'play',
       sessionCount: currentTask?.sessionCount ?? 1
     })
