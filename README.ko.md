@@ -117,7 +117,7 @@ pnpm run build:mas
 
 ## 🔐 개인정보처리방침
 
-- [개인정보처리방침](PRIVACY_POLICY_URL) - 여기에 링크를 넣어주세요
+- [개인정보처리방침](https://jamkim.notion.site/2855072e39f5807596d0c4a8de4ebf88)
 
 ## 📋 시스템 요구사항
 
