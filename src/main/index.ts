@@ -55,9 +55,9 @@ function createWindow(): BrowserWindow {
       showWindow(tray, mainWindow)
     }
   }
-  const tray = createTray()
-  tray.on('double-click', toggleWindow)
+  const tray = createTray(mainWindow)
   tray.on('click', toggleWindow)
+  tray.on('double-click', toggleWindow)
   mainWindow.once('show', () => {
     showWindow(tray, mainWindow)
   })
