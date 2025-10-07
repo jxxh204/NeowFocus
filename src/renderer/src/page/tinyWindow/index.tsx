@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTaskContext } from '@renderer/context/TaskContext'
@@ -13,7 +13,6 @@ export function TinyWindowPage(): JSX.Element {
   const { currentTask, updateTask } = useTaskContext()
   const { setWindowSize } = useWindowSize()
   const textRef = useRef<HTMLDivElement>(null)
-  const [isTruncated, setIsTruncated] = useState(false)
 
   // focus 페이지와 동일한 타이머 로직 사용
   const { percentage, timerState } = useTimer(
@@ -40,14 +39,7 @@ export function TinyWindowPage(): JSX.Element {
     })
   }, [])
 
-  useEffect(() => {
-    if (textRef.current) {
-      const isOverflow = textRef.current.scrollWidth > textRef.current.clientWidth
-      setIsTruncated(isOverflow)
-    }
-  }, [currentTask?.taskName])
-
-  const handleContainerClick = () => {
+  const handleContainerClick = (e: React.MouseEvent) => {
     navigate(ROUTES.FOCUS)
   }
 
@@ -55,12 +47,17 @@ export function TinyWindowPage(): JSX.Element {
 
   return (
     <Container onClick={handleContainerClick}>
-      <TaskNameArea $centered={!isTruncated}>
+      <TaskNameArea>
         <TaskName ref={textRef}>{currentTask?.taskName || 'Focus Time'}</TaskName>
       </TaskNameArea>
-      <TimerArea>
-        <CircularTimer percentage={percentage} size={36} paused={isPaused} />
-      </TimerArea>
+      <CircularTimer
+        percentage={percentage}
+        size={24}
+        paused={isPaused}
+        color="green"
+        strokeWidth={3}
+        handStrokeWidth={3}
+      />
       <DragHandle>
         <Icon name="drag" size={36} />
       </DragHandle>
@@ -72,52 +69,41 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   width: ${WINDOW_SIZE.TINY_WINDOW_WIDTH}px;
-  height: ${WINDOW_SIZE.TINY_WINDOW_HEIGHT}px;
-  background: ${({ theme }) => theme.color.container.background};
-  border: 1px solid ${({ theme }) => theme.color.container.border};
+  height: 36px;
+  max-height: 36px;
+  background: rgba(39, 39, 39, 0.9);
+  backdrop-filter: blur(2px);
   border-radius: 8px;
   overflow: hidden;
-  cursor: pointer;
   -webkit-app-region: no-drag;
+`
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.03);
-  }
+const TaskNameArea = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  padding: 8 12px;
+  overflow: hidden;
+  min-width: 0;
+`
+
+const TaskName = styled.div`
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `
 
 const DragHandle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 36px;
   -webkit-app-region: drag;
-  cursor: move;
-`
-
-const TaskNameArea = styled.div<{ $centered: boolean }>`
-  width: ${WINDOW_SIZE.TINY_TASK_NAME_WIDTH}px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: ${({ $centered }) => ($centered ? 'center' : 'flex-start')};
-  padding: 0 12px;
-  overflow: hidden;
-`
-
-const TaskName = styled.div`
-  color: ${({ theme }) => theme.color.text.primary};
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: ${WINDOW_SIZE.TINY_TASK_NAME_TEXT_WIDTH}px;
-`
-
-const TimerArea = styled.div`
-  width: ${WINDOW_SIZE.TINY_TIMER_CONTAINER_SIZE}px;
-  height: ${WINDOW_SIZE.TINY_TIMER_CONTAINER_SIZE}px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  cursor: grab;
+  flex-shrink: 0;
 `
