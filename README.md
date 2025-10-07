@@ -117,7 +117,7 @@ If you encounter any issues or have questions:
 
 ## 🔐 Privacy Policy
 
-- [Privacy Policy](PRIVACY_POLICY_URL) - Your link here
+- [Privacy Policy](https://jamkim.notion.site/2855072e39f5807596d0c4a8de4ebf88)
 
 ## 📋 System Requirements
 
