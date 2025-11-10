@@ -39,9 +39,10 @@ type TextFieldProps = {
   maxLength?: number
   value: string
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
 }
 
-const TextField = ({ placeholder, maxLength, value, onChange }: TextFieldProps) => {
+const TextField = ({ placeholder, maxLength, value, onChange, onKeyDown }: TextFieldProps) => {
   return (
     <InputWrapper>
       <StyledTextarea
@@ -49,6 +50,7 @@ const TextField = ({ placeholder, maxLength, value, onChange }: TextFieldProps) 
         maxLength={maxLength}
         value={value}
         onChange={onChange}
+        onKeyDown={onKeyDown}
         rows={1}
       />
     </InputWrapper>
