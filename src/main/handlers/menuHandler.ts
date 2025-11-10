@@ -1,4 +1,4 @@
-import { Menu, app, shell, nativeImage, dialog } from 'electron'
+import { Menu, app, nativeImage, dialog } from 'electron'
 import path from 'path'
 import { APP_INFO } from '../constants'
 
