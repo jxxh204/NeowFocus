@@ -18,7 +18,7 @@ import {
 // 앱 종료 플래그
 let isQuitting = false
 
-function createWindow(): BrowserWindow {
+function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
   // Force dark mode
   nativeTheme.themeSource = APP_CONFIG.THEME
 
@@ -57,6 +57,7 @@ function createWindow(): BrowserWindow {
 
   setDevTools(mainWindow)
   handleWindow(mainWindow)
+  const tray = createTray(mainWindow)
   const toggleWindow = () => {
     if (!mainWindow || mainWindow.isDestroyed()) {
       console.log('Window was destroyed, cannot toggle')
@@ -68,7 +69,6 @@ function createWindow(): BrowserWindow {
       showWindow(tray, mainWindow)
     }
   }
-  const tray = createTray(mainWindow)
   tray.on('click', toggleWindow)
   tray.on('double-click', toggleWindow)
 
@@ -95,7 +95,7 @@ function createWindow(): BrowserWindow {
     mainWindow?.minimize()
   })
 
-  return mainWindow
+  return { mainWindow, tray }
 }
 
 app.whenReady().then(() => {
@@ -110,11 +110,16 @@ app.whenReady().then(() => {
 
   ipcMain.on(IPC_CHANNELS.PING, () => console.log('pong'))
 
-  let mainWindow = createWindow()
+  let { mainWindow, tray } = createWindow()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) {
-      mainWindow = createWindow()
+      const result = createWindow()
+      mainWindow = result.mainWindow
+      tray = result.tray
+    } else if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
+      // hide 상태에서 Dock 아이콘 클릭 시 창 다시 표시
+      showWindow(tray, mainWindow)
     }
   })
 
