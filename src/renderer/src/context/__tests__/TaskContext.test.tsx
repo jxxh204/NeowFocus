@@ -175,7 +175,7 @@ describe('TaskContext', () => {
 
     it('should calculate session count based on same date and same task name', () => {
       const { result } = renderHook(() => useTaskContext(), { wrapper })
-      const today = new Date().toISOString()
+      // const today = new Date().toISOString()
 
       // First session
       act(() => {
@@ -276,7 +276,7 @@ describe('TaskContext', () => {
     })
 
     it('should reset session count for same task name on different day', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
+      const { result: _result } = renderHook(() => useTaskContext(), { wrapper })
 
       // Mock yesterday's date
       const yesterday = new Date()

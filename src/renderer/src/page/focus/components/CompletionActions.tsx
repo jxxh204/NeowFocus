@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Icon from '@renderer/component/Icon'
 import BottomButton from '@renderer/component/Container/BottomButton'
 import styled from 'styled-components'
@@ -8,13 +9,15 @@ interface CompletionActionsProps {
 }
 
 export default function CompletionActions({ onNewTask, onRepeat }: CompletionActionsProps) {
+  const { t } = useTranslation()
+
   return (
     <Container>
       <BottomButton onClick={onNewTask}>
-        새 작업 <Icon name="plus_box" />
+        {t('focus.completionActions.newTask')} <Icon name="plus_box" />
       </BottomButton>
       <BottomButton onClick={onRepeat}>
-        타이머 한번 더 <Icon name="timer" />
+        {t('focus.completionActions.repeat')} <Icon name="timer" />
       </BottomButton>
     </Container>
   )
