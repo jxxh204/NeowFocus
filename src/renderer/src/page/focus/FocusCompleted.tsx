@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { useTaskContext } from '@renderer/context/TaskContext'
 import { WINDOW_SIZE } from '@renderer/constants'
@@ -10,6 +11,7 @@ import Icon from '@renderer/component/Icon'
 
 export default function FocusCompleted(): JSX.Element {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { currentTask, resetCurrentTask, reStartTask, saveTaskToList, groupedTaskList } =
     useTaskContext()
 
@@ -44,7 +46,7 @@ export default function FocusCompleted(): JSX.Element {
 
       <Container.Body height={WINDOW_SIZE.BODY_SECTION_FOCUS_HEIGHT} padding="0 0 0 10px">
         <TaskNameBox>
-          <TaskNameText>{currentTask?.taskName || 'Focus Time'}</TaskNameText>
+          <TaskNameText>{currentTask?.taskName || t('focus.defaultTaskName')}</TaskNameText>
         </TaskNameBox>
         <TimerWrapper>
           <TimerCompletion

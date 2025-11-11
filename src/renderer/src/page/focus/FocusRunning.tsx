@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { useTaskContext } from '@renderer/context/TaskContext'
 import { useTimer } from './hooks/useTimer'
@@ -12,6 +13,7 @@ import Icon from '@renderer/component/Icon'
 
 export default function FocusRunning(): JSX.Element {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { currentTask, updateTask, resetCurrentTask } = useTaskContext()
   const [showStopModal, setShowStopModal] = useState(false)
 
@@ -86,7 +88,7 @@ export default function FocusRunning(): JSX.Element {
 
       <Container.Body height={WINDOW_SIZE.BODY_SECTION_FOCUS_HEIGHT} padding="0 0 0 10px">
         <TaskNameBox>
-          <TaskNameText>{currentTask?.taskName || 'Focus Time'}</TaskNameText>
+          <TaskNameText>{currentTask?.taskName || t('focus.defaultTaskName')}</TaskNameText>
         </TaskNameBox>
         <TimerWrapper>
           <TimerDisplay
@@ -103,7 +105,7 @@ export default function FocusRunning(): JSX.Element {
 
       <Container.Bottom height={WINDOW_SIZE.BOTTOM_SECTION_HEIGHT}>
         <Container.Button onClick={handleTinyWindowClick}>
-          작은 창 보기
+          {t('focus.tinyWindowButton')}
           <Icon name="icon_mini" alt="window_mini" size={16} />
         </Container.Button>
       </Container.Bottom>

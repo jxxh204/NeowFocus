@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import CircularTimer from '@renderer/component/CircularTimer'
 import Icon from '@renderer/component/Icon'
@@ -24,6 +25,7 @@ export default function TimerDisplay({
   onPause,
   onStop
 }: TimerDisplayProps) {
+  const { t } = useTranslation()
   const [isHovering, setIsHovering] = useState(false)
 
   const handleTimerClick = () => {
@@ -51,7 +53,7 @@ export default function TimerDisplay({
           <PauseOverlay>
             <PlayButton>
               <Icon name="play" size={14} />
-              <PlayLabel>재개</PlayLabel>
+              <PlayLabel>{t('focus.timerMenu.resume')}</PlayLabel>
             </PlayButton>
           </PauseOverlay>
         )}

@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
 import Icon from '@renderer/component/Icon'
 import theme from '@renderer/styles/theme'
 
@@ -8,16 +9,18 @@ interface TimerMenuProps {
 }
 
 export default function TimerMenu({ onPause, onStop }: TimerMenuProps) {
+  const { t } = useTranslation()
+
   return (
     <MenuContainer>
       <MenuItem onClick={onPause}>
         <Icon name="pause" alt="pause" size={14} />
-        <MenuLabel>잠깐멈춤</MenuLabel>
+        <MenuLabel>{t('focus.timerMenu.pause')}</MenuLabel>
       </MenuItem>
       <MenuDivider />
       <MenuItem onClick={onStop}>
         <Icon name="close" alt="stop" size={14} />
-        <MenuLabel>작업중단</MenuLabel>
+        <MenuLabel>{t('focus.timerMenu.stop')}</MenuLabel>
       </MenuItem>
     </MenuContainer>
   )

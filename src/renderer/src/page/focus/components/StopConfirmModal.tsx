@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { useTranslation } from 'react-i18next'
 import theme from '@renderer/styles/theme'
 
 interface StopConfirmModalProps {
@@ -8,16 +9,18 @@ interface StopConfirmModalProps {
 }
 
 export default function StopConfirmModal({ isOpen, onClose, onConfirm }: StopConfirmModalProps) {
+  const { t } = useTranslation()
+
   if (!isOpen) return null
 
   return (
     <Overlay>
       <ModalContainer>
-        <ModalText>진행중인 작업을 중단하실 건가요?</ModalText>
+        <ModalText>{t('focus.stopConfirmModal.title')}</ModalText>
         <ButtonContainer>
-          <ModalButton onClick={onClose}>닫기</ModalButton>
+          <ModalButton onClick={onClose}>{t('focus.stopConfirmModal.cancelButton')}</ModalButton>
           <ModalButton $primary onClick={onConfirm}>
-            중단하기
+            {t('focus.stopConfirmModal.confirmButton')}
           </ModalButton>
         </ButtonContainer>
       </ModalContainer>
