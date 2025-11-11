@@ -13,6 +13,7 @@ declare global {
       minimizeWindow: () => void
       showNotification: (title: string, body: string) => void
       showWindow: () => void
+      getSystemLocale: () => Promise<string>
     }
     api: unknown
   }
