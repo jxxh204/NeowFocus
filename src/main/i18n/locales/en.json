@@ -1,0 +1,43 @@
+{
+  "app": {
+    "displayName": "NeowFocus",
+    "description": "Pomodoro Timer App"
+  },
+  "dock": {
+    "show": "Show",
+    "hide": "Hide",
+    "quit": "Quit"
+  },
+  "tray": {
+    "show": "Show",
+    "hide": "Hide",
+    "quit": "Quit"
+  },
+  "menu": {
+    "about": "About",
+    "preferences": "Preferences...",
+    "services": "Services",
+    "hide": "Hide",
+    "hideOthers": "Hide Others",
+    "unhide": "Show All",
+    "quit": "Quit",
+    "edit": "Edit",
+    "undo": "Undo",
+    "redo": "Redo",
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "selectAll": "Select All",
+    "window": "Window",
+    "minimize": "Minimize",
+    "zoom": "Zoom",
+    "close": "Close",
+    "front": "Bring All to Front",
+    "aboutDialog": {
+      "title": "About",
+      "message": "NeowFocus",
+      "version": "Version",
+      "button": "OK"
+    }
+  }
+}

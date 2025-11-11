@@ -1,0 +1,32 @@
+{
+  "input": {
+    "placeholder": "Write one task that needs your focus.",
+    "startButton": "Start Pomodoro"
+  },
+  "focus": {
+    "stopConfirmModal": {
+      "title": "Do you want to stop the current task?",
+      "cancelButton": "Cancel",
+      "confirmButton": "Stop"
+    },
+    "sessionCount": "sessions",
+    "defaultTaskName": "Focus Time",
+    "tinyWindowButton": "Tiny Window View",
+    "timerMenu": {
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Stop"
+    },
+    "completionActions": {
+      "newTask": "New Task",
+      "repeat": "One More Timer"
+    },
+    "notification": {
+      "title": "Task Completed! 🎉",
+      "body": "25 minutes of focus time is over."
+    }
+  },
+  "tinyWindow": {
+    "defaultTaskName": "Focus Time"
+  }
+}
