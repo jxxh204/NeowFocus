@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { TIME } from '@renderer/constants'
 
 export type TimerState = 'idle' | 'play' | 'pause' | 'end'
@@ -24,6 +25,7 @@ export const useTimer = (
   fullDuration: number,
   options?: UseTimerOptions
 ): UseTimerReturn => {
+  const { t } = useTranslation()
   const [timerState, setTimerState] = useState<TimerState>(options?.initialState || 'play')
   const [remainingTime, setRemainingTime] = useState(initialDuration)
 
@@ -52,7 +54,10 @@ export const useTimer = (
           setTimerState('end')
           // 알림 표시 및 창 띄우기
           if (window.electron?.showNotification) {
-            window.electron.showNotification('작업 완료! 🎉', '25분 집중 시간이 끝났습니다.')
+            window.electron.showNotification(
+              t('focus.notification.title'),
+              t('focus.notification.body')
+            )
           }
           if (window.electron?.showWindow) {
             window.electron.showWindow()
@@ -63,7 +68,7 @@ export const useTimer = (
     }, TIME.TIMER_INTERVAL)
 
     return () => clearInterval(interval)
-  }, [timerState, options])
+  }, [timerState, options, t])
 
   const percentage = fullDuration > 0 ? (remainingTime / fullDuration) * 100 : 0
 

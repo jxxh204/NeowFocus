@@ -1,5 +1,6 @@
 import { Menu, BrowserWindow, app, nativeImage } from 'electron'
 import { join } from 'path'
+import { t } from '../i18n'
 
 export const createDockMenu = (mainWindow: BrowserWindow): void => {
   // macOS 전용
@@ -9,7 +10,7 @@ export const createDockMenu = (mainWindow: BrowserWindow): void => {
 
   const dockMenu = Menu.buildFromTemplate([
     {
-      label: '열기',
+      label: t('dock.show'),
       click: () => {
         if (!mainWindow || mainWindow.isDestroyed()) {
           console.log('Window was destroyed, cannot show')
@@ -23,7 +24,7 @@ export const createDockMenu = (mainWindow: BrowserWindow): void => {
       }
     },
     {
-      label: '가리기',
+      label: t('dock.hide'),
       click: () => {
         if (!mainWindow || mainWindow.isDestroyed()) {
           console.log('Window was destroyed, cannot hide')
@@ -36,7 +37,7 @@ export const createDockMenu = (mainWindow: BrowserWindow): void => {
       type: 'separator'
     },
     {
-      label: '종료',
+      label: t('dock.quit'),
       click: () => {
         app.quit()
       }

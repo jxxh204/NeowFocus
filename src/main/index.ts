@@ -5,7 +5,13 @@ import { handleWindow, showWindow } from './handlers/windowHandler'
 import { createTray } from './handlers/trayhandler'
 import { createDockMenu } from './handlers/dockHandler'
 import { setupApplicationMenu } from './handlers/menuHandler'
-import { windowSizeChange, notificationProtocol, showWindowProtocol } from './IpcProtocol'
+import { initI18n } from './i18n'
+import {
+  windowSizeChange,
+  notificationProtocol,
+  showWindowProtocol,
+  getSystemLocaleProtocol
+} from './IpcProtocol'
 import {
   WINDOW_SIZE,
   APP_CONFIG,
@@ -18,7 +24,7 @@ import {
 // 앱 종료 플래그
 let isQuitting = false
 
-function createWindow(): BrowserWindow {
+function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
   // Force dark mode
   nativeTheme.themeSource = APP_CONFIG.THEME
 
@@ -57,6 +63,7 @@ function createWindow(): BrowserWindow {
 
   setDevTools(mainWindow)
   handleWindow(mainWindow)
+  const tray = createTray(mainWindow)
   const toggleWindow = () => {
     if (!mainWindow || mainWindow.isDestroyed()) {
       console.log('Window was destroyed, cannot toggle')
@@ -68,7 +75,6 @@ function createWindow(): BrowserWindow {
       showWindow(tray, mainWindow)
     }
   }
-  const tray = createTray(mainWindow)
   tray.on('click', toggleWindow)
   tray.on('double-click', toggleWindow)
 
@@ -88,6 +94,7 @@ function createWindow(): BrowserWindow {
   windowSizeChange(mainWindow)
   notificationProtocol()
   showWindowProtocol(mainWindow)
+  getSystemLocaleProtocol()
 
   createDockMenu(mainWindow)
 
@@ -95,11 +102,14 @@ function createWindow(): BrowserWindow {
     mainWindow?.minimize()
   })
 
-  return mainWindow
+  return { mainWindow, tray }
 }
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId(APP_CONFIG.USER_MODEL_ID)
+
+  // i18n 초기화
+  initI18n()
 
   // Application Menu 설정
   setupApplicationMenu()
@@ -110,11 +120,16 @@ app.whenReady().then(() => {
 
   ipcMain.on(IPC_CHANNELS.PING, () => console.log('pong'))
 
-  let mainWindow = createWindow()
+  let { mainWindow, tray } = createWindow()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) {
-      mainWindow = createWindow()
+      const result = createWindow()
+      mainWindow = result.mainWindow
+      tray = result.tray
+    } else if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
+      // hide 상태에서 Dock 아이콘 클릭 시 창 다시 표시
+      showWindow(tray, mainWindow)
     }
   })
 
