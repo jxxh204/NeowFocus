@@ -1,6 +1,6 @@
 import { nativeImage, Tray, Menu, BrowserWindow, app } from 'electron'
 import path from 'path'
-import { APP_INFO } from '../constants'
+import { t } from '../i18n'
 
 export const createTray = (mainWindow: BrowserWindow): Tray => {
   // 프로덕션과 개발 환경에서 다른 경로 사용
@@ -18,12 +18,12 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
 
   const tray = new Tray(icon)
 
-  tray.setToolTip(APP_INFO.DISPLAY_NAME)
+  tray.setToolTip(t('app.displayName'))
 
   // 컨텍스트 메뉴 생성
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: `${APP_INFO.DISPLAY_NAME} 열기`,
+      label: `${t('tray.show')} ${t('app.displayName')}`,
       click: () => {
         if (!mainWindow || mainWindow.isDestroyed()) {
           console.log('Window was destroyed, cannot show')
@@ -37,7 +37,7 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
       }
     },
     {
-      label: '가리기',
+      label: t('tray.hide'),
       click: () => {
         if (!mainWindow || mainWindow.isDestroyed()) {
           console.log('Window was destroyed, cannot hide')
@@ -50,7 +50,7 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
       type: 'separator'
     },
     {
-      label: '종료',
+      label: t('tray.quit'),
       click: () => {
         app.quit()
       }

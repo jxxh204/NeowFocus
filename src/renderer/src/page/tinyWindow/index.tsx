@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { useTaskContext } from '@renderer/context/TaskContext'
 import useWindowSize from '@renderer/hooks/useWindowSize'
@@ -11,6 +12,7 @@ import theme from '@renderer/styles/theme'
 
 export function TinyWindowPage(): JSX.Element {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { currentTask, updateTask } = useTaskContext()
   const { setWindowSize } = useWindowSize()
   const textRef = useRef<HTMLDivElement>(null)
@@ -40,7 +42,7 @@ export function TinyWindowPage(): JSX.Element {
     })
   }, [])
 
-  const handleContainerClick = (e: React.MouseEvent) => {
+  const handleContainerClick = () => {
     navigate(ROUTES.FOCUS)
   }
 
@@ -57,7 +59,7 @@ export function TinyWindowPage(): JSX.Element {
   return (
     <Container onClick={handleContainerClick}>
       <TaskNameArea>
-        <TaskName ref={textRef}>{currentTask?.taskName || 'Focus Time'}</TaskName>
+        <TaskName ref={textRef}>{currentTask?.taskName || t('tinyWindow.defaultTaskName')}</TaskName>
       </TaskNameArea>
       <CircularTimer
         percentage={percentage}

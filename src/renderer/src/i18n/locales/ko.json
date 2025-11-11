@@ -1,0 +1,32 @@
+{
+  "input": {
+    "placeholder": "집중이 필요한 일 하나를 적어주세요.",
+    "startButton": "뽀모도로 시작"
+  },
+  "focus": {
+    "stopConfirmModal": {
+      "title": "진행중인 작업을 중단하실 건가요?",
+      "cancelButton": "닫기",
+      "confirmButton": "중단하기"
+    },
+    "sessionCount": "회차",
+    "defaultTaskName": "Focus Time",
+    "tinyWindowButton": "작은 창 보기",
+    "timerMenu": {
+      "pause": "잠깐멈춤",
+      "resume": "재개",
+      "stop": "작업중단"
+    },
+    "completionActions": {
+      "newTask": "새 작업",
+      "repeat": "타이머 한번 더"
+    },
+    "notification": {
+      "title": "작업 완료! 🎉",
+      "body": "25분 집중 시간이 끝났습니다."
+    }
+  },
+  "tinyWindow": {
+    "defaultTaskName": "Focus Time"
+  }
+}

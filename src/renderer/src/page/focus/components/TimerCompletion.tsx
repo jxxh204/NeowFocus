@@ -1,5 +1,6 @@
 import Icon from '@renderer/component/Icon'
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { ANIMATION } from '@renderer/constants'
 import theme from '@renderer/styles/theme'
@@ -11,6 +12,7 @@ interface TimerCompletionProps {
 }
 
 export default function TimerCompletion({ sessionCount }: TimerCompletionProps) {
+  const { t } = useTranslation()
   const [pawColor, setPawColor] = useState(0)
 
   useEffect(() => {
@@ -28,7 +30,9 @@ export default function TimerCompletion({ sessionCount }: TimerCompletionProps) 
       <TimerCircle $color={pawColor}>
         <Icon name="paw_white" size={28} />
       </TimerCircle>
-      <SessionCount>{displayCount}회차</SessionCount>
+      <SessionCount>
+        {displayCount} {t('focus.sessionCount')}
+      </SessionCount>
     </Container>
   )
 }
