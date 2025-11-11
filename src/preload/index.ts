@@ -28,6 +28,9 @@ const windowAPI = {
   },
   showWindow: () => {
     ipcRenderer.send('SHOW_WINDOW')
+  },
+  getSystemLocale: (): Promise<string> => {
+    return ipcRenderer.invoke('GET_SYSTEM_LOCALE')
   }
 }
 
