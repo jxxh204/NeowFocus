@@ -3,6 +3,7 @@ import App from './App'
 import GlobalStyle from './styles/GlobalStyle'
 import { ThemeProvider } from 'styled-components'
 import theme from './styles/theme'
+import './i18n'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
