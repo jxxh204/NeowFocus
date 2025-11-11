@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron'
+import { ipcMain, app } from 'electron'
 
 export const windowSizeChange = (mainWindow): void => {
   ipcMain.on('WINDOW_SIZE_CHANGE', (_e: Electron.IpcMainEvent, size) => {
@@ -43,5 +43,13 @@ export const showWindowProtocol = (mainWindow): void => {
       mainWindow.show()
       mainWindow.focus()
     }
+  })
+}
+
+export const getSystemLocaleProtocol = (): void => {
+  ipcMain.handle('GET_SYSTEM_LOCALE', () => {
+    const locale = app.getLocale()
+    // ko, en, ja 등에서 ko -> ko, en -> en으로 변환
+    return locale.startsWith('ko') ? 'ko' : 'en'
   })
 }
