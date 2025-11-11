@@ -90,8 +90,8 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       id: uuidv4(),
       date: new Date().toISOString(),
       taskName: taskName,
-      taskDuration: currentTask?.fullDuration ?? 0,
-      fullDuration: currentTask?.fullDuration ?? 0,
+      taskDuration: taskDuration.current,
+      fullDuration: taskDuration.current,
       taskStatus: 'play',
       sessionCount: 1
     })

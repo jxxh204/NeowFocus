@@ -2,9 +2,29 @@ import { BrowserWindow } from 'electron'
 
 export const handleWindow = (mainWindow: BrowserWindow): void => {
   if (mainWindow) {
-    mainWindow.setAlwaysOnTop(true, 'screen-saver')
-    mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
-    mainWindow.setAlwaysOnTop(true, 'screen-saver')
+    // 전체화면 앱 위에 표시하기 위한 설정
+    // skipTransformProcessType을 사용하여 Dock 숨김 현상 방지
+    mainWindow.setVisibleOnAllWorkspaces(true, {
+      visibleOnFullScreen: true,
+      skipTransformProcessType: true
+    })
+
+    // 가장 높은 레벨로 항상 최상위 설정
+    mainWindow.setAlwaysOnTop(true, 'screen-saver', 1)
+
+    // 전체화면 작동을 위해 윈도우를 강제로 다시 focus
+    // Electron 버그 우회: https://github.com/electron/electron/issues/36364
+    setTimeout(() => {
+      mainWindow.focus()
+      mainWindow.setAlwaysOnTop(true, 'screen-saver', 1)
+    }, 100)
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Window settings applied:', {
+        alwaysOnTop: mainWindow.isAlwaysOnTop(),
+        visibleOnAllWorkspaces: mainWindow.isVisibleOnAllWorkspaces()
+      })
+    }
   }
 }
 

@@ -1,0 +1,43 @@
+{
+  "app": {
+    "displayName": "냐우포커스",
+    "description": "뽀모도로 타이머 앱"
+  },
+  "dock": {
+    "show": "열기",
+    "hide": "가리기",
+    "quit": "종료"
+  },
+  "tray": {
+    "show": "열기",
+    "hide": "가리기",
+    "quit": "종료"
+  },
+  "menu": {
+    "about": "정보",
+    "preferences": "환경설정...",
+    "services": "서비스",
+    "hide": "가리기",
+    "hideOthers": "기타 가리기",
+    "unhide": "모두 보기",
+    "quit": "종료",
+    "edit": "편집",
+    "undo": "실행 취소",
+    "redo": "재실행",
+    "cut": "잘라내기",
+    "copy": "복사",
+    "paste": "붙여넣기",
+    "selectAll": "모두 선택",
+    "window": "윈도우",
+    "minimize": "최소화",
+    "zoom": "확대/축소",
+    "close": "닫기",
+    "front": "앞으로 가져오기",
+    "aboutDialog": {
+      "title": "정보",
+      "message": "NeowFocus",
+      "version": "버전",
+      "button": "확인"
+    }
+  }
+}
