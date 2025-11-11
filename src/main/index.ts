@@ -5,7 +5,13 @@ import { handleWindow, showWindow } from './handlers/windowHandler'
 import { createTray } from './handlers/trayhandler'
 import { createDockMenu } from './handlers/dockHandler'
 import { setupApplicationMenu } from './handlers/menuHandler'
-import { windowSizeChange, notificationProtocol, showWindowProtocol } from './IpcProtocol'
+import { initI18n } from './i18n'
+import {
+  windowSizeChange,
+  notificationProtocol,
+  showWindowProtocol,
+  getSystemLocaleProtocol
+} from './IpcProtocol'
 import {
   WINDOW_SIZE,
   APP_CONFIG,
@@ -88,6 +94,7 @@ function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
   windowSizeChange(mainWindow)
   notificationProtocol()
   showWindowProtocol(mainWindow)
+  getSystemLocaleProtocol()
 
   createDockMenu(mainWindow)
 
@@ -100,6 +107,9 @@ function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId(APP_CONFIG.USER_MODEL_ID)
+
+  // i18n 초기화
+  initI18n()
 
   // Application Menu 설정
   setupApplicationMenu()

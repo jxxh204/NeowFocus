@@ -1,6 +1,7 @@
 import { Menu, app, nativeImage, dialog } from 'electron'
 import path from 'path'
 import { APP_INFO } from '../constants'
+import { t } from '../i18n'
 
 export const setupApplicationMenu = (): void => {
   // macOS 전용
@@ -16,7 +17,7 @@ export const setupApplicationMenu = (): void => {
       label: APP_INFO.NAME,
       submenu: [
         {
-          label: `${APP_INFO.NAME} 정보`,
+          label: `${t('menu.about')} ${APP_INFO.NAME}`,
           click: () => {
             // 커스텀 정보 다이얼로그 표시
             const iconPath = app.isPackaged
@@ -27,43 +28,45 @@ export const setupApplicationMenu = (): void => {
 
             dialog.showMessageBox({
               type: 'info',
-              title: `${APP_INFO.NAME} 정보`,
+              title: `${t('menu.aboutDialog.title')} ${APP_INFO.NAME}`,
               message: APP_INFO.NAME,
-              detail: `버전 ${app.getVersion()}\n\n${APP_INFO.DESCRIPTION}`,
+              detail: `${t('menu.aboutDialog.version')} ${app.getVersion()}\n\n${t('app.description')}`,
               icon: icon,
-              buttons: ['확인']
+              buttons: [t('menu.aboutDialog.button')]
             })
           }
         },
         { type: 'separator' },
         {
-          label: '환경설정...',
+          label: t('menu.preferences'),
           accelerator: 'Cmd+,',
           enabled: false // 아직 구현 안됨
         },
         { type: 'separator' },
         {
-          label: '서비스',
+          label: t('menu.services'),
           role: 'services'
         },
         { type: 'separator' },
         {
-          label: '가리기',
+          label: `${t('menu.hide')} ${APP_INFO.NAME}`,
           accelerator: 'Cmd+H',
-          role: 'hide'
+          click: () => {
+            app.hide()
+          }
         },
         {
-          label: '기타 가리기',
+          label: t('menu.hideOthers'),
           accelerator: 'Cmd+Alt+H',
           role: 'hideOthers'
         },
         {
-          label: '모두 보기',
+          label: t('menu.unhide'),
           role: 'unhide'
         },
         { type: 'separator' },
         {
-          label: '종료',
+          label: `${t('menu.quit')} ${APP_INFO.NAME}`,
           accelerator: 'Cmd+Q',
           click: () => {
             app.quit()
@@ -72,25 +75,25 @@ export const setupApplicationMenu = (): void => {
       ]
     },
     {
-      label: '편집',
+      label: t('menu.edit'),
       submenu: [
-        { label: '실행 취소', accelerator: 'Cmd+Z', role: 'undo' },
-        { label: '재실행', accelerator: 'Shift+Cmd+Z', role: 'redo' },
+        { label: t('menu.undo'), accelerator: 'Cmd+Z', role: 'undo' },
+        { label: t('menu.redo'), accelerator: 'Shift+Cmd+Z', role: 'redo' },
         { type: 'separator' },
-        { label: '잘라내기', accelerator: 'Cmd+X', role: 'cut' },
-        { label: '복사', accelerator: 'Cmd+C', role: 'copy' },
-        { label: '붙여넣기', accelerator: 'Cmd+V', role: 'paste' },
-        { label: '모두 선택', accelerator: 'Cmd+A', role: 'selectAll' }
+        { label: t('menu.cut'), accelerator: 'Cmd+X', role: 'cut' },
+        { label: t('menu.copy'), accelerator: 'Cmd+C', role: 'copy' },
+        { label: t('menu.paste'), accelerator: 'Cmd+V', role: 'paste' },
+        { label: t('menu.selectAll'), accelerator: 'Cmd+A', role: 'selectAll' }
       ]
     },
     {
-      label: '윈도우',
+      label: t('menu.window'),
       submenu: [
-        { label: '최소화', accelerator: 'Cmd+M', role: 'minimize' },
-        { label: '확대/축소', role: 'zoom' },
-        { label: '닫기', accelerator: 'Cmd+W', role: 'close' },
+        { label: t('menu.minimize'), accelerator: 'Cmd+M', role: 'minimize' },
+        { label: t('menu.zoom'), role: 'zoom' },
+        { label: t('menu.close'), accelerator: 'Cmd+W', role: 'close' },
         { type: 'separator' },
-        { label: '앞으로 가져오기', role: 'front' }
+        { label: t('menu.front'), role: 'front' }
       ]
     }
   ]
