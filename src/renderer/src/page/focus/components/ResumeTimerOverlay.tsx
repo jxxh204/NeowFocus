@@ -1,62 +1,46 @@
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import Icon from '@renderer/component/ui/Icon'
-import theme from '@renderer/styles/theme'
+import { SubButton } from '@renderer/component/ui/SubButton'
 
 interface ResumeTimerOverlayProps {
   timerState: 'idle' | 'play' | 'pause' | 'end'
-  isHovering: boolean
+  onResume?: () => void
 }
 
 /**
  * 일시정지된 타이머 위에 표시되는 "다시 시작" 버튼 오버레이
- * - pause 상태 + 호버 시에만 표시됨
+ * - pause 상태 + 호버 시 + 핸들러가 있을 때만 표시됨
  */
-export default function ResumeTimerOverlay({ timerState, isHovering }: ResumeTimerOverlayProps) {
+export default function ResumeTimerOverlay({ timerState, onResume }: ResumeTimerOverlayProps) {
   const { t } = useTranslation()
 
-  // pause 상태 + 호버 시에만 표시
-  const shouldShow = timerState === 'pause' && isHovering
+  // pause 상태 + 호버 시 + 핸들러가 있을 때만 표시
+  const shouldShow = timerState === 'pause' && onResume
 
   if (!shouldShow) return null
 
   return (
     <Overlay>
-      <ResumeButton>
+      <SubButton onClick={onResume}>
         <Icon name="play" size={14} />
         <Label>{t('focus.timerMenu.resume')}</Label>
-      </ResumeButton>
+      </SubButton>
     </Overlay>
   )
 }
 
 const Overlay = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-`
-
-const ResumeButton = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  height: 24px;
-  padding: 0 6px;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(6px);
-  border-radius: 8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
 `
 
 const Label = styled.span`
   font-size: 10px;
   font-weight: 400;
   line-height: 14px;
-  color: ${theme.color.white};
+  color: #ffffff;
 `

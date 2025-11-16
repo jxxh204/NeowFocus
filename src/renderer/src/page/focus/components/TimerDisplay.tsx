@@ -41,12 +41,8 @@ export default function TimerDisplay({
     >
       <TimerCircleWrapper>
         <CircularTimer percentage={percentage} size={64} paused={isPaused} />
-        <ResumeTimerOverlay timerState={timerState} isHovering={isHovering} />
-        <PauseMenuOverlay
-          timerState={timerState}
-          isHovering={isHovering}
-          onPause={onPause}
-        />
+        <ResumeTimerOverlay timerState={timerState} onResume={onResume} />
+        <PauseMenuOverlay timerState={timerState} isHovering={isHovering} onPause={onPause} />
       </TimerCircleWrapper>
       <TimeText>{formatTime(remainingTime)}</TimeText>
     </TimerWrapper>
