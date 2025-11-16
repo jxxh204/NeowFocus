@@ -12,7 +12,6 @@ interface TimerDisplayProps {
   timerState: 'idle' | 'play' | 'pause' | 'end'
   onResume?: () => void
   onPause?: () => void
-  onStop?: () => void
 }
 
 export default function TimerDisplay({
@@ -21,8 +20,7 @@ export default function TimerDisplay({
   remainingTime,
   timerState,
   onResume,
-  onPause,
-  onStop
+  onPause
 }: TimerDisplayProps) {
   const [isHovering, setIsHovering] = useState(false)
 
@@ -48,7 +46,6 @@ export default function TimerDisplay({
           timerState={timerState}
           isHovering={isHovering}
           onPause={onPause}
-          onStop={onStop}
         />
       </TimerCircleWrapper>
       <TimeText>{formatTime(remainingTime)}</TimeText>

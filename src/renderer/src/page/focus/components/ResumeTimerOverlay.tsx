@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import Icon from '@renderer/component/Icon'
+import Icon from '@renderer/component/ui/Icon'
 import theme from '@renderer/styles/theme'
 
 interface ResumeTimerOverlayProps {

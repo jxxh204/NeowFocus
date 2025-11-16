@@ -1,4 +1,4 @@
-import Icon from '@renderer/component/Icon'
+import Icon from '@renderer/component/ui/Icon'
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'

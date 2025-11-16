@@ -7,7 +7,7 @@ import useWindowSize from '@renderer/hooks/useWindowSize'
 import { useTimer } from '../focus/hooks/useTimer'
 import { TIME, WINDOW_SIZE, ROUTES } from '@renderer/constants'
 import CircularTimer from '@renderer/component/CircularTimer'
-import Icon from '@renderer/component/Icon'
+import Icon from '@renderer/component/ui/Icon'
 import theme from '@renderer/styles/theme'
 
 export function TinyWindowPage(): JSX.Element {
@@ -59,7 +59,9 @@ export function TinyWindowPage(): JSX.Element {
   return (
     <Container onClick={handleContainerClick}>
       <TaskNameArea>
-        <TaskName ref={textRef}>{currentTask?.taskName || t('tinyWindow.defaultTaskName')}</TaskName>
+        <TaskName ref={textRef}>
+          {currentTask?.taskName || t('tinyWindow.defaultTaskName')}
+        </TaskName>
       </TaskNameArea>
       <CircularTimer
         percentage={percentage}

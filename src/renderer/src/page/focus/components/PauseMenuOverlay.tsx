@@ -1,11 +1,13 @@
 import styled from 'styled-components'
-import TimerMenu from './TimerMenu'
+import { useTranslation } from 'react-i18next'
+import Icon from '@renderer/component/ui/Icon'
+import theme from '@renderer/styles/theme'
+import { SubButton } from '@renderer/component/ui/SubButton'
 
 interface PauseMenuOverlayProps {
   timerState: 'idle' | 'play' | 'pause' | 'end'
   isHovering: boolean
   onPause?: () => void
-  onStop?: () => void
 }
 
 /**
@@ -15,17 +17,21 @@ interface PauseMenuOverlayProps {
 export default function PauseMenuOverlay({
   timerState,
   isHovering,
-  onPause,
-  onStop
+  onPause
 }: PauseMenuOverlayProps) {
+  const { t } = useTranslation()
+
   // play 상태 + 호버 시 + 핸들러가 있을 때만 표시
-  const shouldShow = timerState === 'play' && isHovering && onPause && onStop
+  const shouldShow = timerState === 'play' && isHovering && onPause
 
   if (!shouldShow) return null
 
   return (
     <Overlay>
-      <TimerMenu onPause={onPause} onStop={onStop} />
+      <SubButton onClick={onPause}>
+        <Icon name="pause" alt="pause" size={14} />
+        <MenuLabel>{t('focus.timerMenu.pause')}</MenuLabel>
+      </SubButton>
     </Overlay>
   )
 }
@@ -36,4 +42,10 @@ const Overlay = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
+`
+
+const MenuLabel = styled.span`
+  font-size: 10px;
+  color: ${theme.color.white};
+  white-space: nowrap;
 `

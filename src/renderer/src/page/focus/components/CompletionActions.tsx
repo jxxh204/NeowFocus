@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import Icon from '@renderer/component/Icon'
+import Icon from '@renderer/component/ui/Icon'
 import BottomButton from '@renderer/component/Container/BottomButton'
 import styled from 'styled-components'
 

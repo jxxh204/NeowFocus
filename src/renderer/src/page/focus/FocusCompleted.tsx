@@ -7,7 +7,7 @@ import TimerCompletion from './components/TimerCompletion'
 import CompletionActions from './components/CompletionActions'
 import Container from '@components/Container'
 import MinimizeButton from '@components/MinimizeButton'
-import Icon from '@renderer/component/Icon'
+import Icon from '@renderer/component/ui/Icon'
 
 export default function FocusCompleted(): JSX.Element {
   const navigate = useNavigate()

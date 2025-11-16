@@ -9,7 +9,7 @@ import TimerDisplay from './components/TimerDisplay'
 import StopConfirmModal from './components/StopConfirmModal'
 import Container from '@components/Container'
 import MinimizeButton from '@components/MinimizeButton'
-import Icon from '@renderer/component/Icon'
+import Icon from '@renderer/component/ui/Icon'
 
 export default function FocusRunning(): JSX.Element {
   const navigate = useNavigate()
@@ -98,7 +98,6 @@ export default function FocusRunning(): JSX.Element {
             timerState={timerState}
             onResume={handleResumeClick}
             onPause={handlePauseClick}
-            onStop={handleStopClick}
           />
         </TimerWrapper>
       </Container.Body>

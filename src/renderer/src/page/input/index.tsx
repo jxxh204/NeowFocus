@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useTaskContext } from '@renderer/context/TaskContext'
 import Container from '@components/Container'
-import Icon from '@components/Icon'
+import Icon from '@renderer/component/ui/Icon'
 import MinimizeButton from '@components/MinimizeButton'
-import TextField from '@components/TextField'
+import TextField from '@renderer/component/ui/TextField'
 import { WINDOW_SIZE, INPUT_LIMITS, ROUTES } from '@renderer/constants'
 
 function InputPage() {
