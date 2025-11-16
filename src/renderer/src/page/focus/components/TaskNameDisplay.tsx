@@ -2,6 +2,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import Icon from '@renderer/component/ui/Icon'
 import { SubButton } from '@renderer/component/ui/SubButton'
+import { Typography } from '@renderer/component/ui/Typography'
 
 interface TaskNameDisplayProps {
   taskName: string
@@ -20,7 +21,9 @@ export default function TaskNameDisplay({ taskName, onComplete, onDelete }: Task
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <TaskNameText>{taskName}</TaskNameText>
+      <Typography variant="subtitle" color="#FFFFFF" align="center">
+        {taskName}
+      </Typography>
       {shouldShowOverlay && (
         <Overlay>
           <ButtonGroup>
@@ -32,6 +35,9 @@ export default function TaskNameDisplay({ taskName, onComplete, onDelete }: Task
             {onComplete && (
               <SubButton size="M" onClick={onComplete}>
                 <Icon name="check" size={16} />
+                <Typography variant="body2" color="#FFFFFF">
+                  빠른 완료
+                </Typography>
               </SubButton>
             )}
           </ButtonGroup>
@@ -57,17 +63,8 @@ const TaskNameBox = styled.div<{ $isHovering: boolean }>`
   ${({ $isHovering }) =>
     $isHovering &&
     `
-    background: rgba(187, 187, 187, 0.08);
+    background: rgba(0,0,0, 0.5);
   `}
-`
-
-const TaskNameText = styled.div`
-  color: ${({ theme }) => theme.color.text.primary};
-  font-size: 15px;
-  font-weight: 500;
-  text-align: center;
-  word-break: break-word;
-  line-height: 20px;
 `
 
 const Overlay = styled.div`

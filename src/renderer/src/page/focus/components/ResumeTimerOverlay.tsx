@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import Icon from '@renderer/component/ui/Icon'
 import { SubButton } from '@renderer/component/ui/SubButton'
+import { Typography } from '@renderer/component/ui/Typography'
 
 interface ResumeTimerOverlayProps {
   timerState: 'idle' | 'play' | 'pause' | 'end'
@@ -24,7 +25,9 @@ export default function ResumeTimerOverlay({ timerState, onResume }: ResumeTimer
     <Overlay>
       <SubButton onClick={onResume}>
         <Icon name="play" size={14} />
-        <Label>{t('focus.timerMenu.resume')}</Label>
+        <Typography variant="caption" color="#FFFFFF">
+          {t('focus.timerMenu.resume')}
+        </Typography>
       </SubButton>
     </Overlay>
   )
@@ -36,11 +39,4 @@ const Overlay = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
-`
-
-const Label = styled.span`
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 14px;
-  color: #ffffff;
 `

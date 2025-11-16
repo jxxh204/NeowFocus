@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import Icon from '@renderer/component/ui/Icon'
-import theme from '@renderer/styles/theme'
 import { SubButton } from '@renderer/component/ui/SubButton'
+import { Typography } from '@renderer/component/ui/Typography'
 
 interface PauseMenuOverlayProps {
   timerState: 'idle' | 'play' | 'pause' | 'end'
@@ -30,7 +30,9 @@ export default function PauseMenuOverlay({
     <Overlay>
       <SubButton onClick={onPause}>
         <Icon name="pause" alt="pause" size={14} />
-        <MenuLabel>{t('focus.timerMenu.pause')}</MenuLabel>
+        <Typography variant="caption" color="#FFFFFF">
+          {t('focus.timerMenu.pause')}
+        </Typography>
       </SubButton>
     </Overlay>
   )
@@ -42,10 +44,4 @@ const Overlay = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
-`
-
-const MenuLabel = styled.span`
-  font-size: 10px;
-  color: ${theme.color.white};
-  white-space: nowrap;
 `
