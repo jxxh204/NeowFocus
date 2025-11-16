@@ -28,8 +28,4 @@ export const SubButton = styled.button<SubButtonProps>`
     padding: 12px;
     gap: 4px;
   `}
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.9);
-  }
 `
