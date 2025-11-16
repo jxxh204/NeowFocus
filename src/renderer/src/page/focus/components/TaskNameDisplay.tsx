@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import styled from 'styled-components'
 import Icon from '@renderer/component/ui/Icon'
+import { SubButton } from '@renderer/component/ui/SubButton'
 
 interface TaskNameDisplayProps {
   taskName: string
@@ -24,14 +25,14 @@ export default function TaskNameDisplay({ taskName, onComplete, onDelete }: Task
         <Overlay>
           <ButtonGroup>
             {onDelete && (
-              <IconButton onClick={onDelete}>
+              <SubButton size="M" onClick={onDelete}>
                 <Icon name="trash" size={16} />
-              </IconButton>
+              </SubButton>
             )}
             {onComplete && (
-              <IconButton onClick={onComplete}>
+              <SubButton size="M" onClick={onComplete}>
                 <Icon name="check" size={16} />
-              </IconButton>
+              </SubButton>
             )}
           </ButtonGroup>
         </Overlay>
@@ -80,22 +81,4 @@ const Overlay = styled.div`
 const ButtonGroup = styled.div`
   display: flex;
   gap: 8px;
-`
-
-const IconButton = styled.button`
-  width: 40px;
-  height: 40px;
-  padding: 12px;
-  background: #000000;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.8;
-  }
 `
