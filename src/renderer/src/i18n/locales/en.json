@@ -12,6 +12,7 @@
     "sessionCount": "sessions",
     "defaultTaskName": "Focus Time",
     "tinyWindowButton": "Tiny Window View",
+    "quickComplete": "Quick Complete",
     "timerMenu": {
       "pause": "Pause",
       "resume": "Resume",

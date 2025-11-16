@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import Icon from '@renderer/component/ui/Icon'
 import { SubButton } from '@renderer/component/ui/SubButton'
@@ -11,6 +12,7 @@ interface TaskNameDisplayProps {
 }
 
 export default function TaskNameDisplay({ taskName, onComplete, onDelete }: TaskNameDisplayProps) {
+  const { t } = useTranslation()
   const [isHovering, setIsHovering] = useState(false)
 
   const shouldShowOverlay = isHovering && (onComplete || onDelete)
@@ -36,7 +38,7 @@ export default function TaskNameDisplay({ taskName, onComplete, onDelete }: Task
               <SubButton size="M" onClick={onComplete}>
                 <Icon name="check" size={16} />
                 <Typography variant="body2" color="#FFFFFF">
-                  빠른 완료
+                  {t('focus.quickComplete')}
                 </Typography>
               </SubButton>
             )}
