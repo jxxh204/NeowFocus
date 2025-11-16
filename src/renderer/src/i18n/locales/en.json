@@ -7,7 +7,7 @@
     "stopConfirmModal": {
       "title": "Do you want to stop the current task?",
       "cancelButton": "Cancel",
-      "confirmButton": "Stop"
+      "confirmButton": "Delete"
     },
     "sessionCount": "sessions",
     "defaultTaskName": "Focus Time",

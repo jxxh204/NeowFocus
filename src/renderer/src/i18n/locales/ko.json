@@ -7,7 +7,7 @@
     "stopConfirmModal": {
       "title": "진행중인 작업을 중단하실 건가요?",
       "cancelButton": "닫기",
-      "confirmButton": "중단하기"
+      "confirmButton": "삭제하기"
     },
     "sessionCount": "회차",
     "defaultTaskName": "Focus Time",
