@@ -1,7 +1,7 @@
 {
   "name": "neow-focus-vite",
   "productName": "NeowFocus",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
