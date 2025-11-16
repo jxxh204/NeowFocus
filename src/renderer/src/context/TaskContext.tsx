@@ -29,6 +29,7 @@ type TaskContextType = {
   groupedTaskList: GroupedTask[]
   resetCurrentTask: () => void
   updateTask: (duration: number, status?: TaskStatus) => void
+  pastComplete: (elapsedTime: number) => void
   startTask: (taskName: string) => void
   reStartTask: () => void
   incrementSession: () => void
@@ -121,6 +122,21 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     [setCurrentTask]
   )
 
+  const pastComplete = useCallback(
+    (elapsedTime: number) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('pastComplete', elapsedTime)
+      }
+      setCurrentTask((prevTask: Task) => ({
+        ...prevTask,
+        taskDuration: 0,
+        fullDuration: elapsedTime,
+        taskStatus: 'end'
+      }))
+    },
+    [setCurrentTask]
+  )
+
   // taskList를 taskName별로 그룹화
   const groupedTaskList = useCallback((): GroupedTask[] => {
     const grouped = taskList.reduce(
@@ -178,6 +194,7 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         groupedTaskList: groupedTaskList(),
         resetCurrentTask,
         updateTask,
+        pastComplete,
         startTask,
         reStartTask,
         incrementSession,

@@ -15,7 +15,7 @@ import Icon from '@renderer/component/ui/Icon'
 export default function FocusRunning(): JSX.Element {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { currentTask, updateTask, resetCurrentTask } = useTaskContext()
+  const { currentTask, updateTask, pastComplete, resetCurrentTask } = useTaskContext()
   const [showStopModal, setShowStopModal] = useState(false)
 
   const {
@@ -72,6 +72,14 @@ export default function FocusRunning(): JSX.Element {
     updateTask(remainingTime, 'play')
   }
 
+  // 이벤트 핸들러: 빠른 완료 (진행된 시간만큼만 저장)
+  const handleQuickComplete = () => {
+    const fullDuration = currentTask?.fullDuration || TIME.DEFAULT_POMODORO_DURATION
+    const elapsedTime = fullDuration - remainingTime
+    handleStop()
+    pastComplete(elapsedTime)
+  }
+
   // 이벤트 핸들러: 작은 창으로 전환
   const handleTinyWindowClick = () => {
     navigate('/tiny_window')
@@ -90,9 +98,7 @@ export default function FocusRunning(): JSX.Element {
       <Container.Body height={WINDOW_SIZE.BODY_SECTION_FOCUS_HEIGHT} padding="0 0 0 10px">
         <TaskNameDisplay
           taskName={currentTask?.taskName || t('focus.defaultTaskName')}
-          onComplete={() => {
-            /* TODO: 완료 처리 */
-          }}
+          onComplete={handleQuickComplete}
           onDelete={handleStopClick}
         />
         <TimerDisplay
