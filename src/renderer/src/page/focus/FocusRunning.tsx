@@ -6,6 +6,7 @@ import { useTaskContext } from '@renderer/context/TaskContext'
 import { useTimer } from './hooks/useTimer'
 import { TIME, WINDOW_SIZE } from '@renderer/constants'
 import TimerDisplay from './components/TimerDisplay'
+import TaskNameDisplay from './components/TaskNameDisplay'
 import StopConfirmModal from './components/StopConfirmModal'
 import Container from '@components/Container'
 import MinimizeButton from '@components/MinimizeButton'
@@ -87,19 +88,21 @@ export default function FocusRunning(): JSX.Element {
       </Container.Top>
 
       <Container.Body height={WINDOW_SIZE.BODY_SECTION_FOCUS_HEIGHT} padding="0 0 0 10px">
-        <TaskNameBox>
-          <TaskNameText>{currentTask?.taskName || t('focus.defaultTaskName')}</TaskNameText>
-        </TaskNameBox>
-        <TimerWrapper>
-          <TimerDisplay
-            percentage={percentage}
-            formatTime={formatTime}
-            remainingTime={remainingTime}
-            timerState={timerState}
-            onResume={handleResumeClick}
-            onPause={handlePauseClick}
-          />
-        </TimerWrapper>
+        <TaskNameDisplay
+          taskName={currentTask?.taskName || t('focus.defaultTaskName')}
+          onComplete={() => {
+            /* TODO: 완료 처리 */
+          }}
+          onDelete={handleStopClick}
+        />
+        <TimerDisplay
+          percentage={percentage}
+          formatTime={formatTime}
+          remainingTime={remainingTime}
+          timerState={timerState}
+          onResume={handleResumeClick}
+          onPause={handlePauseClick}
+        />
       </Container.Body>
 
       <Container.Bottom height={WINDOW_SIZE.BOTTOM_SECTION_HEIGHT}>
@@ -122,31 +125,4 @@ const IconGroup = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-`
-
-const TaskNameBox = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 292px;
-  height: 88px;
-  padding: 10px;
-  box-sizing: border-box;
-  background: rgba(187, 187, 187, 0.04);
-  border-radius: 8px;
-`
-
-const TaskNameText = styled.div`
-  color: ${({ theme }) => theme.color.text.primary};
-  font-size: 15px;
-  font-weight: 500;
-  text-align: center;
-  word-break: break-word;
-  line-height: 20px;
-`
-
-const TimerWrapper = styled.div`
-  width: 88px;
-  display: flex;
-  justify-content: center;
 `

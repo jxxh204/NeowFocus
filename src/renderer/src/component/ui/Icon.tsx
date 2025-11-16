@@ -11,6 +11,8 @@ type IconName =
   | 'drag'
   | 'paw_white'
   | 'plus_box'
+  | 'trash'
+  | 'check'
 
 interface IconProps {
   name?: IconName
@@ -36,7 +38,9 @@ const ICON_MAP: Record<IconName, string> = {
   icon_mini: './assets/icon_mini.svg',
   drag: './assets/icon_drag.svg',
   paw_white: './assets/icon_paw_white.svg',
-  plus_box: './assets/icon_plus_box.svg'
+  plus_box: './assets/icon_plus_box.svg',
+  trash: './assets/icon_trash.svg',
+  check: './assets/icon_check.svg'
 }
 
 const Icon = ({ name, src, alt = '', size = 16, width, height }: IconProps) => {
