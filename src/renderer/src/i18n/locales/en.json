@@ -5,7 +5,7 @@
   },
   "focus": {
     "stopConfirmModal": {
-      "title": "Do you want to stop the current task?",
+      "title": "Do you want to delete the current task?",
       "cancelButton": "Cancel",
       "confirmButton": "Delete"
     },

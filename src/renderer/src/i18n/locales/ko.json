@@ -5,7 +5,7 @@
   },
   "focus": {
     "stopConfirmModal": {
-      "title": "진행중인 작업을 중단하실 건가요?",
+      "title": "진행중인 작업을 삭제하실 건가요?",
       "cancelButton": "닫기",
       "confirmButton": "삭제하기"
     },
@@ -14,7 +14,7 @@
     "tinyWindowButton": "작은 창 보기",
     "quickComplete": "빠른 완료",
     "timerMenu": {
-      "pause": "잠깐멈춤",
+      "pause": "일시정지",
       "resume": "재개",
       "stop": "작업중단"
     },

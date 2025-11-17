@@ -69,7 +69,7 @@ const ButtonContainer = styled.div`
   height: 48px;
 `
 
-const ModalButton = styled.button<{ $primary?: boolean }>`
+const ModalButton = styled.button.attrs({ type: 'button' })<{ $primary?: boolean }>`
   flex: 1;
   height: 100%;
   background: transparent;

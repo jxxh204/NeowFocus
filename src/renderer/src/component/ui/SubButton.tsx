@@ -6,7 +6,7 @@ interface SubButtonProps {
   size?: SubButtonSize
 }
 
-export const SubButton = styled.button<SubButtonProps>`
+export const SubButton = styled.button.attrs({ type: 'button' })<SubButtonProps>`
   background: rgba(0, 0, 0, 0.8);
   border-radius: 8px;
   border: none;
