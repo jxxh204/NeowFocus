@@ -11,7 +11,7 @@
     },
     "sessionCount": "회차",
     "defaultTaskName": "Focus Time",
-    "tinyWindowButton": "작은 창 보기",
+    "tinyWindowButton": "작은 창 보기 (Enter)",
     "quickComplete": "빠른 완료",
     "timerMenu": {
       "pause": "일시정지",
