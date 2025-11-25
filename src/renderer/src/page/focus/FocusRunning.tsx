@@ -45,15 +45,24 @@ export default function FocusRunning(): JSX.Element {
   }, [currentTask?.taskName, navigate])
 
   // 키보드 이벤트: Enter 키로 작은 창으로 전환
+  // 입력창에서의 Enter 이벤트 전파 방지를 위해 마운트 후 지연 활성화
   useEffect(() => {
+    let isReady = false
+    const timer = setTimeout(() => {
+      isReady = true
+    }, 300) // 300ms 후 Enter 키 활성화
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && !showStopModal) {
+      if (e.key === 'Enter' && !showStopModal && isReady) {
         navigate('/tiny_window')
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [showStopModal, navigate])
 
   // 이벤트 핸들러: 타이머 중지 확인
