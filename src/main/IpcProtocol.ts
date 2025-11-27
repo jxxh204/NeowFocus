@@ -53,3 +53,13 @@ export const getSystemLocaleProtocol = (): void => {
     return locale.startsWith('ko') ? 'ko' : 'en'
   })
 }
+
+export const navigateToProtocol = (mainWindow: Electron.BrowserWindow): void => {
+  ipcMain.on('NAVIGATE_TO', (_e: Electron.IpcMainEvent, route: string) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('NAVIGATE_TO', route)
+      mainWindow.show()
+      mainWindow.focus()
+    }
+  })
+}

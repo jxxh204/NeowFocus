@@ -1,7 +1,13 @@
-import { Menu, app, nativeImage, dialog } from 'electron'
+import { Menu, app, nativeImage, dialog, BrowserWindow } from 'electron'
 import path from 'path'
 import { APP_INFO } from '../constants'
 import { t } from '../i18n'
+
+let mainWindowRef: BrowserWindow | null = null
+
+export const setMainWindow = (window: BrowserWindow): void => {
+  mainWindowRef = window
+}
 
 export const setupApplicationMenu = (): void => {
   // macOS 전용
@@ -40,7 +46,13 @@ export const setupApplicationMenu = (): void => {
         {
           label: t('menu.preferences'),
           accelerator: 'Cmd+,',
-          enabled: false // 아직 구현 안됨
+          click: () => {
+            if (mainWindowRef && !mainWindowRef.isDestroyed()) {
+              mainWindowRef.webContents.send('NAVIGATE_TO', '/settings')
+              mainWindowRef.show()
+              mainWindowRef.focus()
+            }
+          }
         },
         { type: 'separator' },
         {

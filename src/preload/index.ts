@@ -31,6 +31,9 @@ const windowAPI = {
   },
   getSystemLocale: (): Promise<string> => {
     return ipcRenderer.invoke('GET_SYSTEM_LOCALE')
+  },
+  onNavigateTo: (callback: (route: string) => void) => {
+    ipcRenderer.on('NAVIGATE_TO', (_event, route) => callback(route))
   }
 }
 

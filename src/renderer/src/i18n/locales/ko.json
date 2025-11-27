@@ -29,5 +29,19 @@
   },
   "tinyWindow": {
     "defaultTaskName": "Focus Time"
+  },
+  "settings": {
+    "title": "설정",
+    "timer": {
+      "title": "타이머",
+      "duration": "집중 시간"
+    },
+    "appearance": {
+      "title": "외관",
+      "color": "테마 컬러",
+      "icon": "아이콘"
+    },
+    "comingSoon": "준비 중",
+    "back": "돌아가기"
   }
 }

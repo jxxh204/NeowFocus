@@ -50,6 +50,21 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
       type: 'separator'
     },
     {
+      label: t('tray.settings'),
+      click: () => {
+        if (!mainWindow || mainWindow.isDestroyed()) {
+          console.log('Window was destroyed, cannot open settings')
+          return
+        }
+        mainWindow.webContents.send('NAVIGATE_TO', '/settings')
+        mainWindow.show()
+        mainWindow.focus()
+      }
+    },
+    {
+      type: 'separator'
+    },
+    {
       label: t('tray.quit'),
       click: () => {
         app.quit()

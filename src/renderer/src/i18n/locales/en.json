@@ -29,5 +29,19 @@
   },
   "tinyWindow": {
     "defaultTaskName": "Focus Time"
+  },
+  "settings": {
+    "title": "Settings",
+    "timer": {
+      "title": "Timer",
+      "duration": "Focus Duration"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "color": "Theme Color",
+      "icon": "Icon"
+    },
+    "comingSoon": "Coming Soon",
+    "back": "Back"
   }
 }

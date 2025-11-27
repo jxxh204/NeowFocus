@@ -11,6 +11,7 @@
   "tray": {
     "show": "Show",
     "hide": "Hide",
+    "settings": "Settings...",
     "quit": "Quit"
   },
   "menu": {

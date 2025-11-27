@@ -4,13 +4,14 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { handleWindow, showWindow } from './handlers/windowHandler'
 import { createTray } from './handlers/trayhandler'
 import { createDockMenu } from './handlers/dockHandler'
-import { setupApplicationMenu } from './handlers/menuHandler'
+import { setupApplicationMenu, setMainWindow } from './handlers/menuHandler'
 import { initI18n } from './i18n'
 import {
   windowSizeChange,
   notificationProtocol,
   showWindowProtocol,
-  getSystemLocaleProtocol
+  getSystemLocaleProtocol,
+  navigateToProtocol
 } from './IpcProtocol'
 import {
   WINDOW_SIZE,
@@ -95,6 +96,7 @@ function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
   notificationProtocol()
   showWindowProtocol(mainWindow)
   getSystemLocaleProtocol()
+  navigateToProtocol(mainWindow)
 
   createDockMenu(mainWindow)
 
@@ -111,9 +113,6 @@ app.whenReady().then(() => {
   // i18n 초기화
   initI18n()
 
-  // Application Menu 설정
-  setupApplicationMenu()
-
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
@@ -121,6 +120,10 @@ app.whenReady().then(() => {
   ipcMain.on(IPC_CHANNELS.PING, () => console.log('pong'))
 
   let { mainWindow, tray } = createWindow()
+
+  // Application Menu 설정 (mainWindow 생성 후)
+  setMainWindow(mainWindow)
+  setupApplicationMenu()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) {

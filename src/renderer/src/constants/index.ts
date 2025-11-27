@@ -35,7 +35,8 @@ export const WINDOW_SIZE = {
 export const ROUTES = {
   INPUT: '/',
   FOCUS: '/focus',
-  TINY_WINDOW: '/tiny_window'
+  TINY_WINDOW: '/tiny_window',
+  SETTINGS: '/settings'
 } as const
 
 // IPC 채널
