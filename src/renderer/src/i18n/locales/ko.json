@@ -34,7 +34,8 @@
     "title": "설정",
     "timer": {
       "title": "타이머",
-      "duration": "집중 시간"
+      "duration": "집중 시간",
+      "minutes": "분"
     },
     "appearance": {
       "title": "외관",

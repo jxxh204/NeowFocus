@@ -1,7 +1,8 @@
-import { createContext, useContext, useRef, useCallback } from 'react'
+import { createContext, useContext, useCallback } from 'react'
 import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
 import { TIME } from '@renderer/constants'
 import { v4 as uuidv4 } from 'uuid'
+import { useSettingsContext } from './SettingsContext'
 
 export type TaskStatus = 'idle' | 'play' | 'pause' | 'end'
 
@@ -39,14 +40,15 @@ type TaskContextType = {
 const TaskContext = createContext<TaskContextType | null>(null)
 
 const TaskProvider = ({ children }: { children: React.ReactNode }) => {
-  const taskDuration = useRef(TIME.DEFAULT_POMODORO_DURATION)
+  const { settings } = useSettingsContext()
+  const timerDuration = settings?.timerDuration ?? TIME.DEFAULT_POMODORO_DURATION
 
   const [currentTask, setCurrentTask] = useLocalStorage<Task>('currentTask', {
     id: uuidv4(), // 고유 식별자
     date: '', // 태스크가 생성된 날짜 (ISO 문자열 형식)
     taskName: '', // 태스크 이름
-    taskDuration: taskDuration.current, // 현재까지 진행된 시간
-    fullDuration: taskDuration.current, // 태스크 총 시간
+    taskDuration: timerDuration, // 현재까지 진행된 시간
+    fullDuration: timerDuration, // 태스크 총 시간
     taskStatus: 'idle', // 태스크 상태
     sessionCount: 1 // 세션 카운트
   })
@@ -62,7 +64,7 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       date: '',
       taskName: '',
       taskDuration: 0,
-      fullDuration: taskDuration.current,
+      fullDuration: timerDuration,
       taskStatus: 'idle',
       sessionCount: 1
     })
@@ -76,8 +78,8 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       id: uuidv4(),
       date: new Date().toISOString(),
       taskName: currentTask?.taskName ?? '',
-      taskDuration: taskDuration.current,
-      fullDuration: taskDuration.current,
+      taskDuration: timerDuration,
+      fullDuration: timerDuration,
       taskStatus: 'play',
       sessionCount: currentTask?.sessionCount ?? 1
     })
@@ -91,8 +93,8 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       id: uuidv4(),
       date: new Date().toISOString(),
       taskName: taskName,
-      taskDuration: taskDuration.current,
-      fullDuration: taskDuration.current,
+      taskDuration: timerDuration,
+      fullDuration: timerDuration,
       taskStatus: 'play',
       sessionCount: 1
     })

@@ -67,7 +67,7 @@ export function TinyWindowPage(): JSX.Element {
         percentage={percentage}
         size={24}
         paused={isPaused}
-        color="green"
+        color="theme"
         strokeWidth={3}
         handStrokeWidth={2}
       />

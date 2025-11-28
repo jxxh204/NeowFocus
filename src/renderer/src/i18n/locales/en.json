@@ -34,7 +34,8 @@
     "title": "Settings",
     "timer": {
       "title": "Timer",
-      "duration": "Focus Duration"
+      "duration": "Focus Duration",
+      "minutes": "m"
     },
     "appearance": {
       "title": "Appearance",

@@ -33,7 +33,12 @@ const windowAPI = {
     return ipcRenderer.invoke('GET_SYSTEM_LOCALE')
   },
   onNavigateTo: (callback: (route: string) => void) => {
-    ipcRenderer.on('NAVIGATE_TO', (_event, route) => callback(route))
+    const handler = (_event: Electron.IpcRendererEvent, route: string) => callback(route)
+    ipcRenderer.on('NAVIGATE_TO', handler)
+    // cleanup 함수 반환
+    return () => {
+      ipcRenderer.removeListener('NAVIGATE_TO', handler)
+    }
   }
 }
 

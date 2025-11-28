@@ -12,12 +12,18 @@ function Router() {
   useEffect(() => {
     // Main 프로세스에서 NAVIGATE_TO 이벤트 수신
     const electron = window.electron as {
-      onNavigateTo?: (callback: (route: string) => void) => void
+      onNavigateTo?: (callback: (route: string) => void) => (() => void) | void
     }
+    let cleanup: (() => void) | void
+
     if (electron?.onNavigateTo) {
-      electron.onNavigateTo((route: string) => {
+      cleanup = electron.onNavigateTo((route: string) => {
         navigate(route)
       })
+    }
+
+    return () => {
+      if (cleanup) cleanup()
     }
   }, [navigate])
 
