@@ -4,6 +4,7 @@ import { TIME } from '@renderer/constants'
 
 // 테마 컬러 옵션
 export const THEME_COLORS = {
+  white: '#FFFFFF',
   green: '#00FF85',
   blue: '#00D4FF',
   purple: '#B388FF',
@@ -33,7 +34,7 @@ type SettingsContextType = {
 
 const DEFAULT_SETTINGS: Settings = {
   timerDuration: TIME.DEFAULT_POMODORO_DURATION, // 25분 = 1500초
-  themeColor: 'green'
+  themeColor: 'white'
 }
 
 const SettingsContext = createContext<SettingsContextType | null>(null)

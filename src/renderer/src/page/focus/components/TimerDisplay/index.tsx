@@ -40,7 +40,7 @@ export default function TimerDisplay({
       onMouseLeave={() => setIsHovering(false)}
     >
       <TimerCircleWrapper>
-        <CircularTimer percentage={percentage} size={64} paused={isPaused} color="theme" />
+        <CircularTimer percentage={percentage} size={64} paused={isPaused} color="white" />
         <ResumeTimerOverlay timerState={timerState} onResume={onResume} />
         <PauseMenuOverlay timerState={timerState} isHovering={isHovering} onPause={onPause} />
       </TimerCircleWrapper>

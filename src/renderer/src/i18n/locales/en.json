@@ -42,6 +42,15 @@
       "color": "Theme Color",
       "icon": "Icon"
     },
+    "colors": {
+      "white": "White",
+      "green": "Green",
+      "blue": "Blue",
+      "purple": "Purple",
+      "pink": "Pink",
+      "orange": "Orange",
+      "yellow": "Yellow"
+    },
     "comingSoon": "Coming Soon",
     "back": "Back"
   }

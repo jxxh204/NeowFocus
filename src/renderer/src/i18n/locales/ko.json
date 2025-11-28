@@ -42,6 +42,15 @@
       "color": "테마 컬러",
       "icon": "아이콘"
     },
+    "colors": {
+      "white": "화이트",
+      "green": "그린",
+      "blue": "블루",
+      "purple": "퍼플",
+      "pink": "핑크",
+      "orange": "오렌지",
+      "yellow": "옐로우"
+    },
     "comingSoon": "준비 중",
     "back": "돌아가기"
   }

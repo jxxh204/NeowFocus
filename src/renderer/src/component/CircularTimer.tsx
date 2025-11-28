@@ -25,8 +25,10 @@ export default function CircularTimer({
   // 흰줄이 줄어들어야 함: percentage가 증가하면 offset이 감소 (남은 부분만 표시)
   const offset = ((100 - percentage) / 100) * circumference
 
-  // 시계바늘 각도 계산 (반시계방향으로 회전)
-  const angle = -90 - ((100 - percentage) / 100) * 360 // 오른쪽에서 왼쪽으로
+  // 시계바늘 각도 계산 (게이지 끝점과 일치하도록)
+  // 게이지는 12시 방향(-90도)에서 시작하여 시계방향으로 진행
+  // percentage가 100이면 12시, 0이면 한바퀴 돌아서 12시
+  const angle = -90 + (percentage / 100) * 360
   const centerX = size / 2
   const centerY = size / 2
   const handLength = radius * 0.6 // 반지름의 60% 길이
