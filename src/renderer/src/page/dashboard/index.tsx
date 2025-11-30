@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
@@ -6,6 +6,7 @@ import Container from '@components/Container'
 import Icon from '@renderer/component/ui/Icon'
 import { WINDOW_SIZE, IPC_CHANNELS, ROUTES } from '@renderer/constants'
 import { useTaskContext, Task } from '@renderer/context/TaskContext'
+import { useSettingsContext } from '@renderer/context/SettingsContext'
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -69,6 +70,10 @@ const Title = styled.h1`
   margin: 0;
 `
 
+const DateSelectorWrapper = styled.div`
+  position: relative;
+`
+
 const DateSelector = styled.button`
   display: flex;
   align-items: center;
@@ -109,8 +114,17 @@ const TaskName = styled.span`
 
 const PawContainer = styled.div`
   display: flex;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
+`
+
+const PawIcon = styled.div<{ $color: string }>`
+  width: 20px;
+  height: 20px;
+
+  svg path {
+    fill: ${({ $color }) => $color};
+  }
 `
 
 const EmptyMessage = styled.div`
@@ -132,20 +146,24 @@ const DatePickerOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: transparent;
   z-index: 100;
 `
 
-const DatePickerModal = styled.div`
+const DatePickerDropdown = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
   background: ${({ theme }) => theme.color.container.background};
-  border-radius: 12px;
-  padding: 12px;
-  max-height: 300px;
+  border: 1px solid ${({ theme }) => theme.color.container.border};
+  border-radius: 8px;
+  padding: 8px;
+  max-height: 200px;
   overflow-y: auto;
-  min-width: 150px;
+  min-width: 120px;
+  z-index: 101;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
   &::-webkit-scrollbar {
     width: 4px;
@@ -160,20 +178,18 @@ const DatePickerModal = styled.div`
 const DateOption = styled.button<{ $isSelected: boolean }>`
   display: block;
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 10px;
   background: ${({ $isSelected, theme }) =>
-    $isSelected ? theme.color.primary[500] : 'transparent'};
+    $isSelected ? theme.color.button.hover : 'transparent'};
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 13px;
-  color: ${({ $isSelected, theme }) =>
-    $isSelected ? theme.color.black : theme.color.text.primary};
+  font-size: 12px;
+  color: ${({ theme }) => theme.color.text.primary};
   text-align: left;
 
   &:hover {
-    background: ${({ $isSelected, theme }) =>
-      $isSelected ? theme.color.primary[500] : theme.color.button.hover};
+    background: ${({ theme }) => theme.color.button.hover};
   }
 `
 
@@ -197,8 +213,10 @@ function DashboardPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { dailyTaskList } = useTaskContext()
+  const { themeColorValue } = useSettingsContext()
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedDate, setSelectedDate] = useState<string>('')
+  const datePickerRef = useRef<HTMLDivElement>(null)
 
   // 사용 가능한 날짜 목록
   const availableDates = useMemo(() => {
@@ -262,10 +280,25 @@ function DashboardPage() {
               <Title>{t('dashboard.title')}</Title>
             </HeaderLeft>
             {availableDates.length > 0 && (
-              <DateSelector onClick={() => setShowDatePicker(true)}>
-                {selectedDate ? formatDateDisplay(selectedDate) : ''}
-                <DateArrow>▼</DateArrow>
-              </DateSelector>
+              <DateSelectorWrapper ref={datePickerRef}>
+                <DateSelector onClick={() => setShowDatePicker(!showDatePicker)}>
+                  {selectedDate ? formatDateDisplay(selectedDate) : ''}
+                  <DateArrow>▼</DateArrow>
+                </DateSelector>
+                {showDatePicker && (
+                  <DatePickerDropdown>
+                    {availableDates.map((date) => (
+                      <DateOption
+                        key={date}
+                        $isSelected={date === selectedDate}
+                        onClick={() => handleDateSelect(date)}
+                      >
+                        {formatDateDisplay(date)}
+                      </DateOption>
+                    ))}
+                  </DatePickerDropdown>
+                )}
+              </DateSelectorWrapper>
             )}
           </Header>
 
@@ -280,7 +313,9 @@ function DashboardPage() {
                 <TaskName>{group.taskName}</TaskName>
                 <PawContainer>
                   {Array.from({ length: group.count }).map((_, i) => (
-                    <Icon key={i} name="paw_white" size={24} />
+                    <PawIcon key={i} $color={themeColorValue}>
+                      <Icon name="paw_white" size={20} />
+                    </PawIcon>
                   ))}
                 </PawContainer>
               </TaskCard>
@@ -290,19 +325,7 @@ function DashboardPage() {
       </Container.Body>
 
       {showDatePicker && (
-        <DatePickerOverlay onClick={() => setShowDatePicker(false)}>
-          <DatePickerModal onClick={(e) => e.stopPropagation()}>
-            {availableDates.map((date) => (
-              <DateOption
-                key={date}
-                $isSelected={date === selectedDate}
-                onClick={() => handleDateSelect(date)}
-              >
-                {formatDateDisplay(date)}
-              </DateOption>
-            ))}
-          </DatePickerModal>
-        </DatePickerOverlay>
+        <DatePickerOverlay onClick={() => setShowDatePicker(false)} />
       )}
     </Container>
   )
