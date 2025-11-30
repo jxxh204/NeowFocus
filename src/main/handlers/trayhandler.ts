@@ -50,6 +50,18 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
       type: 'separator'
     },
     {
+      label: t('tray.dashboard'),
+      click: () => {
+        if (!mainWindow || mainWindow.isDestroyed()) {
+          console.log('Window was destroyed, cannot open dashboard')
+          return
+        }
+        mainWindow.webContents.send('NAVIGATE_TO', '/dashboard')
+        mainWindow.show()
+        mainWindow.focus()
+      }
+    },
+    {
       label: t('tray.settings'),
       click: () => {
         if (!mainWindow || mainWindow.isDestroyed()) {

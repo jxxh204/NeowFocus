@@ -11,6 +11,7 @@
   "tray": {
     "show": "열기",
     "hide": "가리기",
+    "dashboard": "기록",
     "settings": "설정...",
     "quit": "종료"
   },

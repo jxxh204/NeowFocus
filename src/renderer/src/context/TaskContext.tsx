@@ -23,11 +23,19 @@ export type GroupedTask = {
   totalCount: number
 }
 
+export type DailyTaskSummary = {
+  date: string // YYYY-MM-DD
+  tasks: Task[]
+  totalDuration: number
+  totalCount: number
+}
+
 type TaskContextType = {
   currentTask: Task
   taskStatus: TaskStatus
   taskList: Task[]
   groupedTaskList: GroupedTask[]
+  dailyTaskList: DailyTaskSummary[]
   resetCurrentTask: () => void
   updateTask: (duration: number, status?: TaskStatus) => void
   pastComplete: (elapsedTime: number) => void
@@ -161,6 +169,30 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     return Object.values(grouped)
   }, [taskList])
 
+  // taskList를 날짜별로 그룹화 (최신순)
+  const dailyTaskList = useCallback((): DailyTaskSummary[] => {
+    const grouped = taskList.reduce(
+      (acc, task) => {
+        const dateKey = task.date ? new Date(task.date).toISOString().split('T')[0] : 'unknown'
+        if (!acc[dateKey]) {
+          acc[dateKey] = {
+            date: dateKey,
+            tasks: [],
+            totalDuration: 0,
+            totalCount: 0
+          }
+        }
+        acc[dateKey].tasks.push(task)
+        acc[dateKey].totalDuration += task.fullDuration
+        acc[dateKey].totalCount += 1
+        return acc
+      },
+      {} as Record<string, DailyTaskSummary>
+    )
+    // 최신순으로 정렬
+    return Object.values(grouped).sort((a, b) => b.date.localeCompare(a.date))
+  }, [taskList])
+
   const saveTaskToList = useCallback(() => {
     if (process.env.NODE_ENV === 'development') {
       console.log('saveTaskToList')
@@ -194,6 +226,7 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         taskStatus: currentTask?.taskStatus ?? 'idle',
         taskList,
         groupedTaskList: groupedTaskList(),
+        dailyTaskList: dailyTaskList(),
         resetCurrentTask,
         updateTask,
         pastComplete,

@@ -36,7 +36,8 @@ export const ROUTES = {
   INPUT: '/',
   FOCUS: '/focus',
   TINY_WINDOW: '/tiny_window',
-  SETTINGS: '/settings'
+  SETTINGS: '/settings',
+  DASHBOARD: '/dashboard'
 } as const
 
 // IPC 채널

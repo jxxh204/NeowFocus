@@ -1,7 +1,8 @@
 {
   "input": {
     "placeholder": "집중이 필요한 일 하나를 적어주세요.",
-    "startButton": "뽀모도로 시작"
+    "startButton": "뽀모도로 시작",
+    "dashboard": "기록 보기"
   },
   "focus": {
     "stopConfirmModal": {
@@ -52,6 +53,14 @@
       "yellow": "옐로우"
     },
     "comingSoon": "준비 중",
+    "back": "돌아가기"
+  },
+  "dashboard": {
+    "title": "집중 기록",
+    "empty": "아직 완료한 작업이 없습니다.\n첫 번째 뽀모도로를 시작해보세요!",
+    "today": "오늘",
+    "yesterday": "어제",
+    "sessions": "회",
     "back": "돌아가기"
   }
 }

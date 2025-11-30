@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { FocusPage } from '@renderer/page/focus'
 import InputPage from '@renderer/page/input'
 import SettingsPage from '@renderer/page/settings'
+import DashboardPage from '@renderer/page/dashboard'
 import { TinyWindowPage } from '@renderer/page/tinyWindow'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import { ROUTES } from '@renderer/constants'
@@ -33,6 +34,7 @@ function Router() {
       <Route path={ROUTES.FOCUS} element={<FocusPage />} />
       <Route path={ROUTES.TINY_WINDOW} element={<TinyWindowPage />} />
       <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+      <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
     </Routes>
   )
 }
