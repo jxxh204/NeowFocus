@@ -2,6 +2,7 @@ import { createContext, useContext, useCallback } from 'react'
 import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
 import { TIME } from '@renderer/constants'
 import { v4 as uuidv4 } from 'uuid'
+import dayjs from 'dayjs'
 import { useSettingsContext } from './SettingsContext'
 
 export type TaskStatus = 'idle' | 'play' | 'pause' | 'end'
@@ -169,11 +170,12 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     return Object.values(grouped)
   }, [taskList])
 
-  // taskList를 날짜별로 그룹화 (최신순)
+  // taskList를 날짜별로 그룹화 (최신순) - dayjs로 로컬 시간대 적용
   const dailyTaskList = useCallback((): DailyTaskSummary[] => {
     const grouped = taskList.reduce(
       (acc, task) => {
-        const dateKey = task.date ? new Date(task.date).toISOString().split('T')[0] : 'unknown'
+        // dayjs는 자동으로 로컬 시간대를 사용
+        const dateKey = task.date ? dayjs(task.date).format('YYYY-MM-DD') : 'unknown'
         if (!acc[dateKey]) {
           acc[dateKey] = {
             date: dateKey,
@@ -200,12 +202,12 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
 
     // 완료된 task만 저장
     if (currentTask.taskStatus === 'end' && currentTask.taskName) {
-      // 오늘 날짜 (YYYY-MM-DD 형식)
-      const today = new Date().toISOString().split('T')[0]
+      // 오늘 날짜 (YYYY-MM-DD 형식) - dayjs로 로컬 시간대 적용
+      const today = dayjs().format('YYYY-MM-DD')
 
       // 같은 날짜, 같은 이름의 task 개수 계산
       const sameTasks = taskList.filter((task) => {
-        const taskDate = task.date ? new Date(task.date).toISOString().split('T')[0] : ''
+        const taskDate = task.date ? dayjs(task.date).format('YYYY-MM-DD') : ''
         return task.taskName === currentTask.taskName && taskDate === today
       })
 
