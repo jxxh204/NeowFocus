@@ -56,7 +56,7 @@
     "back": "Back"
   },
   "dashboard": {
-    "title": "Focus History",
+    "title": "My Focus History",
     "empty": "No completed tasks yet.\nStart your first pomodoro!",
     "today": "Today",
     "yesterday": "Yesterday",

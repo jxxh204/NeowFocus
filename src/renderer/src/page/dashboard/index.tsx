@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import Container from '@components/Container'
 import Icon from '@renderer/component/ui/Icon'
-import MinimizeButton from '@components/MinimizeButton'
-import { WINDOW_SIZE, IPC_CHANNELS, ROUTES, TIME } from '@renderer/constants'
-import { useTaskContext, DailyTaskSummary } from '@renderer/context/TaskContext'
+import { WINDOW_SIZE, IPC_CHANNELS, ROUTES } from '@renderer/constants'
+import { useTaskContext, Task } from '@renderer/context/TaskContext'
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -14,7 +13,7 @@ const DashboardContainer = styled.div`
   gap: 8px;
   width: 100%;
   height: 100%;
-  padding: 12px;
+  padding: 0 12px 12px 12px;
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -31,12 +30,87 @@ const DashboardContainer = styled.div`
   }
 `
 
-const SectionTitle = styled.h2`
-  font-size: 14px;
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  flex-shrink: 0;
+`
+
+const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+const BackButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: ${({ theme }) => theme.color.text.primary};
+  padding: 0;
+
+  &:hover {
+    opacity: 0.7;
+  }
+`
+
+const Title = styled.h1`
+  font-size: 16px;
   font-weight: 600;
   color: ${({ theme }) => theme.color.text.primary};
   margin: 0;
-  flex-shrink: 0;
+`
+
+const DateSelector = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: ${({ theme }) => theme.color.input.background};
+  border: 1px solid ${({ theme }) => theme.color.container.border};
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: ${({ theme }) => theme.color.text.primary};
+
+  &:hover {
+    background: ${({ theme }) => theme.color.button.hover};
+  }
+`
+
+const DateArrow = styled.span`
+  font-size: 10px;
+  color: ${({ theme }) => theme.color.text.secondary};
+`
+
+const TaskCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: ${({ theme }) => theme.color.input.background};
+  border-radius: 12px;
+`
+
+const TaskName = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.color.text.primary};
+  word-break: break-word;
+`
+
+const PawContainer = styled.div`
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
 `
 
 const EmptyMessage = styled.div`
@@ -44,200 +118,192 @@ const EmptyMessage = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px;
+  padding: 48px 16px;
   color: ${({ theme }) => theme.color.text.secondary};
   font-size: 13px;
   text-align: center;
-  gap: 8px;
+  gap: 12px;
   white-space: pre-line;
 `
 
-const DayCard = styled.div`
+const DatePickerOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
-  flex-direction: column;
-  background: ${({ theme }) => theme.color.input.background};
-  border-radius: 8px;
-  overflow: hidden;
-  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
 `
 
-const DayHeader = styled.button<{ $isOpen: boolean }>`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s ease;
+const DatePickerModal = styled.div`
+  background: ${({ theme }) => theme.color.container.background};
+  border-radius: 12px;
+  padding: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  min-width: 150px;
 
-  &:hover {
-    background: ${({ theme }) => theme.color.button.hover};
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.color.text.secondary};
+    border-radius: 2px;
   }
 `
 
-const DateInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`
-
-const DateText = styled.span`
+const DateOption = styled.button<{ $isSelected: boolean }>`
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  background: ${({ $isSelected, theme }) =>
+    $isSelected ? theme.color.primary[500] : 'transparent'};
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
   font-size: 13px;
-  font-weight: 600;
-  color: ${({ theme }) => theme.color.text.primary};
-`
+  color: ${({ $isSelected, theme }) =>
+    $isSelected ? theme.color.black : theme.color.text.primary};
+  text-align: left;
 
-const DaySummary = styled.span`
-  font-size: 11px;
-  color: ${({ theme }) => theme.color.text.secondary};
-`
-
-const ToggleIcon = styled.span<{ $isOpen: boolean }>`
-  font-size: 10px;
-  color: ${({ theme }) => theme.color.text.secondary};
-  transform: rotate(${({ $isOpen }) => ($isOpen ? '180deg' : '0deg')});
-  transition: transform 0.2s ease;
-`
-
-const TaskList = styled.div<{ $isOpen: boolean }>`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: ${({ $isOpen }) => ($isOpen ? '0 12px 10px 12px' : '0')};
-  max-height: ${({ $isOpen }) => ($isOpen ? '500px' : '0')};
-  overflow: hidden;
-  transition: all 0.2s ease;
-`
-
-const TaskItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 8px;
-  background: ${({ theme }) => theme.color.container.background};
-  border-radius: 4px;
-`
-
-const TaskName = styled.span`
-  font-size: 12px;
-  color: ${({ theme }) => theme.color.text.primary};
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
-
-const TaskDuration = styled.span`
-  font-size: 11px;
-  color: ${({ theme }) => theme.color.text.secondary};
-  margin-left: 8px;
+  &:hover {
+    background: ${({ $isSelected, theme }) =>
+      $isSelected ? theme.color.primary[500] : theme.color.button.hover};
+  }
 `
 
 const DASHBOARD_BODY_HEIGHT = 400
 const DASHBOARD_WINDOW_HEIGHT =
-  WINDOW_SIZE.TOP_SECTION_HEIGHT + DASHBOARD_BODY_HEIGHT + WINDOW_SIZE.BOTTOM_SECTION_HEIGHT
+  WINDOW_SIZE.TOP_SECTION_HEIGHT + DASHBOARD_BODY_HEIGHT
 
-// 초를 분 형식으로 변환
-const formatDuration = (seconds: number): string => {
-  const mins = Math.floor(seconds / TIME.SECONDS_PER_MINUTE)
-  return `${mins}분`
+// 날짜 포맷 (YYYY-MM-DD -> YYYY.M.D)
+const formatDateDisplay = (dateStr: string): string => {
+  const [year, month, day] = dateStr.split('-')
+  return `${year}.${parseInt(month)}.${parseInt(day)}`
 }
 
-// 날짜 포맷 (YYYY-MM-DD -> MM/DD 또는 오늘/어제)
-const formatDate = (dateStr: string, t: (key: string) => string): string => {
-  const today = new Date().toISOString().split('T')[0]
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
-
-  if (dateStr === today) return t('dashboard.today')
-  if (dateStr === yesterday) return t('dashboard.yesterday')
-
-  const [, month, day] = dateStr.split('-')
-  return `${parseInt(month)}/${parseInt(day)}`
+// 같은 작업 이름을 가진 태스크 그룹화
+type GroupedByName = {
+  taskName: string
+  count: number
 }
 
 function DashboardPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { dailyTaskList } = useTaskContext()
-  const [openDays, setOpenDays] = useState<Set<string>>(new Set())
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<string>('')
+
+  // 사용 가능한 날짜 목록
+  const availableDates = useMemo(() => {
+    return dailyTaskList.map((day) => day.date)
+  }, [dailyTaskList])
+
+  // 초기 날짜 설정
+  useEffect(() => {
+    if (availableDates.length > 0 && !selectedDate) {
+      setSelectedDate(availableDates[0])
+    }
+  }, [availableDates, selectedDate])
 
   useEffect(() => {
     window.message?.send(IPC_CHANNELS.WINDOW_SIZE_CHANGE, {
       width: WINDOW_SIZE.DEFAULT_WIDTH,
       height: DASHBOARD_WINDOW_HEIGHT
     })
-
-    // 오늘 날짜는 기본으로 열어둠
-    if (dailyTaskList.length > 0) {
-      setOpenDays(new Set([dailyTaskList[0].date]))
-    }
   }, [])
 
   const handleBack = () => {
     navigate(ROUTES.INPUT)
   }
 
-  const toggleDay = (date: string) => {
-    setOpenDays((prev) => {
-      const newSet = new Set(prev)
-      if (newSet.has(date)) {
-        newSet.delete(date)
-      } else {
-        newSet.add(date)
+  // 선택된 날짜의 태스크들
+  const selectedDayTasks = useMemo(() => {
+    const dayData = dailyTaskList.find((day) => day.date === selectedDate)
+    return dayData?.tasks || []
+  }, [dailyTaskList, selectedDate])
+
+  // 같은 이름의 태스크를 그룹화
+  const groupedTasks = useMemo((): GroupedByName[] => {
+    const grouped: Record<string, number> = {}
+    selectedDayTasks.forEach((task: Task) => {
+      if (!grouped[task.taskName]) {
+        grouped[task.taskName] = 0
       }
-      return newSet
+      grouped[task.taskName] += 1
     })
+    return Object.entries(grouped).map(([taskName, count]) => ({
+      taskName,
+      count
+    }))
+  }, [selectedDayTasks])
+
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date)
+    setShowDatePicker(false)
   }
 
   return (
     <Container width={400}>
       <Container.Top height={WINDOW_SIZE.TOP_SECTION_HEIGHT}>
-        <Icon name="cat_face" alt="cat" size={24} />
-        <MinimizeButton />
+        <div />
       </Container.Top>
       <Container.Body height={DASHBOARD_BODY_HEIGHT} padding="0">
         <DashboardContainer>
-          <SectionTitle>{t('dashboard.title')}</SectionTitle>
+          <Header>
+            <HeaderLeft>
+              <BackButton onClick={handleBack}>‹</BackButton>
+              <Title>{t('dashboard.title')}</Title>
+            </HeaderLeft>
+            {availableDates.length > 0 && (
+              <DateSelector onClick={() => setShowDatePicker(true)}>
+                {selectedDate ? formatDateDisplay(selectedDate) : ''}
+                <DateArrow>▼</DateArrow>
+              </DateSelector>
+            )}
+          </Header>
+
           {dailyTaskList.length === 0 ? (
             <EmptyMessage>
-              <Icon name="timer" size={32} />
+              <Icon name="paw_white" size={40} />
               {t('dashboard.empty')}
             </EmptyMessage>
           ) : (
-            dailyTaskList.map((day: DailyTaskSummary) => {
-              const isOpen = openDays.has(day.date)
-              return (
-                <DayCard key={day.date}>
-                  <DayHeader $isOpen={isOpen} onClick={() => toggleDay(day.date)}>
-                    <DateInfo>
-                      <DateText>{formatDate(day.date, t)}</DateText>
-                      <DaySummary>
-                        {day.totalCount}
-                        {t('dashboard.sessions')} · {formatDuration(day.totalDuration)}
-                      </DaySummary>
-                    </DateInfo>
-                    <ToggleIcon $isOpen={isOpen}>▼</ToggleIcon>
-                  </DayHeader>
-                  <TaskList $isOpen={isOpen}>
-                    {day.tasks.map((task, index) => (
-                      <TaskItem key={`${task.id}-${index}`}>
-                        <TaskName>{task.taskName}</TaskName>
-                        <TaskDuration>{formatDuration(task.fullDuration)}</TaskDuration>
-                      </TaskItem>
-                    ))}
-                  </TaskList>
-                </DayCard>
-              )
-            })
+            groupedTasks.map((group, index) => (
+              <TaskCard key={`${group.taskName}-${index}`}>
+                <TaskName>{group.taskName}</TaskName>
+                <PawContainer>
+                  {Array.from({ length: group.count }).map((_, i) => (
+                    <Icon key={i} name="paw_white" size={24} />
+                  ))}
+                </PawContainer>
+              </TaskCard>
+            ))
           )}
         </DashboardContainer>
       </Container.Body>
-      <Container.Bottom height={WINDOW_SIZE.BOTTOM_SECTION_HEIGHT}>
-        <Container.Button type="button" onClick={handleBack}>
-          {t('dashboard.back')}
-        </Container.Button>
-      </Container.Bottom>
+
+      {showDatePicker && (
+        <DatePickerOverlay onClick={() => setShowDatePicker(false)}>
+          <DatePickerModal onClick={(e) => e.stopPropagation()}>
+            {availableDates.map((date) => (
+              <DateOption
+                key={date}
+                $isSelected={date === selectedDate}
+                onClick={() => handleDateSelect(date)}
+              >
+                {formatDateDisplay(date)}
+              </DateOption>
+            ))}
+          </DatePickerModal>
+        </DatePickerOverlay>
+      )}
     </Container>
   )
 }
