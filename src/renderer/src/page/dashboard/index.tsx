@@ -54,7 +54,7 @@ const BackButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 24px;
   color: ${({ theme }) => theme.color.text.primary};
   padding: 0;
 
@@ -219,8 +219,7 @@ const DateOption = styled.button<{ $isSelected: boolean }>`
 `
 
 const DASHBOARD_BODY_HEIGHT = 400
-const DASHBOARD_WINDOW_HEIGHT =
-  WINDOW_SIZE.TOP_SECTION_HEIGHT + DASHBOARD_BODY_HEIGHT
+const DASHBOARD_WINDOW_HEIGHT = WINDOW_SIZE.TOP_SECTION_HEIGHT + DASHBOARD_BODY_HEIGHT
 
 // 날짜 포맷 (YYYY-MM-DD -> YYYY.M.D)
 const formatDateDisplay = (dateStr: string): string => {
@@ -300,7 +299,9 @@ function DashboardPage() {
         <DashboardContainer>
           <Header>
             <HeaderLeft>
-              <BackButton onClick={handleBack}>‹</BackButton>
+              <BackButton onClick={handleBack}>
+                <Icon name="undo" size={20} />
+              </BackButton>
               <Title>{t('dashboard.title')}</Title>
             </HeaderLeft>
             {availableDates.length > 0 && (
@@ -346,9 +347,7 @@ function DashboardPage() {
         </DashboardContainer>
       </Container.Body>
 
-      {showDatePicker && (
-        <DatePickerOverlay onClick={() => setShowDatePicker(false)} />
-      )}
+      {showDatePicker && <DatePickerOverlay onClick={() => setShowDatePicker(false)} />}
     </Container>
   )
 }
