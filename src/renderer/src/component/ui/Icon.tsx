@@ -15,6 +15,7 @@ type IconName =
   | 'check'
   | 'chart'
   | 'undo'
+  | 'chevron'
 
 interface IconProps {
   name?: IconName
@@ -44,7 +45,8 @@ const ICON_MAP: Record<IconName, string> = {
   trash: './assets/icon_trash.svg',
   check: './assets/icon_check.svg',
   chart: './assets/icon_chart.svg',
-  undo: './assets/icon_undo.svg'
+  undo: './assets/icon_undo.svg',
+  chevron: './assets/icon_chevron.svg'
 }
 
 const Icon = ({ name, src, alt = '', size = 16, width, height }: IconProps) => {

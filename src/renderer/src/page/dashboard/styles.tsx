@@ -70,22 +70,18 @@ export const DateSelector = styled.button`
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 10px;
+  padding: 8px 12px 8px 17px;
   background: ${({ theme }) => theme.color.input.background};
-  border: 1px solid ${({ theme }) => theme.color.container.border};
+  border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: 500;
   color: ${({ theme }) => theme.color.text.primary};
 
   &:hover {
     background: ${({ theme }) => theme.color.button.hover};
   }
-`
-
-export const DateArrow = styled.span`
-  font-size: 10px;
-  color: ${({ theme }) => theme.color.text.secondary};
 `
 
 export const TaskCard = styled.div`
@@ -137,6 +133,7 @@ export const DatePickerDropdown = styled.div`
   position: absolute;
   top: 100%;
   right: 0;
+  left: 0;
   margin-top: 4px;
   background: ${({ theme }) => theme.color.container.background};
   border: 1px solid ${({ theme }) => theme.color.container.border};
@@ -144,17 +141,11 @@ export const DatePickerDropdown = styled.div`
   padding: 8px;
   max-height: 200px;
   overflow-y: auto;
-  min-width: 120px;
   z-index: 101;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
   &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.color.text.secondary};
-    border-radius: 2px;
+    display: none;
   }
 `
 
@@ -167,7 +158,8 @@ export const DateOption = styled.button<{ $isSelected: boolean }>`
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 500;
   color: ${({ theme }) => theme.color.text.primary};
   text-align: left;
 

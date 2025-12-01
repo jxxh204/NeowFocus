@@ -1,25 +1,19 @@
 import { useTranslation } from 'react-i18next'
 import Container from '@components/Container'
 import Icon from '@renderer/component/ui/Icon'
-import { WINDOW_SIZE } from '@renderer/constants'
-import { useDashboard, formatDateDisplay } from './useDashboard'
+import { useDashboard } from './useDashboard'
+import DatePicker from './DatePicker'
 import {
   DashboardContainer,
   Header,
   HeaderLeft,
   BackButton,
   Title,
-  DateSelectorWrapper,
-  DateSelector,
-  DateArrow,
   TaskCard,
   TaskName,
   PawContainer,
   PawSvg,
-  EmptyMessage,
-  DatePickerOverlay,
-  DatePickerDropdown,
-  DateOption
+  EmptyMessage
 } from './styles'
 
 function DashboardPage() {
@@ -31,6 +25,7 @@ function DashboardPage() {
     groupedTasks,
     themeColorValue,
     dailyTaskList,
+    DASHBOARD_TOP_SECTION_HEIGHT,
     DASHBOARD_BODY_HEIGHT,
     handleBack,
     handleDateSelect,
@@ -40,7 +35,7 @@ function DashboardPage() {
 
   return (
     <Container width={400}>
-      <Container.Top height={WINDOW_SIZE.TOP_SECTION_HEIGHT}>
+      <Container.Top height={DASHBOARD_TOP_SECTION_HEIGHT}>
         <div />
       </Container.Top>
       <Container.Body height={DASHBOARD_BODY_HEIGHT} padding="0">
@@ -52,27 +47,14 @@ function DashboardPage() {
               </BackButton>
               <Title>{t('dashboard.title')}</Title>
             </HeaderLeft>
-            {availableDates.length > 0 && (
-              <DateSelectorWrapper>
-                <DateSelector onClick={toggleDatePicker}>
-                  {selectedDate ? formatDateDisplay(selectedDate) : ''}
-                  <DateArrow>▼</DateArrow>
-                </DateSelector>
-                {showDatePicker && (
-                  <DatePickerDropdown>
-                    {availableDates.map((date) => (
-                      <DateOption
-                        key={date}
-                        $isSelected={date === selectedDate}
-                        onClick={() => handleDateSelect(date)}
-                      >
-                        {formatDateDisplay(date)}
-                      </DateOption>
-                    ))}
-                  </DatePickerDropdown>
-                )}
-              </DateSelectorWrapper>
-            )}
+            <DatePicker
+              selectedDate={selectedDate}
+              availableDates={availableDates}
+              showDatePicker={showDatePicker}
+              onToggle={toggleDatePicker}
+              onSelect={handleDateSelect}
+              onClose={closeDatePicker}
+            />
           </Header>
 
           {dailyTaskList.length === 0 ? (
@@ -94,8 +76,6 @@ function DashboardPage() {
           )}
         </DashboardContainer>
       </Container.Body>
-
-      {showDatePicker && <DatePickerOverlay onClick={closeDatePicker} />}
     </Container>
   )
 }

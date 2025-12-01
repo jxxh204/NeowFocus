@@ -4,8 +4,9 @@ import { useTaskContext, Task } from '@renderer/context/TaskContext'
 import { useSettingsContext } from '@renderer/context/SettingsContext'
 import { WINDOW_SIZE, IPC_CHANNELS, ROUTES } from '@renderer/constants'
 
+const DASHBOARD_TOP_SECTION_HEIGHT = 16
 const DASHBOARD_BODY_HEIGHT = 400
-const DASHBOARD_WINDOW_HEIGHT = WINDOW_SIZE.TOP_SECTION_HEIGHT + DASHBOARD_BODY_HEIGHT
+const DASHBOARD_WINDOW_HEIGHT = DASHBOARD_TOP_SECTION_HEIGHT + DASHBOARD_BODY_HEIGHT
 
 // 같은 작업 이름을 가진 태스크 그룹화
 export type GroupedByName = {
@@ -93,6 +94,7 @@ export const useDashboard = () => {
     themeColorValue,
     dailyTaskList,
     // 상수
+    DASHBOARD_TOP_SECTION_HEIGHT,
     DASHBOARD_BODY_HEIGHT,
     // 핸들러
     handleBack,
