@@ -81,7 +81,6 @@ export const useDashboard = () => {
     availableDates,
     groupedTasks,
     themeColorValue,
-    dailyTaskList,
     // 상수
     DASHBOARD_TOP_SECTION_HEIGHT,
     DASHBOARD_BODY_HEIGHT,

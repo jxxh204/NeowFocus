@@ -8,7 +8,6 @@ function DashboardPage() {
     availableDates,
     groupedTasks,
     themeColorValue,
-    dailyTaskList,
     DASHBOARD_TOP_SECTION_HEIGHT,
     DASHBOARD_BODY_HEIGHT,
     handleBack,
@@ -28,11 +27,11 @@ function DashboardPage() {
             availableDates={availableDates}
             onSelectDate={handleDateSelect}
           />
-          {dailyTaskList.length === 0 ? (
-            <Dashboard.Empty />
-          ) : (
-            <Dashboard.TaskList tasks={groupedTasks} themeColor={themeColorValue} />
-          )}
+          <Dashboard.TaskList
+            tasks={groupedTasks}
+            themeColor={themeColorValue}
+            Empty={Dashboard.Empty}
+          />
         </Dashboard>
       </Container.Body>
     </Container>
