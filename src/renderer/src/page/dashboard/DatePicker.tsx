@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Icon from '@renderer/component/ui/Icon'
 import { formatDateDisplay } from './useDashboard'
 import {
@@ -11,38 +12,37 @@ import {
 interface DatePickerProps {
   selectedDate: string
   availableDates: string[]
-  showDatePicker: boolean
-  onToggle: () => void
   onSelect: (date: string) => void
-  onClose: () => void
 }
 
-function DatePicker({
-  selectedDate,
-  availableDates,
-  showDatePicker,
-  onToggle,
-  onSelect,
-  onClose
-}: DatePickerProps) {
+function DatePicker({ selectedDate, availableDates, onSelect }: DatePickerProps) {
+  const [isOpen, setIsOpen] = useState(false)
+
   if (availableDates.length === 0) {
     return null
+  }
+
+  const handleToggle = () => setIsOpen((prev) => !prev)
+  const handleClose = () => setIsOpen(false)
+  const handleSelect = (date: string) => {
+    onSelect(date)
+    setIsOpen(false)
   }
 
   return (
     <>
       <DateSelectorWrapper>
-        <DateSelector onClick={onToggle}>
+        <DateSelector onClick={handleToggle}>
           {selectedDate ? formatDateDisplay(selectedDate) : ''}
           <Icon name="chevron" size={12} />
         </DateSelector>
-        {showDatePicker && (
+        {isOpen && (
           <DatePickerDropdown>
             {availableDates.map((date) => (
               <DateOption
                 key={date}
                 $isSelected={date === selectedDate}
-                onClick={() => onSelect(date)}
+                onClick={() => handleSelect(date)}
               >
                 {formatDateDisplay(date)}
               </DateOption>
@@ -50,7 +50,7 @@ function DatePicker({
           </DatePickerDropdown>
         )}
       </DateSelectorWrapper>
-      {showDatePicker && <DatePickerOverlay onClick={onClose} />}
+      {isOpen && <DatePickerOverlay onClick={handleClose} />}
     </>
   )
 }

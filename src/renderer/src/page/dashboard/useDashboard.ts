@@ -25,7 +25,6 @@ export const useDashboard = () => {
   const { dailyTaskList } = useTaskContext()
   const { themeColorValue } = useSettingsContext()
   const [selectedDate, setSelectedDate] = useState<string>('')
-  const [showDatePicker, setShowDatePicker] = useState(false)
 
   // 사용 가능한 날짜 목록
   const availableDates = useMemo(() => {
@@ -76,28 +75,17 @@ export const useDashboard = () => {
     setSelectedDate(date)
   }
 
-  const handleToggleDatePicker = () => {
-    setShowDatePicker((prev) => !prev)
-  }
-
-  const handleCloseDatePicker = () => {
-    setShowDatePicker(false)
-  }
-
   return {
     // 상태
     selectedDate,
     availableDates,
     groupedTasks,
     themeColorValue,
-    showDatePicker,
     // 상수
     DASHBOARD_TOP_SECTION_HEIGHT,
     DASHBOARD_BODY_HEIGHT,
     // 핸들러
     handleBack,
-    handleDateSelect,
-    handleToggleDatePicker,
-    handleCloseDatePicker
+    handleDateSelect
   }
 }

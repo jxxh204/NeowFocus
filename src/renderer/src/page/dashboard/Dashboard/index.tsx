@@ -1,10 +1,12 @@
+import { ReactNode } from 'react'
 import { DashboardContainer } from '../styles'
 import DashboardHeader from './Header'
 import DashboardTaskList from './TaskList'
 import DashboardEmpty from './Empty'
+import DatePicker from '../DatePicker'
 
 interface DashboardProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 const Dashboard = ({ children }: DashboardProps) => {
@@ -14,5 +16,6 @@ const Dashboard = ({ children }: DashboardProps) => {
 Dashboard.Header = DashboardHeader
 Dashboard.TaskList = DashboardTaskList
 Dashboard.Empty = DashboardEmpty
+Dashboard.DatePicker = DatePicker
 
 export default Dashboard

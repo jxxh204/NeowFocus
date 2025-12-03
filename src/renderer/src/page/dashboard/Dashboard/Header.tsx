@@ -1,22 +1,25 @@
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Header, HeaderLeft, Title } from '../styles'
+import Icon from '@renderer/component/ui/Icon'
+import { Header, HeaderLeft, BackButton, Title } from '../styles'
 
 interface DashboardHeaderProps {
-  BackButton: ReactNode
-  DatePicker: ReactNode
+  children: ReactNode
+  onBack: () => void
 }
 
-function DashboardHeader({ BackButton, DatePicker }: DashboardHeaderProps) {
+function DashboardHeader({ children, onBack }: DashboardHeaderProps) {
   const { t } = useTranslation()
 
   return (
     <Header>
       <HeaderLeft>
-        {BackButton}
+        <BackButton onClick={onBack}>
+          <Icon name="undo" size={20} />
+        </BackButton>
         <Title>{t('dashboard.title')}</Title>
       </HeaderLeft>
-      {DatePicker}
+      {children}
     </Header>
   )
 }
