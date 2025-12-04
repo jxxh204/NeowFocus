@@ -67,7 +67,6 @@ function InputPage() {
     e.stopPropagation()
     navigate(ROUTES.DASHBOARD)
   }
-
   return (
     <Container width={400} onSubmit={onSubmitHandler}>
       <Container.Top height={WINDOW_SIZE.TOP_SECTION_HEIGHT}>

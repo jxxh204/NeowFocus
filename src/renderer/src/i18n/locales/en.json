@@ -61,6 +61,14 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "sessions": " sessions",
-    "back": "Back"
+    "back": "Back",
+    "deleteConfirmModal": {
+      "title": "Delete this record?",
+      "cancelButton": "Cancel",
+      "confirmButton": "Delete"
+    },
+    "contextMenu": {
+      "delete": "Delete"
+    }
   }
 }

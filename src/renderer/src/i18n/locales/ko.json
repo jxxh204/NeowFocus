@@ -61,6 +61,14 @@
     "today": "오늘",
     "yesterday": "어제",
     "sessions": "회",
-    "back": "돌아가기"
+    "back": "돌아가기",
+    "deleteConfirmModal": {
+      "title": "이 기록을 삭제할까요?",
+      "cancelButton": "취소",
+      "confirmButton": "삭제"
+    },
+    "contextMenu": {
+      "delete": "삭제"
+    }
   }
 }

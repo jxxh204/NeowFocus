@@ -44,6 +44,7 @@ type TaskContextType = {
   reStartTask: () => void
   incrementSession: () => void
   saveTaskToList: () => void
+  deleteTasksByNameAndDate: (taskName: string, date: string) => void
 }
 
 const TaskContext = createContext<TaskContextType | null>(null)
@@ -221,6 +222,22 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [currentTask, taskList, setTaskList])
 
+  // 특정 날짜의 특정 이름을 가진 모든 태스크 삭제
+  const deleteTasksByNameAndDate = useCallback(
+    (taskName: string, date: string) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('deleteTasksByNameAndDate', taskName, date)
+      }
+      setTaskList((prevList) =>
+        prevList.filter((task) => {
+          const taskDate = task.date ? dayjs(task.date).format('YYYY-MM-DD') : ''
+          return !(task.taskName === taskName && taskDate === date)
+        })
+      )
+    },
+    [setTaskList]
+  )
+
   return (
     <TaskContext.Provider
       value={{
@@ -235,7 +252,8 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         startTask,
         reStartTask,
         incrementSession,
-        saveTaskToList
+        saveTaskToList,
+        deleteTasksByNameAndDate
       }}
     >
       {children}

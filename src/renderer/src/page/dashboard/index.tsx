@@ -32,6 +32,7 @@ function DashboardPage() {
             tasks={groupedTasks}
             themeColor={themeColorValue}
             Empty={Dashboard.Empty}
+            selectedDate={selectedDate}
           />
         </Dashboard>
       </Container.Body>
