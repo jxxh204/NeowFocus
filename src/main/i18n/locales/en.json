@@ -11,7 +11,7 @@
   "tray": {
     "show": "Show",
     "hide": "Hide",
-    "dashboard": "Dashboard",
+    "dashboard": "My Focus History",
     "settings": "Settings...",
     "quit": "Quit"
   },
