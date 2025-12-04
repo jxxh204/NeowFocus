@@ -68,7 +68,7 @@ function InputPage() {
     navigate(ROUTES.DASHBOARD)
   }
   return (
-    <Container width={400} onSubmit={onSubmitHandler}>
+    <Container width={WINDOW_SIZE.DEFAULT_WIDTH} onSubmit={onSubmitHandler}>
       <Container.Top height={WINDOW_SIZE.TOP_SECTION_HEIGHT}>
         <TopLeftButtons>
           <Icon name="cat_face" alt="cat" size={24} />

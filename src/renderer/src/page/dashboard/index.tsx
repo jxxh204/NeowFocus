@@ -1,4 +1,5 @@
 import Container from '@components/Container'
+import { WINDOW_SIZE } from '@renderer/constants'
 import { useDashboard } from './useDashboard'
 import Dashboard from './Dashboard'
 
@@ -15,7 +16,7 @@ function DashboardPage() {
   } = useDashboard()
 
   return (
-    <Container width={400}>
+    <Container width={WINDOW_SIZE.DEFAULT_WIDTH}>
       <Container.Top height={DASHBOARD_TOP_SECTION_HEIGHT}>
         <div />
       </Container.Top>

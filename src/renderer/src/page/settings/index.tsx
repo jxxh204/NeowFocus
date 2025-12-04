@@ -170,7 +170,7 @@ function SettingsPage() {
   }
 
   return (
-    <Container width={400}>
+    <Container width={WINDOW_SIZE.DEFAULT_WIDTH}>
       <Container.Top height={SETTINGS_TOP_SECTION_HEIGHT}>
         <div />
       </Container.Top>
@@ -195,7 +195,8 @@ function SettingsPage() {
                     $isSelected={timerDurationMinutes === minutes}
                     onClick={() => setTimerDuration(minutes)}
                   >
-                    {minutes}{t('settings.timer.minutes')}
+                    {minutes}
+                    {t('settings.timer.minutes')}
                   </DurationButton>
                 ))}
               </DurationButtonGroup>

@@ -107,7 +107,7 @@ export default function FocusRunning(): JSX.Element {
   }
 
   return (
-    <Container width={400}>
+    <Container width={WINDOW_SIZE.DEFAULT_WIDTH}>
       <Container.Top height={WINDOW_SIZE.TOP_SECTION_HEIGHT}>
         <IconGroup>
           <Icon name="cat_face" alt="cat" size={24} />
