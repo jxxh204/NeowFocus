@@ -149,7 +149,7 @@ const ColorButton = styled.button<{ $color: string; $isSelected: boolean }>`
 `
 
 const SETTINGS_TOP_SECTION_HEIGHT = 16
-const SETTINGS_BODY_HEIGHT = 280
+const SETTINGS_BODY_HEIGHT = 230
 const SETTINGS_WINDOW_HEIGHT = SETTINGS_TOP_SECTION_HEIGHT + SETTINGS_BODY_HEIGHT
 
 function SettingsPage() {
