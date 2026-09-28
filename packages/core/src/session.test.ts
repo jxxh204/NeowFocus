@@ -14,7 +14,14 @@ const MIN = 60_000
 const T0 = Date.UTC(2026, 8, 29, 1, 0, 0)
 
 const start = (overrides: Partial<Parameters<typeof startFocus>[0]> = {}) =>
-  startFocus({ id: 's1', task: '기획안 첫 문단 쓰기', plannedMs: 25 * MIN, now: T0, deviceId: 'mac', ...overrides })
+  startFocus({
+    id: 's1',
+    task: '기획안 첫 문단 쓰기',
+    plannedMs: 25 * MIN,
+    now: T0,
+    deviceId: 'mac',
+    ...overrides
+  })
 
 describe('startFocus', () => {
   it('종료 예정 시각을 기준으로 집중을 시작한다', () => {

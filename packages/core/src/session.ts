@@ -81,7 +81,14 @@ export function pauseFocus(session: FocusSession, now: number, deviceId: string)
   if (session.status !== 'running') return session
   const remainingMs = remainingOf(session, now)
   if (remainingMs === 0) return settleFocus(session, now)
-  return { ...session, status: 'paused', endsAt: null, remainingMs, updatedAt: now, updatedBy: deviceId }
+  return {
+    ...session,
+    status: 'paused',
+    endsAt: null,
+    remainingMs,
+    updatedAt: now,
+    updatedBy: deviceId
+  }
 }
 
 export function resumeFocus(session: FocusSession, now: number, deviceId: string): FocusSession {
@@ -108,13 +115,22 @@ export function finishFocus(session: FocusSession, now: number, deviceId: string
  * 두 기기가 각자 완료를 확인해도 같은 결과가 나온다.
  */
 export function settleFocus(session: FocusSession, now: number): FocusSession {
-  if (session.status !== 'running' || session.endsAt === null || now < session.endsAt) return session
-  return toFinished(session, { finishedAt: session.endsAt, remainingMs: 0, updatedBy: session.updatedBy })
+  if (session.status !== 'running' || session.endsAt === null || now < session.endsAt)
+    return session
+  return toFinished(session, {
+    finishedAt: session.endsAt,
+    remainingMs: 0,
+    updatedBy: session.updatedBy
+  })
 }
 
 function toFinished(
   session: FocusSession,
-  { finishedAt, remainingMs, updatedBy }: { finishedAt: number; remainingMs: number; updatedBy: string }
+  {
+    finishedAt,
+    remainingMs,
+    updatedBy
+  }: { finishedAt: number; remainingMs: number; updatedBy: string }
 ): FocusSession {
   return {
     ...session,

@@ -6,7 +6,14 @@ const MIN = 60_000
 const T0 = new Date(2026, 8, 29, 9, 0, 0).getTime()
 
 const startAction = (id = 's1', now = T0) =>
-  ({ type: 'start', id, task: '기획안 첫 문단 쓰기', plannedMs: 25 * MIN, now, deviceId: 'phone' }) as const
+  ({
+    type: 'start',
+    id,
+    task: '기획안 첫 문단 쓰기',
+    plannedMs: 25 * MIN,
+    now,
+    deviceId: 'phone'
+  }) as const
 
 const run = (...actions: Parameters<typeof focusReducer>[1][]): FocusState =>
   actions.reduce(focusReducer, EMPTY_STATE)
@@ -35,7 +42,11 @@ describe('focusReducer', () => {
   })
 
   it('완료 화면을 닫으면 시작 전 상태로 돌아간다', () => {
-    const state = run(startAction(), { type: 'finish', now: T0 + 10 * MIN, deviceId: 'phone' }, { type: 'dismiss' })
+    const state = run(
+      startAction(),
+      { type: 'finish', now: T0 + 10 * MIN, deviceId: 'phone' },
+      { type: 'dismiss' }
+    )
     expect(state.current).toBeNull()
     expect(state.records).toHaveLength(1)
   })

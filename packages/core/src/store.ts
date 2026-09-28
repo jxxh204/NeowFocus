@@ -48,11 +48,16 @@ export function focusReducer(state: FocusState, action: FocusAction): FocusState
 
   const record = toRecord(next)
   const records =
-    record && !state.records.some((r) => r.id === record.id) ? [...state.records, record] : state.records
+    record && !state.records.some((r) => r.id === record.id)
+      ? [...state.records, record]
+      : state.records
   return { current: next, records }
 }
 
-function transition(session: FocusSession, action: Exclude<FocusAction, { type: 'start' | 'dismiss' }>) {
+function transition(
+  session: FocusSession,
+  action: Exclude<FocusAction, { type: 'start' | 'dismiss' }>
+) {
   switch (action.type) {
     case 'pause':
       return pauseFocus(session, action.now, action.deviceId)
