@@ -30,6 +30,7 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@neowfocus/core": "workspace:*",
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "dayjs": "^1.11.19",

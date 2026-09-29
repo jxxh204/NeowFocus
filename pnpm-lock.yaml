@@ -16,6 +16,9 @@ importers:
       '@electron-toolkit/utils':
         specifier: ^3.0.0
         version: 3.0.0(electron@28.3.3)
+      '@neowfocus/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       dayjs:
         specifier: ^1.11.19
         version: 1.11.19

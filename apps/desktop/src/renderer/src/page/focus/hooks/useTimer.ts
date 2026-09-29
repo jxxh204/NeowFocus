@@ -1,76 +1,14 @@
-import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTaskContext, type TaskStatus } from '@renderer/context/TaskContext'
 import { TIME } from '@renderer/constants'
 
-export type TimerState = 'idle' | 'play' | 'pause' | 'end'
+export type TimerState = TaskStatus
 
-interface UseTimerOptions {
-  onTick?: (remainingTime: number, timerState: TimerState) => void
-  initialState?: TimerState
-}
-
-interface UseTimerReturn {
-  timerState: TimerState
-  remainingTime: number
-  percentage: number
-  formatTime: (time: number) => string
-  handlePause: () => void
-  handleResume: () => void
-  handleStop: () => void
-  handleReset: () => void
-}
-
-export const useTimer = (
-  initialDuration: number,
-  fullDuration: number,
-  options?: UseTimerOptions
-): UseTimerReturn => {
-  const { t } = useTranslation()
-  const [timerState, setTimerState] = useState<TimerState>(options?.initialState || 'play')
-  const [remainingTime, setRemainingTime] = useState(initialDuration)
-
-  // initialDuration이 변경되면 타이머 리셋
-  useEffect(() => {
-    setRemainingTime(initialDuration)
-    if (initialDuration === fullDuration) {
-      setTimerState(options?.initialState || 'play')
-    }
-  }, [initialDuration, fullDuration, options?.initialState])
-
-  useEffect(() => {
-    if (timerState !== 'play') return
-
-    const interval = setInterval(() => {
-      setRemainingTime((prev: number) => {
-        const newTime = prev <= 1 ? 0 : prev - 1
-        const newState = prev <= 1 ? 'end' : timerState
-
-        // Event-based callback instead of useEffect
-        if (options?.onTick) {
-          options.onTick(newTime, newState)
-        }
-
-        if (prev <= 1) {
-          setTimerState('end')
-          // 알림 표시 및 창 띄우기
-          if (window.electron?.showNotification) {
-            window.electron.showNotification(
-              t('focus.notification.title'),
-              t('focus.notification.body')
-            )
-          }
-          if (window.electron?.showWindow) {
-            window.electron.showWindow()
-          }
-        }
-        return newTime
-      })
-    }, TIME.TIMER_INTERVAL)
-
-    return () => clearInterval(interval)
-  }, [timerState, options, t])
-
-  const percentage = fullDuration > 0 ? (remainingTime / fullDuration) * 100 : 0
+/**
+ * 타이머 화면용 값. 시간 계산과 멈춤·재개는 TaskContext(공통 코어)가 맡고,
+ * 이 훅은 화면이 쓰는 형태로만 꺼내준다.
+ */
+export const useTimer = () => {
+  const { taskStatus, remainingTime, percentage, pauseTask, resumeTask } = useTaskContext()
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / TIME.SECONDS_PER_MINUTE)
@@ -78,22 +16,12 @@ export const useTimer = (
     return `${minutes.toString().padStart(TIME.TIME_DISPLAY_PADDING, '0')}:${seconds.toString().padStart(TIME.TIME_DISPLAY_PADDING, '0')}`
   }
 
-  const handlePause = () => setTimerState('pause')
-  const handleResume = () => setTimerState('play')
-  const handleStop = () => setTimerState('end')
-  const handleReset = () => {
-    setRemainingTime(fullDuration)
-    setTimerState('play')
-  }
-
   return {
-    timerState,
+    timerState: taskStatus,
     remainingTime,
     percentage,
     formatTime,
-    handlePause,
-    handleResume,
-    handleStop,
-    handleReset
+    handlePause: pauseTask,
+    handleResume: resumeTask
   }
 }

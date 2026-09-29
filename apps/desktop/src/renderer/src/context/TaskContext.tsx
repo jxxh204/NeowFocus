@@ -1,9 +1,20 @@
-import { createContext, useContext, useCallback } from 'react'
+import { createContext, useContext, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
+import {
+  finishFocus,
+  pauseFocus,
+  progressOf,
+  remainingOf,
+  resumeFocus,
+  settleFocus,
+  startFocus,
+  type FocusSession
+} from '@neowfocus/core'
 import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
 import { TIME } from '@renderer/constants'
-import { v4 as uuidv4 } from 'uuid'
-import dayjs from 'dayjs'
 import { useSettingsContext } from './SettingsContext'
+import { sessionFromLegacyTask, type LegacyTask } from './legacySession'
 
 export type TaskStatus = 'idle' | 'play' | 'pause' | 'end'
 
@@ -11,7 +22,9 @@ export type Task = {
   id: string
   date: string
   taskName: string
+  /** 남은 초 */
   taskDuration: number
+  /** 계획한 초. 마친 뒤에는 실제 집중한 초 */
   fullDuration: number
   taskStatus: TaskStatus
   sessionCount: number
@@ -32,125 +45,191 @@ export type DailyTaskSummary = {
 }
 
 type TaskContextType = {
+  /** 진행 중인 집중을 기존 화면들이 쓰던 형태로 보여준다 */
   currentTask: Task
   taskStatus: TaskStatus
+  /** 남은 초 */
+  remainingTime: number
+  /** 남은 비율(0~100). CircularTimer의 percentage */
+  percentage: number
   taskList: Task[]
   groupedTaskList: GroupedTask[]
   dailyTaskList: DailyTaskSummary[]
   resetCurrentTask: () => void
-  updateTask: (duration: number, status?: TaskStatus) => void
-  pastComplete: (elapsedTime: number) => void
   startTask: (taskName: string) => void
   reStartTask: () => void
-  incrementSession: () => void
+  pauseTask: () => void
+  resumeTask: () => void
+  /** 시간이 남았어도 지금까지 집중한 만큼으로 마친다 */
+  completeEarly: () => void
   saveTaskToList: () => void
   deleteTasksByNameAndDate: (taskName: string, date: string) => void
 }
 
 const TaskContext = createContext<TaskContextType | null>(null)
 
-const TaskProvider = ({ children }: { children: React.ReactNode }) => {
-  const { settings } = useSettingsContext()
-  const timerDuration = settings?.timerDuration ?? TIME.DEFAULT_POMODORO_DURATION
+// 진행 중인 집중은 공통 코어(@neowfocus/core)의 세션으로 저장한다.
+// 남은 초가 아니라 종료 시각을 저장하므로 창이 숨겨져 타이머가 느려져도 어긋나지 않는다.
+const SESSION_KEY = 'focusSession'
+const LEGACY_TASK_KEY = 'currentTask'
+const DEVICE_ID_KEY = 'deviceId'
 
-  const [currentTask, setCurrentTask] = useLocalStorage<Task>('currentTask', {
-    id: uuidv4(), // 고유 식별자
-    date: '', // 태스크가 생성된 날짜 (ISO 문자열 형식)
-    taskName: '', // 태스크 이름
-    taskDuration: timerDuration, // 현재까지 진행된 시간
-    fullDuration: timerDuration, // 태스크 총 시간
-    taskStatus: 'idle', // 태스크 상태
-    sessionCount: 1 // 세션 카운트
-  })
+/** 이 시간 안에 끝난 것을 봤을 때만 완료 알림을 띄운다. 오래전에 끝난 집중을 다시 열 때는 띄우지 않는다. */
+const LIVE_COMPLETION_WINDOW_MS = 5_000
 
-  const [taskList, setTaskList] = useLocalStorage<Task[]>('taskList', [])
+function newId(): string {
+  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
 
-  const resetCurrentTask = () => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('resetCurrentTask')
-    }
-    setCurrentTask({
-      id: uuidv4(),
+function readJson<T>(key: string): T | null {
+  try {
+    const raw = localStorage.getItem(key)
+    return raw === null ? null : (JSON.parse(raw) as T)
+  } catch {
+    return null
+  }
+}
+
+function loadDeviceId(): string {
+  const saved = localStorage.getItem(DEVICE_ID_KEY)
+  if (saved) return saved
+  const id = newId()
+  localStorage.setItem(DEVICE_ID_KEY, id)
+  return id
+}
+
+function loadSession(deviceId: string): FocusSession | null {
+  if (localStorage.getItem(SESSION_KEY) !== null) return readJson<FocusSession>(SESSION_KEY)
+  const migrated = sessionFromLegacyTask(
+    readJson<LegacyTask>(LEGACY_TASK_KEY),
+    Date.now(),
+    deviceId
+  )
+  localStorage.setItem(SESSION_KEY, JSON.stringify(migrated))
+  localStorage.removeItem(LEGACY_TASK_KEY)
+  return migrated
+}
+
+const STATUS: Record<FocusSession['status'], TaskStatus> = {
+  running: 'play',
+  paused: 'pause',
+  finished: 'end'
+}
+
+function toTask(session: FocusSession | null, now: number, timerDuration: number): Task {
+  if (!session) {
+    return {
+      id: '',
       date: '',
       taskName: '',
       taskDuration: 0,
       fullDuration: timerDuration,
       taskStatus: 'idle',
       sessionCount: 1
-    })
-  }
-
-  const reStartTask = () => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('reStartTask')
     }
-    setCurrentTask({
-      id: uuidv4(),
-      date: new Date().toISOString(),
-      taskName: currentTask?.taskName ?? '',
-      taskDuration: timerDuration,
-      fullDuration: timerDuration,
-      taskStatus: 'play',
-      sessionCount: currentTask?.sessionCount ?? 1
-    })
   }
-
-  const startTask = (taskName: string) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('startTask', taskName)
-    }
-    setCurrentTask({
-      id: uuidv4(),
-      date: new Date().toISOString(),
-      taskName: taskName,
-      taskDuration: timerDuration,
-      fullDuration: timerDuration,
-      taskStatus: 'play',
-      sessionCount: 1
-    })
+  const finished = session.status === 'finished'
+  return {
+    id: session.id,
+    date: new Date(session.startedAt).toISOString(),
+    taskName: session.task,
+    taskDuration: Math.ceil(remainingOf(session, now) / 1000),
+    fullDuration: Math.round((finished ? session.focusedMs : session.plannedMs) / 1000),
+    taskStatus: STATUS[session.status],
+    sessionCount: 1
   }
+}
 
-  const incrementSession = useCallback(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('incrementSession')
-    }
-    setCurrentTask((prevTask: Task) => ({
-      ...prevTask,
-      sessionCount: Math.min((prevTask.sessionCount || 1) + 1, 1000)
-    }))
-  }, [setCurrentTask])
+const TaskProvider = ({ children }: { children: React.ReactNode }) => {
+  const { t } = useTranslation()
+  const { settings } = useSettingsContext()
+  const timerDuration = settings?.timerDuration ?? TIME.DEFAULT_POMODORO_DURATION
 
-  const updateTask = useCallback(
-    (duration: number, status?: TaskStatus) => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('updateTask', duration)
-      }
-      setCurrentTask((prevTask: Task) => ({
-        ...prevTask,
-        taskDuration: duration,
-        taskStatus: status ?? prevTask.taskStatus
-      }))
+  const [deviceId] = useState(loadDeviceId)
+  const [session, setSession] = useState(() => loadSession(deviceId))
+  const [now, setNow] = useState(Date.now)
+  const [taskList, setTaskList] = useLocalStorage<Task[]>('taskList', [])
+
+  const update = useCallback(
+    (next: (s: FocusSession | null, now: number) => FocusSession | null) => {
+      const at = Date.now()
+      setNow(at)
+      setSession((prev) => next(prev, at))
     },
-    [setCurrentTask]
+    []
   )
 
-  const pastComplete = useCallback(
-    (elapsedTime: number) => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('pastComplete', elapsedTime)
-      }
-      setCurrentTask((prevTask: Task) => ({
-        ...prevTask,
-        taskDuration: 0,
-        fullDuration: elapsedTime,
-        taskStatus: 'end'
-      }))
+  useEffect(() => {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session))
+  }, [session])
+
+  // 진행 중일 때만 화면을 갱신한다. 남은 시간은 매번 종료 시각에서 다시 계산한다.
+  const tick = useCallback(() => update((s, at) => (s ? settleFocus(s, at) : s)), [update])
+  useEffect(() => {
+    tick()
+    if (session?.status !== 'running') return
+    const interval = setInterval(tick, TIME.TIMER_INTERVAL)
+    window.addEventListener('focus', tick)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('focus', tick)
+    }
+  }, [session?.status, tick])
+
+  // 시간이 다 된 순간: 알림을 띄우고 창을 앞으로 가져온다(기존 useTimer 동작).
+  const prevStatus = useRef(session?.status)
+  useEffect(() => {
+    const was = prevStatus.current
+    prevStatus.current = session?.status
+    if (was !== 'running' || session?.status !== 'finished' || !session.completed) return
+    if (Date.now() - (session.finishedAt ?? 0) > LIVE_COMPLETION_WINDOW_MS) return
+    window.electron?.showNotification?.(t('focus.notification.title'), t('focus.notification.body'))
+    window.electron?.showWindow?.()
+  }, [session, t])
+
+  const resetCurrentTask = useCallback(() => update(() => null), [update])
+
+  const startTask = useCallback(
+    (taskName: string) => {
+      if (!taskName.trim()) return
+      update((_, at) =>
+        startFocus({
+          id: newId(),
+          task: taskName,
+          plannedMs: timerDuration * 1000,
+          now: at,
+          deviceId
+        })
+      )
     },
-    [setCurrentTask]
+    [update, timerDuration, deviceId]
   )
+
+  const reStartTask = useCallback(() => {
+    if (session) startTask(session.task)
+  }, [session, startTask])
+
+  const pauseTask = useCallback(
+    () => update((s, at) => (s ? pauseFocus(s, at, deviceId) : s)),
+    [update, deviceId]
+  )
+  const resumeTask = useCallback(
+    () => update((s, at) => (s ? resumeFocus(s, at, deviceId) : s)),
+    [update, deviceId]
+  )
+  const completeEarly = useCallback(
+    () => update((s, at) => (s ? finishFocus(s, at, deviceId) : s)),
+    [update, deviceId]
+  )
+
+  const currentTask = useMemo(
+    () => toTask(session, now, timerDuration),
+    [session, now, timerDuration]
+  )
+  const percentage = session ? (1 - progressOf(session, now)) * 100 : 0
 
   // taskList를 taskName별로 그룹화
-  const groupedTaskList = useCallback((): GroupedTask[] => {
+  const groupedTaskList = useMemo((): GroupedTask[] => {
     const grouped = taskList.reduce(
       (acc, task) => {
         if (!acc[task.taskName]) {
@@ -172,10 +251,9 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   }, [taskList])
 
   // taskList를 날짜별로 그룹화 (최신순) - dayjs로 로컬 시간대 적용
-  const dailyTaskList = useCallback((): DailyTaskSummary[] => {
+  const dailyTaskList = useMemo((): DailyTaskSummary[] => {
     const grouped = taskList.reduce(
       (acc, task) => {
-        // dayjs는 자동으로 로컬 시간대를 사용
         const dateKey = task.date ? dayjs(task.date).format('YYYY-MM-DD') : 'unknown'
         if (!acc[dateKey]) {
           acc[dateKey] = {
@@ -192,42 +270,30 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
       },
       {} as Record<string, DailyTaskSummary>
     )
-    // 최신순으로 정렬
     return Object.values(grouped).sort((a, b) => b.date.localeCompare(a.date))
   }, [taskList])
 
   const saveTaskToList = useCallback(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('saveTaskToList')
-    }
-
     // 완료된 task만 저장
     if (currentTask.taskStatus === 'end' && currentTask.taskName) {
-      // 오늘 날짜 (YYYY-MM-DD 형식) - dayjs로 로컬 시간대 적용
       const today = dayjs().format('YYYY-MM-DD')
 
-      // 같은 날짜, 같은 이름의 task 개수 계산
+      // 같은 날짜, 같은 이름의 task 개수 계산 (당일 반복 횟수)
       const sameTasks = taskList.filter((task) => {
         const taskDate = task.date ? dayjs(task.date).format('YYYY-MM-DD') : ''
         return task.taskName === currentTask.taskName && taskDate === today
       })
 
-      // sessionCount 업데이트 (당일 반복 횟수)
-      const updatedTask = {
-        ...currentTask,
-        sessionCount: sameTasks.length + 1
-      }
-
-      setTaskList((prevList) => [...prevList, updatedTask])
+      setTaskList((prevList) => [
+        ...prevList,
+        { ...currentTask, sessionCount: sameTasks.length + 1 }
+      ])
     }
   }, [currentTask, taskList, setTaskList])
 
   // 특정 날짜의 특정 이름을 가진 모든 태스크 삭제
   const deleteTasksByNameAndDate = useCallback(
     (taskName: string, date: string) => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('deleteTasksByNameAndDate', taskName, date)
-      }
       setTaskList((prevList) =>
         prevList.filter((task) => {
           const taskDate = task.date ? dayjs(task.date).format('YYYY-MM-DD') : ''
@@ -241,17 +307,19 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <TaskContext.Provider
       value={{
-        currentTask: currentTask as Task,
-        taskStatus: currentTask?.taskStatus ?? 'idle',
+        currentTask,
+        taskStatus: currentTask.taskStatus,
+        remainingTime: currentTask.taskDuration,
+        percentage,
         taskList,
-        groupedTaskList: groupedTaskList(),
-        dailyTaskList: dailyTaskList(),
+        groupedTaskList,
+        dailyTaskList,
         resetCurrentTask,
-        updateTask,
-        pastComplete,
         startTask,
         reStartTask,
-        incrementSession,
+        pauseTask,
+        resumeTask,
+        completeEarly,
         saveTaskToList,
         deleteTasksByNameAndDate
       }}

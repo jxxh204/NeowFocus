@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { useTaskContext } from '@renderer/context/TaskContext'
 import { useTimer } from './hooks/useTimer'
-import { TIME, WINDOW_SIZE } from '@renderer/constants'
+import { WINDOW_SIZE } from '@renderer/constants'
 import TimerDisplay from './components/TimerDisplay'
 import TaskNameDisplay from './components/TaskNameDisplay'
 import StopConfirmModal from './components/StopConfirmModal'
@@ -15,27 +15,11 @@ import Icon from '@renderer/component/ui/Icon'
 export default function FocusRunning(): JSX.Element {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { currentTask, updateTask, pastComplete, resetCurrentTask } = useTaskContext()
+  const { currentTask, resetCurrentTask, completeEarly } = useTaskContext()
   const [showStopModal, setShowStopModal] = useState(false)
 
-  const {
-    timerState,
-    remainingTime,
-    percentage,
-    formatTime,
-    handlePause,
-    handleResume,
-    handleStop
-  } = useTimer(
-    currentTask?.taskDuration || TIME.DEFAULT_POMODORO_DURATION,
-    currentTask?.fullDuration || TIME.DEFAULT_POMODORO_DURATION,
-    {
-      initialState: currentTask?.taskStatus || 'play',
-      onTick: (time, state) => {
-        updateTask(time, state)
-      }
-    }
-  )
+  const { timerState, remainingTime, percentage, formatTime, handlePause, handleResume } =
+    useTimer()
 
   // 도메인 로직: 태스크 없으면 입력 페이지로
   useEffect(() => {
@@ -71,7 +55,6 @@ export default function FocusRunning(): JSX.Element {
   }
 
   const handleStopConfirm = () => {
-    handleStop()
     resetCurrentTask()
     setShowStopModal(false)
     navigate('/')
@@ -84,21 +67,16 @@ export default function FocusRunning(): JSX.Element {
   // 이벤트 핸들러: 일시정지
   const handlePauseClick = () => {
     handlePause()
-    updateTask(remainingTime, 'pause')
   }
 
   // 이벤트 핸들러: 재개
   const handleResumeClick = () => {
     handleResume()
-    updateTask(remainingTime, 'play')
   }
 
   // 이벤트 핸들러: 빠른 완료 (진행된 시간만큼만 저장)
   const handleQuickComplete = () => {
-    const fullDuration = currentTask?.fullDuration || TIME.DEFAULT_POMODORO_DURATION
-    const elapsedTime = fullDuration - remainingTime
-    handleStop()
-    pastComplete(elapsedTime)
+    completeEarly()
   }
 
   // 이벤트 핸들러: 작은 창으로 전환

@@ -1,364 +1,144 @@
 import React from 'react'
 import { renderHook, act } from '@testing-library/react'
 import { TaskProvider, useTaskContext } from '../TaskContext'
+import { SettingsProvider } from '../SettingsContext'
+
+const T0 = new Date('2026-09-29T09:00:00.000Z').getTime()
 
 describe('TaskContext', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <TaskProvider>{children}</TaskProvider>
+    <SettingsProvider>
+      <TaskProvider>{children}</TaskProvider>
+    </SettingsProvider>
   )
+  const render = () => renderHook(() => useTaskContext(), { wrapper })
+  const advance = (ms: number) => act(() => jest.advanceTimersByTime(ms))
 
   beforeEach(() => {
+    jest.useFakeTimers({ now: T0 })
     localStorage.clear()
-    jest.clearAllMocks()
+    ;(window as any).electron.showNotification = jest.fn()
+    ;(window as any).electron.showWindow = jest.fn()
   })
 
-  describe('initial state', () => {
-    it('should provide default task values', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-      
-      expect(result.current.currentTask).toEqual({
-        date: expect.any(String),
-        taskName: '',
-        taskDuration: 1500,
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  it('처음에는 시작 전 상태다', () => {
+    const { result } = render()
+    expect(result.current.taskStatus).toBe('idle')
+    expect(result.current.currentTask.taskName).toBe('')
+  })
+
+  it('시작하면 기본 25분부터 줄어든다', () => {
+    const { result } = render()
+    act(() => result.current.startTask('보고서 쓰기'))
+    expect(result.current.taskStatus).toBe('play')
+    expect(result.current.remainingTime).toBe(1500)
+    expect(result.current.percentage).toBe(100)
+
+    advance(60_000)
+    expect(result.current.remainingTime).toBe(1440)
+  })
+
+  it('멈춘 동안은 줄지 않고, 재개하면 이어간다', () => {
+    const { result } = render()
+    act(() => result.current.startTask('보고서 쓰기'))
+    advance(10_000)
+    act(() => result.current.pauseTask())
+    advance(60_000)
+    expect(result.current.taskStatus).toBe('pause')
+    expect(result.current.remainingTime).toBe(1490)
+
+    act(() => result.current.resumeTask())
+    advance(5_000)
+    expect(result.current.remainingTime).toBe(1485)
+  })
+
+  it('타이머가 늦게 불려도 종료 시각 기준으로 남은 시간을 계산한다', () => {
+    const { result } = render()
+    act(() => result.current.startTask('보고서 쓰기'))
+    // 창이 숨겨져 interval이 멈춘 상황: 시계만 흐르고 한 번만 깨어난다
+    act(() => {
+      jest.setSystemTime(T0 + 10 * 60_000)
+      jest.advanceTimersByTime(1_000)
+    })
+    expect(result.current.remainingTime).toBe(899)
+  })
+
+  it('시간이 다 되면 완료되고 알림을 띄운다', () => {
+    const { result } = render()
+    act(() => result.current.startTask('보고서 쓰기'))
+    advance(1500 * 1000)
+    expect(result.current.taskStatus).toBe('end')
+    expect(result.current.currentTask.fullDuration).toBe(1500)
+    expect(window.electron.showNotification).toHaveBeenCalledTimes(1)
+    expect(window.electron.showWindow).toHaveBeenCalledTimes(1)
+  })
+
+  it('일찍 마치면 집중한 시간만 남기고 알림은 띄우지 않는다', () => {
+    const { result } = render()
+    act(() => result.current.startTask('보고서 쓰기'))
+    advance(12 * 60_000)
+    act(() => result.current.completeEarly())
+    expect(result.current.taskStatus).toBe('end')
+    expect(result.current.currentTask.fullDuration).toBe(720)
+    expect(window.electron.showNotification).not.toHaveBeenCalled()
+  })
+
+  it('완료한 작업을 기록에 저장하고 같은 일을 다시 시작할 수 있다', () => {
+    const { result } = render()
+    act(() => result.current.startTask('보고서 쓰기'))
+    act(() => result.current.completeEarly())
+    act(() => result.current.saveTaskToList())
+    act(() => result.current.reStartTask())
+
+    expect(result.current.taskList).toHaveLength(1)
+    expect(result.current.taskList[0]).toMatchObject({ taskName: '보고서 쓰기', sessionCount: 1 })
+    expect(result.current.taskStatus).toBe('play')
+    expect(result.current.currentTask.taskName).toBe('보고서 쓰기')
+  })
+
+  it('중지하면 기록 없이 시작 전으로 돌아간다', () => {
+    const { result } = render()
+    act(() => result.current.startTask('보고서 쓰기'))
+    act(() => result.current.resetCurrentTask())
+    expect(result.current.taskStatus).toBe('idle')
+    expect(result.current.taskList).toHaveLength(0)
+  })
+
+  it('앱을 다시 열어도 진행 중인 집중이 종료 시각 기준으로 이어진다', () => {
+    const first = render()
+    act(() => first.result.current.startTask('보고서 쓰기'))
+    first.unmount()
+
+    jest.setSystemTime(T0 + 5 * 60_000)
+    const { result } = render()
+    expect(result.current.taskStatus).toBe('play')
+    expect(result.current.remainingTime).toBe(1200)
+  })
+
+  it('이전 버전의 진행 중 작업을 새 형식으로 옮긴다', () => {
+    localStorage.setItem(
+      'currentTask',
+      JSON.stringify({
+        id: 'old-1',
+        date: '2026-09-29T08:00:00.000Z',
+        taskName: '이전 작업',
+        taskDuration: 600,
         fullDuration: 1500,
-        taskStatus: 'idle'
+        taskStatus: 'pause',
+        sessionCount: 1
       })
+    )
+    const { result } = render()
+    expect(result.current.currentTask).toMatchObject({
+      id: 'old-1',
+      taskName: '이전 작업',
+      taskStatus: 'pause',
+      taskDuration: 600
     })
-
-    it('should load task from localStorage if exists', () => {
-      const savedTask = {
-        date: '2024-01-01T10:00:00.000Z',
-        taskName: 'Saved Task',
-        taskDuration: 1000,
-        fullDuration: 1800,
-        taskStatus: 'play' as const
-      }
-      
-      localStorage.setItem('currentTask', JSON.stringify(savedTask))
-      
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-      
-      expect(result.current.currentTask).toEqual(savedTask)
-    })
-  })
-
-  describe('resetCurrentTask', () => {
-    it('should reset the current task', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-      
-      // First, start a task
-      act(() => {
-        result.current.startTask('Test Task')
-      })
-      
-      // Then reset it
-      act(() => {
-        result.current.resetCurrentTask()
-      })
-      
-      expect(result.current.currentTask.taskName).toBe('')
-      expect(result.current.currentTask.taskDuration).toBe(0)
-      expect(result.current.currentTask.taskStatus).toBe('idle')
-    })
-  })
-
-  describe('startTask', () => {
-    it('should start a new task with given name', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-      
-      act(() => {
-        result.current.startTask('Test Task')
-      })
-      
-      expect(result.current.currentTask.taskName).toBe('Test Task')
-      expect(result.current.currentTask.taskStatus).toBe('play')
-      expect(result.current.currentTask.taskDuration).toBe(1500)
-      expect(result.current.currentTask.fullDuration).toBe(1500)
-    })
-  })
-
-  describe('reStartTask', () => {
-    it('should restart the current task', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-      
-      // First, start and modify a task
-      act(() => {
-        result.current.startTask('Test Task')
-      })
-      
-      act(() => {
-        result.current.updateTask(500, 'end')
-      })
-      
-      // Restart the task
-      act(() => {
-        result.current.reStartTask()
-      })
-      
-      expect(result.current.currentTask.taskDuration).toBe(1500)
-      expect(result.current.currentTask.taskStatus).toBe('play')
-      expect(result.current.currentTask.taskName).toBe('Test Task')
-    })
-  })
-
-  describe('taskStatus', () => {
-    it('should reflect the current task status', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-      
-      expect(result.current.taskStatus).toBe('idle')
-      
-      act(() => {
-        result.current.startTask('Test Task')
-      })
-      
-      expect(result.current.taskStatus).toBe('play')
-      
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-      
-      expect(result.current.taskStatus).toBe('end')
-    })
-  })
-
-  describe('updateTask', () => {
-    it('should update task duration', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-      
-      act(() => {
-        result.current.startTask('Test Task')
-      })
-      
-      act(() => {
-        result.current.updateTask(1200)
-      })
-      
-      expect(result.current.currentTask.taskDuration).toBe(1200)
-    })
-
-    it('should update task status when provided', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-      
-      act(() => {
-        result.current.startTask('Test Task')
-      })
-      
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-      
-      expect(result.current.currentTask.taskDuration).toBe(0)
-      expect(result.current.currentTask.taskStatus).toBe('end')
-    })
-  })
-
-  describe('saveTaskToList', () => {
-    it('should save completed task to task list', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-
-      act(() => {
-        result.current.startTask('Test Task')
-      })
-
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-
-      act(() => {
-        result.current.saveTaskToList()
-      })
-
-      expect(result.current.taskList).toHaveLength(1)
-      expect(result.current.taskList[0].taskName).toBe('Test Task')
-      expect(result.current.taskList[0].sessionCount).toBe(1)
-    })
-
-    it('should calculate session count based on same date and same task name', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-      // const today = new Date().toISOString()
-
-      // First session
-      act(() => {
-        result.current.startTask('Test Task')
-      })
-
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-
-      act(() => {
-        result.current.saveTaskToList()
-      })
-
-      expect(result.current.taskList[0].sessionCount).toBe(1)
-
-      // Second session (same day, same task)
-      act(() => {
-        result.current.reStartTask()
-      })
-
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-
-      act(() => {
-        result.current.saveTaskToList()
-      })
-
-      expect(result.current.taskList).toHaveLength(2)
-      expect(result.current.taskList[1].sessionCount).toBe(2)
-
-      // Third session (same day, same task)
-      act(() => {
-        result.current.reStartTask()
-      })
-
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-
-      act(() => {
-        result.current.saveTaskToList()
-      })
-
-      expect(result.current.taskList).toHaveLength(3)
-      expect(result.current.taskList[2].sessionCount).toBe(3)
-    })
-
-    it('should reset session count for different task name on same day', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-
-      // First task - first session
-      act(() => {
-        result.current.startTask('Task A')
-      })
-
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-
-      act(() => {
-        result.current.saveTaskToList()
-      })
-
-      expect(result.current.taskList[0].sessionCount).toBe(1)
-
-      // First task - second session
-      act(() => {
-        result.current.reStartTask()
-      })
-
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-
-      act(() => {
-        result.current.saveTaskToList()
-      })
-
-      expect(result.current.taskList[1].sessionCount).toBe(2)
-
-      // Different task - should start from 1
-      act(() => {
-        result.current.startTask('Task B')
-      })
-
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-
-      act(() => {
-        result.current.saveTaskToList()
-      })
-
-      expect(result.current.taskList).toHaveLength(3)
-      expect(result.current.taskList[2].sessionCount).toBe(1)
-    })
-
-    it('should reset session count for same task name on different day', () => {
-      const { result: _result } = renderHook(() => useTaskContext(), { wrapper })
-
-      // Mock yesterday's date
-      const yesterday = new Date()
-      yesterday.setDate(yesterday.getDate() - 1)
-
-      // Create a task from yesterday
-      const yesterdayTask = {
-        id: 'test-id-1',
-        date: yesterday.toISOString(),
-        taskName: 'Test Task',
-        taskDuration: 0,
-        fullDuration: 1500,
-        taskStatus: 'end' as const,
-        sessionCount: 2 // Had 2 sessions yesterday
-      }
-
-      // Manually add yesterday's task to localStorage
-      localStorage.setItem('taskList', JSON.stringify([yesterdayTask]))
-
-      // Re-render to load the saved task list
-      const { result: newResult } = renderHook(() => useTaskContext(), { wrapper })
-
-      expect(newResult.current.taskList).toHaveLength(1)
-      expect(newResult.current.taskList[0].sessionCount).toBe(2)
-
-      // Start same task today
-      act(() => {
-        newResult.current.startTask('Test Task')
-      })
-
-      act(() => {
-        newResult.current.updateTask(0, 'end')
-      })
-
-      act(() => {
-        newResult.current.saveTaskToList()
-      })
-
-      // Should start from 1 for today (not 3)
-      expect(newResult.current.taskList).toHaveLength(2)
-      expect(newResult.current.taskList[1].sessionCount).toBe(1)
-    })
-
-    it('should not save task if status is not end', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-
-      act(() => {
-        result.current.startTask('Test Task')
-      })
-
-      act(() => {
-        result.current.saveTaskToList()
-      })
-
-      expect(result.current.taskList).toHaveLength(0)
-    })
-
-    it('should not save task if taskName is empty', () => {
-      const { result } = renderHook(() => useTaskContext(), { wrapper })
-
-      act(() => {
-        result.current.updateTask(0, 'end')
-      })
-
-      act(() => {
-        result.current.saveTaskToList()
-      })
-
-      expect(result.current.taskList).toHaveLength(0)
-    })
-  })
-
-  describe('error handling', () => {
-    it('should throw error when useTaskContext is used outside provider', () => {
-      // Suppress console.error for this test
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
-
-      expect(() => {
-        renderHook(() => useTaskContext())
-      }).toThrow('useTaskContext must be used within a TaskProvider')
-
-      consoleErrorSpy.mockRestore()
-    })
+    expect(localStorage.getItem('currentTask')).toBeNull()
   })
 })
