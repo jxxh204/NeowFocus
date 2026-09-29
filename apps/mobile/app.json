@@ -13,6 +13,8 @@
     },
     "ios": {
       "supportsTablet": false,
+      "bundleIdentifier": "com.neowfocus.pomodorotimer",
+      "appleTeamId": "L67FAG9382",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -21,6 +23,9 @@
       "bundler": "metro",
       "output": "single"
     },
-    "plugins": ["expo-router", "expo-notifications"]
+    "plugins": [
+      "expo-router",
+      "expo-notifications"
+    ]
   }
 }
