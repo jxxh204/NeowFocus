@@ -1,4 +1,5 @@
 import { toRecord, type FocusRecord } from './records'
+import { mergeCurrent, mergeRecords } from './sync'
 import {
   finishFocus,
   pauseFocus,
@@ -15,6 +16,8 @@ import {
 export type FocusState = {
   current: FocusSession | null
   records: FocusRecord[]
+  /** 다른 기기의 집중에 밀려 마친 집중. 알린 뒤 ackDisplaced로 지운다. */
+  displaced?: FocusSession | null
 }
 
 export type FocusAction =
@@ -24,6 +27,9 @@ export type FocusAction =
   | { type: 'finish'; now: number; deviceId: string }
   | { type: 'tick'; now: number }
   | { type: 'dismiss' }
+  /** 다른 기기에서 받은 상태를 합친다 */
+  | { type: 'sync'; current: FocusSession | null; records: FocusRecord[]; now: number }
+  | { type: 'ackDisplaced' }
 
 export const EMPTY_STATE: FocusState = { current: null, records: [] }
 
@@ -40,23 +46,32 @@ export function focusReducer(state: FocusState, action: FocusAction): FocusState
       return { ...state, current: startFocus(action) }
     case 'dismiss':
       return current?.status === 'finished' ? { ...state, current: null } : state
+    case 'ackDisplaced':
+      return state.displaced ? { ...state, displaced: null } : state
+    case 'sync': {
+      const merged = mergeCurrent(current, action.current, action.now)
+      const records = [merged.current, merged.displaced].reduce(
+        (list, s) => withRecord(list, s ? toRecord(s) : null),
+        mergeRecords(state.records, action.records)
+      )
+      return { current: merged.current, records, displaced: merged.displaced ?? state.displaced }
+    }
   }
 
   if (!current) return state
   const next = transition(current, action)
   if (next === current) return state
 
-  const record = toRecord(next)
-  const records =
-    record && !state.records.some((r) => r.id === record.id)
-      ? [...state.records, record]
-      : state.records
-  return { current: next, records }
+  return { ...state, current: next, records: withRecord(state.records, toRecord(next)) }
+}
+
+function withRecord(records: FocusRecord[], record: FocusRecord | null): FocusRecord[] {
+  return record && !records.some((r) => r.id === record.id) ? [...records, record] : records
 }
 
 function transition(
   session: FocusSession,
-  action: Exclude<FocusAction, { type: 'start' | 'dismiss' }>
+  action: Exclude<FocusAction, { type: 'start' | 'dismiss' | 'sync' | 'ackDisplaced' }>
 ) {
   switch (action.type) {
     case 'pause':
