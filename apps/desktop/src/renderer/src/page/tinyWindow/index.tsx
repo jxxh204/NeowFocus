@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { useTaskContext } from '@renderer/context/TaskContext'
 import useWindowSize from '@renderer/hooks/useWindowSize'
 import { useTimer } from '../focus/hooks/useTimer'
-import { TIME, WINDOW_SIZE, ROUTES } from '@renderer/constants'
+import { WINDOW_SIZE, ROUTES } from '@renderer/constants'
 import CircularTimer from '@renderer/component/CircularTimer'
 import Icon from '@renderer/component/ui/Icon'
 import theme from '@renderer/styles/theme'
@@ -13,27 +13,17 @@ import theme from '@renderer/styles/theme'
 export function TinyWindowPage(): JSX.Element {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { currentTask, updateTask } = useTaskContext()
+  const { currentTask } = useTaskContext()
   const { setWindowSize } = useWindowSize()
   const textRef = useRef<HTMLDivElement>(null)
 
-  // focus 페이지와 동일한 타이머 로직 사용
-  const { percentage, timerState } = useTimer(
-    currentTask?.taskDuration || TIME.DEFAULT_POMODORO_DURATION,
-    currentTask?.fullDuration || TIME.DEFAULT_POMODORO_DURATION,
-    {
-      initialState: currentTask?.taskStatus || 'play',
-      onTick: (time, state) => {
-        // TimerState를 TaskStatus로 그대로 매핑 (pause도 유지)
-        updateTask(time, state)
+  // focus 페이지와 동일한 타이머 값 사용
+  const { percentage, timerState } = useTimer()
 
-        // 타이머 종료 시 focus 페이지로 이동
-        if (state === 'end') {
-          navigate(ROUTES.FOCUS)
-        }
-      }
-    }
-  )
+  // 타이머 종료 시 focus 페이지로 이동
+  useEffect(() => {
+    if (timerState === 'end') navigate(ROUTES.FOCUS)
+  }, [timerState, navigate])
 
   useEffect(() => {
     setWindowSize({

@@ -1,0 +1,14 @@
+packages:
+  - apps/*
+  - packages/*
+
+# nodeLinker는 pnpm 기본값(isolated)을 쓴다. 데스크톱은 React 18, 모바일은 React 19라
+# hoisted로 두면 한 앱의 라이브러리가 다른 앱의 React를 잡을 수 있다.
+# Expo는 SDK 54부터 isolated 설치를 지원한다.
+
+onlyBuiltDependencies:
+  - electron
+  - esbuild
+
+ignoredBuiltDependencies:
+  - unrs-resolver
