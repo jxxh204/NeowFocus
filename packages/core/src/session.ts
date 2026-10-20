@@ -11,6 +11,7 @@
  */
 
 export type FocusStatus = 'running' | 'paused' | 'finished'
+export type FinishReason = 'completed' | 'manual' | 'conflict'
 
 export type FocusSession = {
   id: string
@@ -30,6 +31,11 @@ export type FocusSession = {
   /** 동기화 시 최신 변경을 가리기 위한 값 */
   updatedAt: number
   updatedBy: string
+  /** Logical version; old persisted sessions without a version remain readable. */
+  revision?: number
+  /** Origin device owns the completion notification, even after remote edits. */
+  startedBy?: string
+  finishReason?: FinishReason
 }
 
 export type StartInput = {
@@ -43,7 +49,9 @@ export type StartInput = {
 export function startFocus({ id, task, plannedMs, now, deviceId }: StartInput): FocusSession {
   const trimmed = task.trim()
   if (!trimmed) throw new Error('할 일을 입력해야 집중을 시작할 수 있습니다.')
-  if (!(plannedMs > 0)) throw new Error('집중 시간은 0보다 커야 합니다.')
+  if (!id.trim() || !deviceId.trim() || !Number.isFinite(now) || now < 0)
+    throw new Error('집중 식별자와 시작 시각이 올바르지 않습니다.')
+  if (!(plannedMs > 0) || !Number.isFinite(plannedMs) || !Number.isFinite(now + plannedMs)) throw new Error('집중 시간은 0보다 커야 합니다.')
 
   return {
     id,
@@ -57,14 +65,16 @@ export function startFocus({ id, task, plannedMs, now, deviceId }: StartInput): 
     focusedMs: 0,
     completed: false,
     updatedAt: now,
-    updatedBy: deviceId
+    updatedBy: deviceId,
+    startedBy: deviceId,
+    revision: 1
   }
 }
 
 export function remainingOf(session: FocusSession, now: number): number {
   switch (session.status) {
     case 'running':
-      return Math.max(0, (session.endsAt ?? now) - now)
+      return Math.min(session.plannedMs, Math.max(0, (session.endsAt ?? now) - now))
     case 'paused':
       return session.remainingMs
     case 'finished':
@@ -87,7 +97,9 @@ export function pauseFocus(session: FocusSession, now: number, deviceId: string)
     endsAt: null,
     remainingMs,
     updatedAt: now,
-    updatedBy: deviceId
+    updatedBy: deviceId,
+    revision: nextRevision(session),
+    startedBy: originDeviceOf(session)
   }
 }
 
@@ -98,7 +110,9 @@ export function resumeFocus(session: FocusSession, now: number, deviceId: string
     status: 'running',
     endsAt: now + session.remainingMs,
     updatedAt: now,
-    updatedBy: deviceId
+    updatedBy: deviceId,
+    revision: nextRevision(session),
+    startedBy: originDeviceOf(session)
   }
 }
 
@@ -107,7 +121,7 @@ export function finishFocus(session: FocusSession, now: number, deviceId: string
   if (session.status === 'finished') return session
   const remainingMs = remainingOf(session, now)
   if (remainingMs === 0) return settleFocus(session, now)
-  return toFinished(session, { finishedAt: now, remainingMs, updatedBy: deviceId })
+  return toFinished(session, { finishedAt: Math.max(now, session.startedAt), remainingMs, updatedBy: deviceId })
 }
 
 /**
@@ -141,7 +155,10 @@ function toFinished(
     focusedMs: session.plannedMs - remainingMs,
     completed: remainingMs === 0,
     updatedAt: finishedAt,
-    updatedBy
+    updatedBy,
+    revision: nextRevision(session),
+    startedBy: originDeviceOf(session),
+    finishReason: remainingMs === 0 ? 'completed' : 'manual'
   }
 }
 
@@ -151,4 +168,13 @@ export function formatClock(ms: number): string {
   const minutes = Math.floor(totalSeconds / 60)
   const seconds = totalSeconds % 60
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+}
+
+/** Increment causal order independently of wall-clock adjustments. */
+export function nextRevision(session: Pick<FocusSession, 'revision'>): number {
+  return (session.revision ?? 0) + 1
+}
+
+export function originDeviceOf(session: FocusSession): string {
+  return session.startedBy ?? session.updatedBy
 }

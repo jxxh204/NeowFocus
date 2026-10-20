@@ -11,19 +11,7 @@ export default function RootLayout() {
       <StatusBar style="light" />
       <SettingsProvider>
         <FocusProvider>
-          <Stack
-            screenOptions={{
-              headerStyle: { backgroundColor: color.bg },
-              headerTintColor: color.text,
-              headerShadowVisible: false,
-              headerBackButtonDisplayMode: 'minimal',
-              contentStyle: { backgroundColor: color.bg }
-            }}
-          >
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="records" options={{ title: '집중 기록' }} />
-            <Stack.Screen name="settings" options={{ title: '설정' }} />
-          </Stack>
+          <Stack screenOptions={{ headerShown: false, animation: 'none', contentStyle: { backgroundColor: color.bg } }} />
         </FocusProvider>
       </SettingsProvider>
     </SafeAreaProvider>

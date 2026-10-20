@@ -20,8 +20,8 @@
       "stop": "작업중단"
     },
     "completionActions": {
-      "newTask": "새 작업",
-      "repeat": "타이머 한번 더"
+      "newTask": "다른 작업",
+      "repeat": "계속하기"
     },
     "notification": {
       "title": "작업 완료! 🎉",

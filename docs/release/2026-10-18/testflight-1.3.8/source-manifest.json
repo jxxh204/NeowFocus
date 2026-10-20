@@ -1,0 +1,30 @@
+[
+  {
+    "path": "apps/desktop/package.json",
+    "sha256": "c60fc2f71689b05cf6e6a676d335abbd6e09efde47fd25ceffc5346158e3747e"
+  },
+  {
+    "path": "apps/desktop/src/main/index.ts",
+    "sha256": "9fbff63b0cabd188816a0d866c88c8fae86dc0243e2078db60b080bb0e2a645f"
+  },
+  {
+    "path": "apps/desktop/src/main/handlers/windowHandler.ts",
+    "sha256": "c940cd0614179e09b6fa2fc23408da5cbeb52f0028d4a07da3ec93d4d259b422"
+  },
+  {
+    "path": "apps/desktop/src/main/handlers/trayhandler.ts",
+    "sha256": "beaf8f13abc9279afee3f90a9aefb7272a6009872e531af53daf88c6212cd504"
+  },
+  {
+    "path": "apps/desktop/src/main/handlers/dockHandler.ts",
+    "sha256": "6d62c33a28a039d7b5ebc233447a377bfbe1b1d9b8cd18f4ac8b5c06819021ee"
+  },
+  {
+    "path": "apps/desktop/src/main/handlers/menuHandler.ts",
+    "sha256": "cd520adfddf90f8d12134cbb3f74271ede4982b1f5cac6e389ab4f5193f95783"
+  },
+  {
+    "path": "apps/desktop/src/main/IpcProtocol.ts",
+    "sha256": "5840f06d32eb5aa1a1b4662f10cbba8fdcfd05652f653a21de75a94f3070ae67"
+  }
+]

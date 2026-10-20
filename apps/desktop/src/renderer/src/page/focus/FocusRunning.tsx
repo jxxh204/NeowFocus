@@ -37,7 +37,12 @@ export default function FocusRunning(): JSX.Element {
     }, 300) // 300ms 후 Enter 키 활성화
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && !showStopModal && isReady) {
+      if (
+        e.key === 'Enter' &&
+        !showStopModal &&
+        isReady &&
+        !(e.target as HTMLElement)?.closest('button,input,textarea,select,a')
+      ) {
         navigate('/tiny_window')
       }
     }

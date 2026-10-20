@@ -6,6 +6,7 @@ import en from './locales/en.json'
 // 시스템 언어 가져오기
 const getSystemLocale = async (): Promise<string> => {
   try {
+    if (!window.electron?.getSystemLocale) return navigator.language.startsWith('ko') ? 'ko' : 'en'
     const locale = await window.electron.getSystemLocale()
     return locale || 'en'
   } catch (error) {

@@ -4,20 +4,22 @@ import { color, radius } from '@/theme'
 
 export function DurationChips({
   value,
-  onChange
+  onChange,
+  options = FOCUS_MINUTES
 }: {
   value: number
   onChange: (minutes: number) => void
+  options?: readonly number[]
 }) {
   return (
     <View style={styles.row} accessibilityRole="radiogroup">
-      {FOCUS_MINUTES.map((minutes) => {
+      {options.map((minutes) => {
         const selected = minutes === value
         return (
           <Pressable
             key={minutes}
             accessibilityRole="radio"
-            accessibilityState={{ selected }}
+            accessibilityState={{ selected, checked: selected }}
             onPress={() => onChange(minutes)}
             style={[styles.chip, selected && styles.selected]}
           >

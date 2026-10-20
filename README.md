@@ -1,4 +1,7 @@
+> Latest delivery: macOS **1.3.8 (1.3.8)** is available to the current tester in TestFlight, verified on October 19. It keeps the Dock icon and existing design while displaying the timer over native full-screen apps. [TestFlight evidence](docs/release/2026-10-18/testflight-1.3.8/README.md). Public App Store submission of 1.3.8 is waiting for App Store Connect sign-in; it has not been submitted. [Public release handoff](docs/release/2026-10-19/macos-1.3.8/README.md). The earlier macOS 1.3.7 and iOS 0.1.0 (12) submissions were waiting for review when last checked on October 18; their current public availability has not been reverified.
+
 # NeowFocus 🐱⏱️
+
 
 <div align="center">
 
@@ -71,14 +74,14 @@ NeowFocus is a Pomodoro timer application for macOS that helps users maintain fo
 ## 🔒 Privacy & Permissions
 
 NeowFocus respects your privacy:
-- ✅ **No data collection**: Your tasks and timer data stay on your device
-- ✅ **No network requests**: App works completely offline
+- **Local by default**: Tasks and timer data stay on your device until you opt into iCloud sync.
+- **Optional iCloud sync**: When enabled, focus sessions and records are sent to your Apple account’s private CloudKit database. Local timing still works offline.
 - ✅ **No third-party analytics**: Zero tracking or telemetry
 - ✅ **Sandboxed**: Fully compliant with Mac App Store security requirements
 - ✅ **No background services**: Only runs when you're actively using it
 
 ### Required Permissions
-- **None**: NeowFocus requires no special permissions to function
+- The local timer needs no account. Notifications, Live Activities, iCloud sync and optional Screen Time blocking have separate system permissions and release requirements; see the implementation handoff.
 
 ## 🚀 Installation
 

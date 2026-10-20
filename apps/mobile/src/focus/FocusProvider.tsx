@@ -1,137 +1,301 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-  type ReactNode
-} from 'react'
-import { AppState } from 'react-native'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { AppState, Text, View } from 'react-native'
 import { randomUUID } from 'expo-crypto'
-import { EMPTY_STATE, focusReducer, type FocusAction, type FocusState } from '@neowfocus/core'
 import {
-  cancelCompletion,
-  requestAlertPermission,
-  scheduleCompletion,
-  vibrateCompletion
-} from './alerts'
+  EMPTY_STATE, focusReducer, parseFocusState, createSyncEnvelope, serializeFocusState, FocusReplicator,
+  remainingOf, localDayKey, canSuggestFirstFocus, achievementForDay, isFeedbackCompletion, breakAfterCompletion, restoreFocusBreak, type FocusBreak, type FocusAction, type FocusState, type SyncStatus
+} from '@neowfocus/core'
+import Native, { type NativeCapabilities } from '../../modules/neowfocus-native'
+import { cancelCompletion, requestAlertPermission, scheduleCompletion, playCompletionFeedback } from './alerts'
 import { useSettings } from './SettingsProvider'
 import { storage } from './storage'
 
 type FocusContextValue = {
   state: FocusState
-  /** 화면 표시용 현재 시각. 집중 중에만 촘촘히 갱신된다. */
   now: number
-  start: (task: string, minutes: number) => void
-  pause: () => void
-  resume: () => void
-  finish: () => void
-  dismiss: () => void
+  breakRemaining: number
+  breakFinished: boolean
+  finishBreak(): void
+  start(task: string, minutes: number): void
+  pause(): void
+  resume(): void
+  finish(): void
+  dismiss(): void
+  deleteRecord(id: string): void
+  undoDeleteRecord(id: string): void
+  resolveConflict(sessionId: string): void
+  firstSuggestionReady: boolean
+  firstSuggestionDay?: string
+  markFirstSuggestion(day: string): void
+  syncStatus: SyncStatus
+  syncError?: string
+  nativeError?: string
+  capabilities: NativeCapabilities
+  retrySync(): void
+  completionFeedback(sessionId: string): void
 }
-
 const FocusContext = createContext<FocusContextValue | null>(null)
-
-type Action = FocusAction | { type: 'hydrate'; state: FocusState }
-
-const reducer = (state: FocusState, action: Action): FocusState =>
-  action.type === 'hydrate' ? action.state : focusReducer(state, action)
-
-/** 시간이 끝나는 순간을 앱 안에서 직접 봤을 때만 진동한다. 백그라운드 완료는 알림이 맡는다. */
-const LIVE_COMPLETION_WINDOW_MS = 3_000
+const NO_CAPABILITIES: NativeCapabilities = { widgets: false, liveActivities: false, cloudKit: false }
 
 export function FocusProvider({ children }: { children: ReactNode }) {
   const { settings } = useSettings()
-  const [state, dispatch] = useReducer(reducer, EMPTY_STATE)
+  const [state, setState] = useState<FocusState>(EMPTY_STATE)
+  const [focusBreak, setFocusBreak] = useState<FocusBreak | null>(null)
+  const breakQueue = useRef<Promise<void>>(Promise.resolve())
+  const finishBreak = useCallback(() => {
+    setFocusBreak(previous => previous ? {...previous, endsAt:null} : null)
+  }, [])
+  const stateRef = useRef(state)
   const [deviceId, setDeviceId] = useState<string | null>(null)
+  const deviceRef = useRef<string | null>(null)
   const [now, setNow] = useState(Date.now)
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('off')
+  const [syncError, setSyncError] = useState<string>()
+  const [nativeError, setNativeError] = useState<string>()
+  const [appActive, setAppActive] = useState(AppState.currentState === 'active')
+  const replicator = useRef<FocusReplicator | null>(null)
+  const nativeQueue = useRef<Promise<void>>(Promise.resolve())
+  const storageQueue = useRef<Promise<void>>(Promise.resolve())
+  const capabilities = useMemo(() => Native?.getCapabilities() ?? NO_CAPABILITIES, [])
   const current = state.current
-
-  const tick = useCallback(() => {
-    const t = Date.now()
-    setNow(t)
-    dispatch({ type: 'tick', now: t })
+  const breakMatches = current?.status === 'finished' && current.id === focusBreak?.sessionId
+  const breakRemaining = breakMatches && settings.autoBreak && focusBreak?.endsAt
+    ? Math.max(0, Math.ceil((focusBreak.endsAt - now) / 1000)) : 0
+  const onBreak = breakRemaining > 0
+  const breakFinished = Boolean(breakMatches && focusBreak?.endsAt && !onBreak)
+  useEffect(() => {
+    if (!deviceId) return
+    breakQueue.current = breakQueue.current.catch(() => {}).then(() => storage.saveBreak(focusBreak))
+    void breakQueue.current.catch(() => setNativeError('휴식 상태를 저장하지 못했어요. 저장 공간을 확인해 주세요.'))
+  }, [focusBreak, deviceId])
+  useEffect(() => { if (!settings.autoBreak) finishBreak() }, [settings.autoBreak, finishBreak])
+  const settingsRef = useRef(settings)
+  settingsRef.current = settings
+  const pendingFeedback = useRef<{ id: string; timer: ReturnType<typeof setTimeout> } | undefined>(undefined)
+  const foregroundSince = useRef(Date.now())
+  const completionFeedback = useCallback((sessionId: string) => {
+    if (pendingFeedback.current?.id !== sessionId) return
+    clearTimeout(pendingFeedback.current.timer)
+    pendingFeedback.current = undefined
+    if (settingsRef.current.alerts && AppState.currentState === 'active') playCompletionFeedback()
+  }, [])
+  useEffect(() => () => {
+    if (pendingFeedback.current) clearTimeout(pendingFeedback.current.timer)
   }, [])
 
-  // 저장된 상태를 불러오고, 꺼져 있던 사이에 끝난 집중은 바로 완료로 정리한다.
-  useEffect(() => {
-    Promise.all([storage.loadState<FocusState>(), storage.deviceId()]).then(([saved, id]) => {
-      if (saved) dispatch({ type: 'hydrate', state: saved })
-      setDeviceId(id)
-      tick()
-    })
-  }, [tick])
-
-  useEffect(() => {
-    if (deviceId) storage.saveState(state)
-  }, [deviceId, state])
-
-  useEffect(() => {
-    if (current?.status !== 'running') return
-    const timer = setInterval(tick, 250)
-    return () => clearInterval(timer)
-  }, [current?.status, tick])
-
-  useEffect(() => {
-    const sub = AppState.addEventListener('change', (next) => next === 'active' && tick())
-    return () => sub.remove()
-  }, [tick])
-
-  // 완료 알림 예약: 진행 중일 때만 종료 시각에 하나를 걸어 둔다.
-  useEffect(() => {
-    if (!current) return
-    if (current.status === 'running' && current.endsAt !== null && settings.alerts) {
-      scheduleCompletion({
-        id: current.id,
-        task: current.task,
-        endsAt: current.endsAt,
-        plannedMs: current.plannedMs
-      })
-    } else {
-      cancelCompletion(current.id)
+  const save = useCallback((next: FocusState) => {
+    const pending = storageQueue.current.catch(() => {}).then(() => storage.saveState(createSyncEnvelope(next)))
+    storageQueue.current = pending
+    pending.catch(() => setNativeError('기기에 저장하지 못했어요. 저장 공간을 확인해 주세요.'))
+    return pending
+  }, [])
+  const apply = useCallback((next: FocusState) => {
+    if (next === stateRef.current) return
+    const previous = stateRef.current.current
+    const current = next.current
+    if (current?.status !== 'finished') setFocusBreak(null)
+    else if (previous?.id === current.id && previous.status !== 'finished')
+      setFocusBreak(breakAfterCompletion(current, settingsRef.current.autoBreak === true))
+    if (deviceRef.current && settingsRef.current.alerts && AppState.currentState === 'active' && next.current
+      && isFeedbackCompletion(previous, next.current, deviceRef.current, Date.now(), foregroundSince.current)) {
+      if (pendingFeedback.current) clearTimeout(pendingFeedback.current.timer)
+      const id = next.current.id
+      pendingFeedback.current = { id, timer: setTimeout(() => completionFeedback(id), 650) }
     }
-    // current 전체가 아닌 예약에 영향을 주는 값만 본다. 기록이 바뀔 때마다 다시 예약하지 않기 위해서다.
-  }, [current?.id, current?.status, current?.endsAt, settings.alerts])
+    stateRef.current = next
+    setState(next)
+    setNow(Date.now())
+    if (deviceRef.current) void save(next)
+  }, [save, completionFeedback])
+  const dispatch = useCallback((action: FocusAction) => {
+    apply(focusReducer(stateRef.current, action))
+  }, [apply])
+  const tick = useCallback(() => {
+    const time = Date.now()
+    setNow(time)
+    dispatch({ type: 'tick', now: time })
+  }, [dispatch])
 
-  const prevStatus = useRef(current?.status)
+  // Widget actions are durable until JS has saved them. Replay before settling an expired timer.
+  const drainNativeCommands = useCallback(async () => {
+    const id = deviceRef.current
+    if (!Native || !id) return
+    const commands = await Native.drainCommands()
+    const nativeCommands = commands.map((command) => ({
+      id: command.id, sessionId: command.sessionId, action: command.action,
+      issuedAt: command.issuedAt, revision: command.revision,
+      deviceId: command.snapshot.deviceId ?? id,
+      ...(command.baseSessionJSON ? { baseSession: JSON.parse(command.baseSessionJSON) } : {})
+    }))
+    if (nativeCommands.some((command) => command.issuedAt > Date.now() + 60_000))
+      throw new Error('위젯 변경 시각을 확인하지 못했어요. 기기 시간을 확인해 주세요.')
+    if (commands.length) {
+      const incoming = parseFocusState(JSON.stringify({ current: null, records: [], nativeCommands }))
+      if (!incoming) throw new Error('위젯 변경을 읽지 못했어요. 앱을 다시 열어 주세요.')
+      dispatch({ ...incoming, type: 'sync', now: Date.now() })
+      await save(stateRef.current)
+      // Original command logs now live in the durable common store before queue acknowledgement.
+      const unresolved = nativeCommands.filter((command) => !command.baseSession
+        && stateRef.current.current?.id === command.sessionId
+        && (stateRef.current.current.revision ?? 0) < command.revision)
+      await Native.acknowledgeCommands(commands.filter((command) => !unresolved.some((item) => item.id === command.id)).map((command) => command.id))
+      if (unresolved.length) throw new Error('위젯 변경을 기다리고 있어요. 동기화 후 다시 확인해 주세요.')
+    }
+  }, [dispatch, save])
+  const refresh = useCallback(() => {
+    nativeQueue.current = nativeQueue.current.catch(() => {}).then(drainNativeCommands).then(() => {
+      tick()
+      void replicator.current?.sync()
+    }).catch((error) => setNativeError(String(error)))
+    return nativeQueue.current
+  }, [drainNativeCommands, tick])
+
   useEffect(() => {
-    const was = prevStatus.current
-    prevStatus.current = current?.status
-    if (was !== 'running' || current?.status !== 'finished' || !current.completed) return
-    const liveCompletion = Date.now() - (current.finishedAt ?? 0) < LIVE_COMPLETION_WINDOW_MS
-    if (settings.alerts && liveCompletion && AppState.currentState === 'active') vibrateCompletion()
-  }, [current, settings.alerts])
+    let active = true
+    Promise.all([storage.loadState<unknown>(), storage.deviceId(), storage.loadBreak()]).then(async ([saved, id, savedBreak]) => {
+      if (!active) return
+      const restored = saved ? parseFocusState(JSON.stringify(saved)) : null
+      if (saved && !restored) setNativeError('저장된 데이터를 읽지 못했어요. 앱을 종료하고 다시 확인해 주세요.')
+      // Do not overwrite an unreadable store with an empty state.
+      if (saved && !restored) return
+      stateRef.current = restored ?? EMPTY_STATE
+      setState(stateRef.current)
+      setFocusBreak(restoreFocusBreak(stateRef.current.current, savedBreak, settingsRef.current.autoBreak === true))
+      deviceRef.current = id
+      await drainNativeCommands().catch(() => setNativeError('위젯 변경을 확인하지 못했어요. 앱에서 다시 확인해 주세요.'))
+      if (!active) return
+      tick()
+      setDeviceId(id)
+    }).catch(() => setNativeError('집중 기록을 불러오지 못했어요. 앱을 다시 열어 주세요.'))
+    return () => { active = false }
+  }, [drainNativeCommands, tick])
 
-  const value = useMemo<FocusContextValue | null>(() => {
-    if (!deviceId) return null
-    const at = () => ({ now: Date.now(), deviceId })
+  useEffect(() => {
+    if (!deviceId || !settings.syncEnabled) {
+      setSyncStatus('off')
+      setSyncError(undefined)
+      return
+    }
+    if (!Native || !capabilities.cloudKit) {
+      setSyncStatus('offline')
+      setSyncError('iCloud 동기화는 설치된 iOS 앱에서 사용할 수 있어요.')
+      return
+    }
+    const native = Native
+    const worker = new FocusReplicator({
+      transport: {
+        read: async () => {
+          const account = await native.cloudAccountStatus()
+          if (account !== 'available') throw new Error('iCloud 로그인을 확인해 주세요.')
+          return native.cloudRead()
+        },
+        write: (json, tag) => native.cloudWrite(json, tag)
+      },
+      getState: () => stateRef.current,
+      applyState: apply,
+      onStatus: (status, message) => { setSyncStatus(status); setSyncError(message) }
+    })
+    replicator.current = worker
+    void worker.sync()
+    const listener = native.addListener('cloudChanged', () => { void refresh() })
+    void native.cloudSubscribe().catch(() => setSyncError('변경 알림을 연결하지 못했어요. 앱을 다시 열면 동기화해요.'))
+    return () => { listener.remove(); worker.stop(); if (replicator.current === worker) replicator.current = null }
+  }, [deviceId, settings.syncEnabled, capabilities.cloudKit, apply])
+
+  useEffect(() => { if (deviceId) void replicator.current?.sync() }, [state, deviceId])
+  useEffect(() => {
+    if (!appActive || (current?.status !== 'running' && !onBreak)) return
+    const interval = setInterval(tick, 250)
+    return () => clearInterval(interval)
+  }, [appActive, current?.status, onBreak, tick])
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (next) => {
+      setAppActive(next === 'active')
+      if (next === 'active') foregroundSince.current = Date.now()
+      if (next === 'active') void refresh()
+    })
+    return () => subscription.remove()
+  }, [refresh])
+
+  // A shared deadline powers the widget and ActivityKit; no background JS timer is required.
+  useEffect(() => {
+    if (!deviceId || !Native) return
+    nativeQueue.current = nativeQueue.current.catch(() => {}).then(() => drainNativeCommands().catch((error) => setNativeError(String(error)))).then(async () => {
+      const session = stateRef.current.current
+      const conflict = Boolean(stateRef.current.conflicts?.length)
+      const today = achievementForDay(stateRef.current.records, Date.now())
+      await Native!.publishSnapshot(JSON.stringify({
+        sessionId: session?.id ?? null,
+        task: session?.task ?? '',
+        status: conflict ? 'idle' : session?.status === 'finished' ? 'completed' : session?.status ?? 'idle',
+        endsAt: session?.endsAt ?? null,
+        remainingSeconds: session ? remainingOf(session, Date.now()) / 1000 : 0,
+        durationSeconds: session ? session.plannedMs / 1000 : 0,
+        revision: session?.revision ?? 0,
+        updatedAt: session?.updatedAt ?? Date.now(),
+        showTaskOnLockScreen: settings.showTaskOnLockScreen,
+        notifyOnCompletion: Boolean(session && settings.alerts && !conflict && (session.startedBy ?? session.updatedBy) === deviceId),
+        sharedStateJSON: serializeFocusState(stateRef.current),
+        syncEnabled: settings.syncEnabled,
+        deviceId,
+        suggestionEligible: canSuggestFirstFocus(stateRef.current, { now: Date.now(), syncEnabled: settings.syncEnabled, syncReady: syncStatus === 'synced' }),
+        defaultMinutes: settings.defaultMinutes,
+        todayDay: today.day, todayCount: today.count, todayFocusedSeconds: today.focusedMs / 1000
+      }))
+    }).catch((error) => setNativeError(String(error)))
+  }, [state, deviceId, settings.showTaskOnLockScreen, settings.alerts, settings.syncEnabled, settings.defaultMinutes, syncStatus, drainNativeCommands])
+
+  const notificationQueue = useRef<Promise<void>>(Promise.resolve())
+  const notificationId = useRef<string | undefined>(undefined)
+  useEffect(() => {
+    if (!deviceId) return
+    notificationQueue.current = notificationQueue.current.catch(() => {}).then(async () => {
+      if (notificationId.current) await cancelCompletion(notificationId.current)
+      notificationId.current = undefined
+      if (current?.status === 'running' && current.endsAt !== null && settings.alerts
+        && !state.conflicts?.length && (current.startedBy ?? current.updatedBy) === deviceId) {
+        await requestAlertPermission()
+        if (stateRef.current.current?.id !== current.id || stateRef.current.current?.status !== 'running' || stateRef.current.current?.endsAt !== current.endsAt) return
+        notificationId.current = current.id
+        await scheduleCompletion({ id: current.id, task: settings.showTaskOnLockScreen ? current.task : '집중을 마쳤어요.',
+          endsAt: current.endsAt, plannedMs: current.plannedMs })
+      }
+    })
+    notificationQueue.current.catch(() => setNativeError('완료 알림을 예약하지 못했어요. 알림 권한을 확인해 주세요.'))
+  }, [deviceId, current?.id, current?.status, current?.endsAt, state.conflicts?.length, settings.alerts, settings.showTaskOnLockScreen])
+
+  const markFirstSuggestion = useCallback((day: string) => {
+    if (deviceRef.current) dispatch({ type: 'decideFirstSuggestion', day, decision: 'skipped', now: Date.now(), deviceId: deviceRef.current })
+  }, [dispatch])
+  const value = useMemo<FocusContextValue>(() => {
+    const at = () => ({ now: Date.now(), deviceId: deviceId ?? '' })
     return {
-      state,
-      now,
+      state, now, breakRemaining, breakFinished, finishBreak, capabilities, syncStatus, syncError, nativeError, completionFeedback,
       start: (task, minutes) => {
-        if (!task.trim()) return
-        if (settings.alerts) requestAlertPermission()
+        if (!task.trim() || !Number.isFinite(minutes) || minutes <= 0 || minutes > 180 || !deviceId) return
         dispatch({ type: 'start', id: randomUUID(), task, plannedMs: minutes * 60_000, ...at() })
         setNow(Date.now())
       },
       pause: () => dispatch({ type: 'pause', ...at() }),
-      resume: () => {
-        dispatch({ type: 'resume', ...at() })
-        setNow(Date.now())
-      },
+      resume: () => { dispatch({ type: 'resume', ...at() }); setNow(Date.now()) },
       finish: () => dispatch({ type: 'finish', ...at() }),
-      dismiss: () => dispatch({ type: 'dismiss' })
+      dismiss: () => { if (stateRef.current.current) completionFeedback(stateRef.current.current.id); dispatch({ type: 'dismiss' }) },
+      deleteRecord: (id) => dispatch({ type: 'deleteRecord', id, ...at() }),
+      undoDeleteRecord: (id) => dispatch({ type: 'undoDeleteRecord', id, ...at() }),
+      resolveConflict: (sessionId) => dispatch({ type: 'resolveConflict', sessionId, ...at() }),
+      firstSuggestionReady: !settings.syncEnabled || syncStatus === 'synced',
+      firstSuggestionDay: state.firstSuggestions?.find((item) => item.day === localDayKey(Date.now()))?.day,
+      markFirstSuggestion,
+      retrySync: () => { void refresh() }
     }
-  }, [deviceId, state, now, settings.alerts])
+  }, [state, now, breakRemaining, breakFinished, finishBreak, deviceId, settings.alerts, settings.syncEnabled, syncStatus, syncError, nativeError, capabilities, dispatch, refresh, markFirstSuggestion, completionFeedback])
 
-  if (!value) return null
+  // Keep storage failure visible rather than presenting an empty, apparently healthy app.
+  if (!deviceId) return nativeError ? <View style={{ flex: 1, padding: 32, justifyContent: 'center', backgroundColor: '#272727' }}><Text accessibilityRole="alert" style={{ color: '#FFF' }}>{nativeError}</Text></View> : null
   return <FocusContext.Provider value={value}>{children}</FocusContext.Provider>
 }
-
 export function useFocus() {
-  const ctx = useContext(FocusContext)
-  if (!ctx) throw new Error('useFocus는 FocusProvider 안에서 써야 합니다.')
-  return ctx
+  const context = useContext(FocusContext)
+  if (!context) throw new Error('useFocus는 FocusProvider 안에서 써야 합니다.')
+  return context
 }

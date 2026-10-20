@@ -21,6 +21,8 @@ export const TIMER_DURATION_OPTIONS = [15, 25, 45, 60] as const
 export type Settings = {
   timerDuration: number // 초 단위
   themeColor: ThemeColorKey
+  autoBreak?: boolean
+  alerts?: boolean
 }
 
 type SettingsContextType = {
@@ -30,11 +32,13 @@ type SettingsContextType = {
   setTimerDuration: (minutes: number) => void
   setThemeColor: (color: ThemeColorKey) => void
   resetSettings: () => void
+  updateExperience: (patch: Pick<Partial<Settings>, 'alerts' | 'autoBreak'>) => void
 }
 
 const DEFAULT_SETTINGS: Settings = {
   timerDuration: TIME.DEFAULT_POMODORO_DURATION, // 25분 = 1500초
-  themeColor: 'white'
+  themeColor: 'white',
+  autoBreak: false
 }
 
 const SettingsContext = createContext<SettingsContextType | null>(null)
@@ -65,9 +69,17 @@ const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
   const resetSettings = useCallback(() => {
     setSettings(DEFAULT_SETTINGS)
   }, [setSettings])
+  const updateExperience = useCallback(
+    (patch: Pick<Partial<Settings>, 'alerts' | 'autoBreak'>) => {
+      setSettings((prev) => ({ ...prev, ...patch }))
+    },
+    [setSettings]
+  )
 
   // 분 단위 타이머 시간
-  const timerDurationMinutes = Math.floor((settings?.timerDuration ?? DEFAULT_SETTINGS.timerDuration) / TIME.SECONDS_PER_MINUTE)
+  const timerDurationMinutes = Math.floor(
+    (settings?.timerDuration ?? DEFAULT_SETTINGS.timerDuration) / TIME.SECONDS_PER_MINUTE
+  )
 
   // 테마 컬러 값
   const themeColorValue = THEME_COLORS[settings?.themeColor ?? DEFAULT_SETTINGS.themeColor]
@@ -80,7 +92,8 @@ const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
         themeColorValue,
         setTimerDuration,
         setThemeColor,
-        resetSettings
+        resetSettings,
+        updateExperience
       }}
     >
       {children}

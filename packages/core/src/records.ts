@@ -1,4 +1,4 @@
-import type { FocusSession } from './session'
+import type { FinishReason, FocusSession } from './session'
 
 /** 마친 집중 한 번. 세션 id를 그대로 써서 어느 기기에서 마쳐도 한 건이 된다. */
 export type FocusRecord = {
@@ -9,6 +9,10 @@ export type FocusRecord = {
   completed: boolean
   startedAt: number
   finishedAt: number
+  revision?: number
+  updatedAt?: number
+  updatedBy?: string
+  finishReason?: FinishReason
 }
 
 export type DayRecords = {
@@ -18,12 +22,11 @@ export type DayRecords = {
   focusedMs: number
 }
 
-/** 이보다 짧게 마친 집중은 실수로 시작한 것으로 보고 기록하지 않는다. */
-export const MIN_RECORD_MS = 60_000
+/** Every explicitly finished focus is a completion, including a brief one. */
+export const MIN_RECORD_MS = 0
 
-export function toRecord(session: FocusSession): FocusRecord | null {
+export function toRecord(session: FocusSession, _preserveBrief = false): FocusRecord | null {
   if (session.status !== 'finished' || session.finishedAt === null) return null
-  if (session.focusedMs < MIN_RECORD_MS) return null
   return {
     id: session.id,
     task: session.task,
@@ -31,7 +34,11 @@ export function toRecord(session: FocusSession): FocusRecord | null {
     focusedMs: session.focusedMs,
     completed: session.completed,
     startedAt: session.startedAt,
-    finishedAt: session.finishedAt
+    finishedAt: session.finishedAt,
+    revision: session.revision,
+    updatedAt: session.updatedAt,
+    updatedBy: session.updatedBy,
+    finishReason: session.finishReason
   }
 }
 

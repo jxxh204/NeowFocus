@@ -2,19 +2,27 @@ import { createContext, useContext, useCallback, useEffect, useMemo, useRef, use
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
-  finishFocus,
-  pauseFocus,
+  EMPTY_STATE,
+  FocusReplicator,
+  focusReducer,
+  localDayKey,
   progressOf,
   remainingOf,
-  resumeFocus,
-  settleFocus,
-  startFocus,
-  type FocusSession
+  serializeFocusState,
+  toRecord,
+  isFeedbackCompletion,
+  breakAfterCompletion,
+  restoreFocusBreak,
+  type FocusBreak,
+  type FocusAction,
+  type FocusRecord,
+  type FocusSession,
+  type FocusState,
+  type SyncStatus
 } from '@neowfocus/core'
-import { useLocalStorage } from '@renderer/hooks/useLocalStorage'
 import { TIME } from '@renderer/constants'
 import { useSettingsContext } from './SettingsContext'
-import { sessionFromLegacyTask, type LegacyTask } from './legacySession'
+import { DESKTOP_FOCUS_KEY, loadDesktopFocus } from './desktopFocusStorage'
 
 export type TaskStatus = 'idle' | 'play' | 'pause' | 'end'
 
@@ -56,7 +64,7 @@ type TaskContextType = {
   groupedTaskList: GroupedTask[]
   dailyTaskList: DailyTaskSummary[]
   resetCurrentTask: () => void
-  startTask: (taskName: string) => void
+  startTask: (taskName: string, minutes?: number) => void
   reStartTask: () => void
   pauseTask: () => void
   resumeTask: () => void
@@ -64,60 +72,47 @@ type TaskContextType = {
   completeEarly: () => void
   saveTaskToList: () => void
   deleteTasksByNameAndDate: (taskName: string, date: string) => void
+  undoDeletedTasks: () => void
+  deletedTaskCount: number
+  focusState: FocusState
+  syncEnabled: boolean
+  syncStatus: SyncStatus
+  syncError: string | null
+  lastSyncedAt: number | null
+  setSyncEnabled: (enabled: boolean) => void
+  retrySync: () => void
+  resolveConflict: (sessionId: string) => void
+  readyDraft: { task: string; minutes: number }
+  updateDraft: (patch: Partial<{ task: string; minutes: number }>) => void
+  prepareTask: (sameTask?: boolean) => void
+  breakRemaining: number
+  breakFinished: boolean
+  finishBreak: () => void
 }
 
 const TaskContext = createContext<TaskContextType | null>(null)
-
-// 진행 중인 집중은 공통 코어(@neowfocus/core)의 세션으로 저장한다.
-// 남은 초가 아니라 종료 시각을 저장하므로 창이 숨겨져 타이머가 느려져도 어긋나지 않는다.
-const SESSION_KEY = 'focusSession'
-const LEGACY_TASK_KEY = 'currentTask'
-const DEVICE_ID_KEY = 'deviceId'
-
-/** 이 시간 안에 끝난 것을 봤을 때만 완료 알림을 띄운다. 오래전에 끝난 집중을 다시 열 때는 띄우지 않는다. */
+const SYNC_ENABLED_KEY = 'neowfocus.sync.enabled.v1'
+const BREAK_KEY = 'neowfocus.break.v1'
+const LAST_SYNC_KEY = 'neowfocus.sync.lastSuccess.v1'
 const LIVE_COMPLETION_WINDOW_MS = 5_000
 
 function newId(): string {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
-
-function readJson<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(key)
-    return raw === null ? null : (JSON.parse(raw) as T)
-  } catch {
-    return null
-  }
-}
-
 function loadDeviceId(): string {
-  const saved = localStorage.getItem(DEVICE_ID_KEY)
+  const saved = localStorage.getItem('deviceId')
   if (saved) return saved
   const id = newId()
-  localStorage.setItem(DEVICE_ID_KEY, id)
+  localStorage.setItem('deviceId', id)
   return id
 }
-
-function loadSession(deviceId: string): FocusSession | null {
-  if (localStorage.getItem(SESSION_KEY) !== null) return readJson<FocusSession>(SESSION_KEY)
-  const migrated = sessionFromLegacyTask(
-    readJson<LegacyTask>(LEGACY_TASK_KEY),
-    Date.now(),
-    deviceId
-  )
-  localStorage.setItem(SESSION_KEY, JSON.stringify(migrated))
-  localStorage.removeItem(LEGACY_TASK_KEY)
-  return migrated
-}
-
 const STATUS: Record<FocusSession['status'], TaskStatus> = {
   running: 'play',
   paused: 'pause',
   finished: 'end'
 }
-
 function toTask(session: FocusSession | null, now: number, timerDuration: number): Task {
-  if (!session) {
+  if (!session)
     return {
       id: '',
       date: '',
@@ -127,16 +122,27 @@ function toTask(session: FocusSession | null, now: number, timerDuration: number
       taskStatus: 'idle',
       sessionCount: 1
     }
-  }
-  const finished = session.status === 'finished'
   return {
     id: session.id,
     date: new Date(session.startedAt).toISOString(),
     taskName: session.task,
     taskDuration: Math.ceil(remainingOf(session, now) / 1000),
-    fullDuration: Math.round((finished ? session.focusedMs : session.plannedMs) / 1000),
+    fullDuration: Math.round(
+      (session.status === 'finished' ? session.focusedMs : session.plannedMs) / 1000
+    ),
     taskStatus: STATUS[session.status],
     sessionCount: 1
+  }
+}
+function recordToTask(record: FocusRecord, sessionCount: number): Task {
+  return {
+    id: record.id,
+    date: new Date(record.startedAt).toISOString(),
+    taskName: record.task,
+    taskDuration: 0,
+    fullDuration: Math.round(record.focusedMs / 1000),
+    taskStatus: 'end',
+    sessionCount
   }
 }
 
@@ -144,84 +150,314 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation()
   const { settings } = useSettingsContext()
   const timerDuration = settings?.timerDuration ?? TIME.DEFAULT_POMODORO_DURATION
-
   const [deviceId] = useState(loadDeviceId)
-  const [session, setSession] = useState(() => loadSession(deviceId))
+  const [initial] = useState(() => {
+    try {
+      return { state: loadDesktopFocus(deviceId, Date.now()), error: null as string | null }
+    } catch (error) {
+      return {
+        state: EMPTY_STATE,
+        error: error instanceof Error ? error.message : '기록을 불러오지 못했어요.'
+      }
+    }
+  })
+  const [focusState, setFocusState] = useState(initial.state)
+  const [focusBreak, setFocusBreak] = useState<FocusBreak | null>(() => {
+    let saved: unknown
+    try {
+      saved = JSON.parse(localStorage.getItem(BREAK_KEY) || 'null')
+    } catch {
+      /* Recover from the completion deadline. */
+    }
+    return restoreFocusBreak(initial.state.current, saved, settings.autoBreak === true)
+  })
+  const autoBreakEnabled = useRef(settings.autoBreak === true)
+  autoBreakEnabled.current = settings.autoBreak === true
+  const finishBreak = useCallback(() => {
+    setFocusBreak((previous) => (previous ? { ...previous, endsAt: null } : null))
+  }, [])
+  useEffect(() => {
+    try {
+      localStorage.setItem(BREAK_KEY, JSON.stringify(focusBreak))
+    } catch {
+      /* Keep the in-memory break. */
+    }
+  }, [focusBreak])
+  useEffect(() => {
+    if (settings.autoBreak !== true) finishBreak()
+  }, [settings.autoBreak, finishBreak])
+  const stateRef = useRef(focusState)
   const [now, setNow] = useState(Date.now)
-  const [taskList, setTaskList] = useLocalStorage<Task[]>('taskList', [])
-
-  const update = useCallback(
-    (next: (s: FocusSession | null, now: number) => FocusSession | null) => {
-      const at = Date.now()
-      setNow(at)
-      setSession((prev) => next(prev, at))
-    },
-    []
+  const session = focusState.current
+  const breakMatches = session?.status === 'finished' && session.id === focusBreak?.sessionId
+  const breakRemaining =
+    breakMatches && settings.autoBreak === true && focusBreak?.endsAt
+      ? Math.max(0, Math.ceil((focusBreak.endsAt - now) / 1000))
+      : 0
+  const onBreak = breakRemaining > 0
+  const breakFinished = Boolean(breakMatches && focusBreak?.endsAt && !onBreak)
+  const lastFinished = useRef<FocusSession | null>(null)
+  if (session?.status === 'finished') lastFinished.current = session
+  const [readyDraft, setReadyDraft] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('neowfocus.ready.v1') || 'null')
+      if (
+        saved &&
+        typeof saved.task === 'string' &&
+        saved.task.length <= 54 &&
+        Number.isFinite(saved.minutes) &&
+        saved.minutes > 0 &&
+        saved.minutes <= 180
+      )
+        return saved as { task: string; minutes: number }
+    } catch {
+      /* A damaged draft never replaces focus records. */
+    }
+    return { task: '', minutes: timerDuration / 60 }
+  })
+  const updateDraft = useCallback((patch: Partial<{ task: string; minutes: number }>) => {
+    setReadyDraft((previous) => ({ ...previous, ...patch }))
+  }, [])
+  useEffect(() => {
+    try {
+      localStorage.setItem('neowfocus.ready.v1', JSON.stringify(readyDraft))
+    } catch {
+      /* Keep the draft in memory. */
+    }
+  }, [readyDraft])
+  const [syncEnabled, setEnabled] = useState(
+    () => localStorage.getItem(SYNC_ENABLED_KEY) === 'true'
   )
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('off')
+  const [syncAttempt, setSyncAttempt] = useState(0)
+  const [syncError, setSyncError] = useState<string | null>(initial.error)
+  const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(() => {
+    const saved = Number(localStorage.getItem(LAST_SYNC_KEY))
+    return saved > 0 ? saved : null
+  })
+  const [deletedIds, setDeletedIds] = useState<string[]>([])
+  const foregroundSince = useRef(Date.now())
+  const alertsEnabled = useRef(settings.alerts !== false)
+  alertsEnabled.current = settings.alerts !== false
+  const replica = useRef<FocusReplicator | null>(null)
+  const applyState = useCallback((next: FocusState) => {
+    const previous = stateRef.current.current
+    const current = next.current
+    if (current?.status !== 'finished') setFocusBreak(null)
+    else if (previous?.id === current.id && previous.status !== 'finished')
+      setFocusBreak(breakAfterCompletion(current, autoBreakEnabled.current))
+    if (
+      alertsEnabled.current &&
+      isFeedbackCompletion(
+        stateRef.current.current,
+        next.current,
+        deviceId,
+        Date.now(),
+        foregroundSince.current
+      )
+    ) {
+      void window.electron?.playCompletionFeedback?.().catch(() => {})
+    }
+    stateRef.current = next
+    setFocusState(next)
+  }, [])
+  const send = useCallback(
+    (action: FocusAction) => {
+      const next = focusReducer(stateRef.current, action)
+      if (next !== stateRef.current) applyState(next)
+      setNow(Date.now())
+    },
+    [applyState]
+  )
+  const stamp = useCallback(() => ({ now: Date.now(), deviceId }), [deviceId])
+
+  const taskList = useMemo(() => {
+    const counts = new Map<string, number>()
+    return [...focusState.records]
+      .sort((a, b) => a.startedAt - b.startedAt)
+      .map((record) => {
+        const key = JSON.stringify([localDayKey(record.startedAt), record.task])
+        const count = (counts.get(key) ?? 0) + 1
+        counts.set(key, count)
+        return recordToTask(record, count)
+      })
+  }, [focusState.records])
 
   useEffect(() => {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session))
-  }, [session])
+    if (initial.error) return
+    try {
+      localStorage.setItem(DESKTOP_FOCUS_KEY, serializeFocusState(focusState))
+      // Compatibility snapshots; the untouched original data is retained by the migration backup.
+      localStorage.setItem('focusSession', JSON.stringify(session))
+      localStorage.setItem('taskList', JSON.stringify(taskList))
+    } catch {
+      setSyncError('이 기기에 기록을 저장하지 못했어요. 저장 공간을 확인해주세요.')
+    }
+    void replica.current?.sync()
+  }, [focusState, session, taskList, initial.error])
 
-  // 진행 중일 때만 화면을 갱신한다. 남은 시간은 매번 종료 시각에서 다시 계산한다.
-  const tick = useCallback(() => update((s, at) => (s ? settleFocus(s, at) : s)), [update])
+  const tick = useCallback(() => send({ type: 'tick', now: Date.now() }), [send])
+  useEffect(() => {
+    const publish = () => {
+      const current = stateRef.current.current
+      void window.electron
+        ?.browserBlockPublish?.({
+          status: current?.status ?? 'idle',
+          endsAt: current?.endsAt ?? null
+        })
+        .catch(() => {})
+    }
+    publish()
+    const heartbeat = setInterval(publish, 2000)
+    return () => clearInterval(heartbeat)
+  }, [session])
   useEffect(() => {
     tick()
-    if (session?.status !== 'running') return
-    const interval = setInterval(tick, TIME.TIMER_INTERVAL)
-    window.addEventListener('focus', tick)
-    return () => {
-      clearInterval(interval)
-      window.removeEventListener('focus', tick)
+    const focused = () => {
+      foregroundSince.current = Date.now()
+      tick()
     }
-  }, [session?.status, tick])
+    window.addEventListener('focus', focused)
+    const interval = setInterval(
+      tick,
+      session?.status === 'running' || onBreak ? TIME.TIMER_INTERVAL : 30_000
+    )
+    return () => {
+      if (interval) clearInterval(interval)
+      window.removeEventListener('focus', focused)
+    }
+  }, [session?.status, onBreak, tick])
 
-  // 시간이 다 된 순간: 알림을 띄우고 창을 앞으로 가져온다(기존 useTimer 동작).
+  useEffect(() => {
+    if (!syncEnabled || initial.error) {
+      setSyncStatus('off')
+      return
+    }
+    let active = true
+    let unsubscribe: (() => void) | undefined
+    const sync = () => {
+      void replica.current?.sync()
+    }
+    setSyncStatus('connecting')
+    const connect = async () => {
+      try {
+        const bridge = window.electron
+        if (!bridge?.focusCloudCapabilities || !bridge.focusCloudRead || !bridge.focusCloudWrite)
+          throw new Error('이 버전에서는 iCloud 연결을 사용할 수 없어요.')
+        const caps = await bridge.focusCloudCapabilities()
+        if (!active) return
+        if (!caps.available)
+          throw new Error(caps.reason || '이 기기에서 iCloud 연결을 사용할 수 없어요.')
+        const client = new FocusReplicator({
+          transport: {
+            read: () => bridge.focusCloudRead(),
+            write: (json, tag) => bridge.focusCloudWrite(json, tag)
+          },
+          getState: () => stateRef.current,
+          applyState,
+          onStatus: (status, message) => {
+            if (!active) return
+            setSyncStatus(status)
+            setSyncError(message ?? null)
+            if (status === 'synced' || status === 'conflict') {
+              const at = Date.now()
+              setLastSyncedAt(at)
+              localStorage.setItem(LAST_SYNC_KEY, String(at))
+            }
+          }
+        })
+        replica.current = client
+        sync()
+        unsubscribe = bridge.onFocusCloudChanged?.(sync)
+        if (bridge.focusCloudSubscribe)
+          void bridge.focusCloudSubscribe().catch(() => {
+            if (active) setSyncError('변경 알림을 연결하지 못했어요. 앱으로 돌아오면 동기화해요.')
+          })
+        window.addEventListener('focus', sync)
+      } catch (error) {
+        if (!active) return
+        setSyncStatus('offline')
+        setSyncError(error instanceof Error ? error.message : String(error))
+      }
+    }
+    void connect()
+    return () => {
+      active = false
+      replica.current?.stop()
+      replica.current = null
+      unsubscribe?.()
+      window.removeEventListener('focus', sync)
+    }
+  }, [syncEnabled, syncAttempt, applyState, initial.error])
+
+  const setSyncEnabled = useCallback(
+    (enabled: boolean) => {
+      if (!enabled) replica.current?.stop()
+      localStorage.setItem(SYNC_ENABLED_KEY, String(enabled))
+      setEnabled(enabled)
+      if (!enabled) {
+        setSyncStatus('off')
+        setSyncError(initial.error)
+      }
+    },
+    [initial.error]
+  )
+  const retrySync = useCallback(() => {
+    if (replica.current) void replica.current.sync()
+    else if (syncEnabled) setSyncAttempt((attempt) => attempt + 1)
+  }, [syncEnabled])
+
   const prevStatus = useRef(session?.status)
   useEffect(() => {
     const was = prevStatus.current
     prevStatus.current = session?.status
-    if (was !== 'running' || session?.status !== 'finished' || !session.completed) return
+    if (
+      !alertsEnabled.current ||
+      was !== 'running' ||
+      session?.status !== 'finished' ||
+      !session.completed
+    )
+      return
+    if ((session.startedBy ?? session.updatedBy) !== deviceId) return
     if (Date.now() - (session.finishedAt ?? 0) > LIVE_COMPLETION_WINDOW_MS) return
     window.electron?.showNotification?.(t('focus.notification.title'), t('focus.notification.body'))
     window.electron?.showWindow?.()
-  }, [session, t])
+  }, [session, t, deviceId])
 
-  const resetCurrentTask = useCallback(() => update(() => null), [update])
-
+  const resetCurrentTask = useCallback(() => {
+    const current = stateRef.current.current
+    if (current && current.status !== 'finished') {
+      send({ type: 'finish', ...stamp() })
+      send({ type: 'deleteRecord', id: current.id, ...stamp() })
+    }
+    send({ type: 'dismiss' })
+  }, [send, stamp])
   const startTask = useCallback(
-    (taskName: string) => {
-      if (!taskName.trim()) return
-      update((_, at) =>
-        startFocus({
-          id: newId(),
-          task: taskName,
-          plannedMs: timerDuration * 1000,
-          now: at,
-          deviceId
-        })
-      )
+    (taskName: string, minutes?: number) => {
+      if (!taskName.trim() || initial.error) return
+      const seconds = minutes === undefined ? timerDuration : minutes * 60
+      if (!Number.isFinite(seconds) || seconds <= 0 || seconds > 180 * 60) return
+      send({ type: 'start', id: newId(), task: taskName, plannedMs: seconds * 1000, ...stamp() })
     },
-    [update, timerDuration, deviceId]
+    [send, stamp, timerDuration, initial.error]
   )
-
-  const reStartTask = useCallback(() => {
-    if (session) startTask(session.task)
-  }, [session, startTask])
-
-  const pauseTask = useCallback(
-    () => update((s, at) => (s ? pauseFocus(s, at, deviceId) : s)),
-    [update, deviceId]
+  const prepareTask = useCallback(
+    (sameTask = true) => {
+      const current = stateRef.current.current
+      if (current && current.status !== 'finished') return
+      const previous = current ?? lastFinished.current
+      setReadyDraft({
+        task: sameTask ? (previous?.task ?? '') : '',
+        minutes: previous ? previous.plannedMs / 60_000 : timerDuration / 60
+      })
+      send({ type: 'dismiss' })
+    },
+    [send, timerDuration]
   )
-  const resumeTask = useCallback(
-    () => update((s, at) => (s ? resumeFocus(s, at, deviceId) : s)),
-    [update, deviceId]
-  )
-  const completeEarly = useCallback(
-    () => update((s, at) => (s ? finishFocus(s, at, deviceId) : s)),
-    [update, deviceId]
-  )
-
+  const reStartTask = useCallback(() => prepareTask(true), [prepareTask])
+  const pauseTask = useCallback(() => send({ type: 'pause', ...stamp() }), [send, stamp])
+  const resumeTask = useCallback(() => send({ type: 'resume', ...stamp() }), [send, stamp])
+  const completeEarly = useCallback(() => send({ type: 'finish', ...stamp() }), [send, stamp])
   const currentTask = useMemo(
     () => toTask(session, now, timerDuration),
     [session, now, timerDuration]
@@ -273,35 +509,37 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     return Object.values(grouped).sort((a, b) => b.date.localeCompare(a.date))
   }, [taskList])
 
+  // Normal completion is saved by the core. Preserve the legacy explicit save API, without duplicates.
   const saveTaskToList = useCallback(() => {
-    // 완료된 task만 저장
-    if (currentTask.taskStatus === 'end' && currentTask.taskName) {
-      const today = dayjs().format('YYYY-MM-DD')
-
-      // 같은 날짜, 같은 이름의 task 개수 계산 (당일 반복 횟수)
-      const sameTasks = taskList.filter((task) => {
-        const taskDate = task.date ? dayjs(task.date).format('YYYY-MM-DD') : ''
-        return task.taskName === currentTask.taskName && taskDate === today
-      })
-
-      setTaskList((prevList) => [
-        ...prevList,
-        { ...currentTask, sessionCount: sameTasks.length + 1 }
-      ])
-    }
-  }, [currentTask, taskList, setTaskList])
-
-  // 특정 날짜의 특정 이름을 가진 모든 태스크 삭제
+    const state = stateRef.current
+    const current = state.current
+    if (
+      !current ||
+      current.status !== 'finished' ||
+      state.records.some((record) => record.id === current.id)
+    )
+      return
+    const record = toRecord(current, true)
+    if (record)
+      send({ ...state, type: 'sync', records: [...state.records, record], now: Date.now() })
+  }, [send])
   const deleteTasksByNameAndDate = useCallback(
     (taskName: string, date: string) => {
-      setTaskList((prevList) =>
-        prevList.filter((task) => {
-          const taskDate = task.date ? dayjs(task.date).format('YYYY-MM-DD') : ''
-          return !(task.taskName === taskName && taskDate === date)
-        })
-      )
+      const ids = stateRef.current.records
+        .filter((record) => record.task === taskName && localDayKey(record.startedAt) === date)
+        .map((record) => record.id)
+      ids.forEach((id) => send({ type: 'deleteRecord', id, ...stamp() }))
+      setDeletedIds((previous) => [...new Set([...previous, ...ids])])
     },
-    [setTaskList]
+    [send, stamp]
+  )
+  const undoDeletedTasks = useCallback(() => {
+    deletedIds.forEach((id) => send({ type: 'undoDeleteRecord', id, ...stamp() }))
+    setDeletedIds([])
+  }, [deletedIds, send, stamp])
+  const resolveConflict = useCallback(
+    (sessionId: string) => send({ type: 'resolveConflict', sessionId, ...stamp() }),
+    [send, stamp]
   )
 
   return (
@@ -321,7 +559,23 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         resumeTask,
         completeEarly,
         saveTaskToList,
-        deleteTasksByNameAndDate
+        deleteTasksByNameAndDate,
+        undoDeletedTasks,
+        deletedTaskCount: deletedIds.length,
+        focusState,
+        syncEnabled,
+        syncStatus,
+        syncError,
+        lastSyncedAt,
+        setSyncEnabled,
+        retrySync,
+        resolveConflict,
+        readyDraft,
+        updateDraft,
+        prepareTask,
+        breakRemaining,
+        breakFinished,
+        finishBreak
       }}
     >
       {children}
@@ -331,10 +585,7 @@ const TaskProvider = ({ children }: { children: React.ReactNode }) => {
 
 const useTaskContext = () => {
   const context = useContext(TaskContext)
-  if (!context) {
-    throw new Error('useTaskContext must be used within a TaskProvider')
-  }
+  if (!context) throw new Error('useTaskContext must be used within a TaskProvider')
   return context
 }
-
 export { TaskProvider, useTaskContext }

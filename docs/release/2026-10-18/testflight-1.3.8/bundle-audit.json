@@ -1,0 +1,95 @@
+{
+  "version": "1.3.8",
+  "panel": true,
+  "floating": true,
+  "dockShow": true,
+  "skipTransformProcessType": true,
+  "rendererUnchanged": true,
+  "renderer": [
+    {
+      "path": "index.html",
+      "sha256": "78283e9176c7acb8b0299185f74e4883aaef622df3d7ec9f19a0a719f263bee1",
+      "same": true
+    },
+    {
+      "path": "assets/icon_bubble_focus.svg",
+      "sha256": "f4d2c961e9f9d6b396ca0afe89998c4eff70250bc33e1c8e8365ea0707f4a55f",
+      "same": true
+    },
+    {
+      "path": "assets/icon_cat_face.svg",
+      "sha256": "d6086ba0377c8c6cd77477d2e48e6a21dfe0ed5564138c0258695206ec0da980",
+      "same": true
+    },
+    {
+      "path": "assets/icon_chart.svg",
+      "sha256": "eea27896bcc3ae00a32d7a8f4a7924e7aaa2291a846475fa5948d8fbe9cc937a",
+      "same": true
+    },
+    {
+      "path": "assets/icon_check.svg",
+      "sha256": "5458aa9ad405f3d597a993312ddef82dbc15157b43af8b6c65bfe60a823e84ed",
+      "same": true
+    },
+    {
+      "path": "assets/icon_chevron.svg",
+      "sha256": "a6b96af7414b2b656465a664e1a40837ef36855221c513bf150eb70723206d1d",
+      "same": true
+    },
+    {
+      "path": "assets/icon_close.svg",
+      "sha256": "117d5ab5d0847771a51f687fee395ceb9e21e40bef0e2f83455b7c4e6045231b",
+      "same": true
+    },
+    {
+      "path": "assets/icon_drag.svg",
+      "sha256": "c7ddf344f51d3406d3eae152c9b888fa6de4941c8acff9329a4ad84ca151f346",
+      "same": true
+    },
+    {
+      "path": "assets/icon_mini.svg",
+      "sha256": "8ac729a4de23fec6d489c7535c4d27d8aaffe8922e1a1d3f2a7481274cb1db60",
+      "same": true
+    },
+    {
+      "path": "assets/icon_pause.svg",
+      "sha256": "2a89fcb0536c388f83fea7b710139ce73dbe6fa19f266e7b89f53c3969940a93",
+      "same": true
+    },
+    {
+      "path": "assets/icon_paw_white.svg",
+      "sha256": "84f6bcb1a00d9b5706af6aa82e88bd88150b1f0f29dd06857aeb37ec5b28f547",
+      "same": true
+    },
+    {
+      "path": "assets/icon_play.svg",
+      "sha256": "90e7277f5044582361013e95314081adcfee77c81465a43f1f869044d13608bb",
+      "same": true
+    },
+    {
+      "path": "assets/icon_plus_box.svg",
+      "sha256": "a0ddfd193c9a8982357cac5d694e3849339222c1aef3225685c61f65892fff74",
+      "same": true
+    },
+    {
+      "path": "assets/icon_timer.svg",
+      "sha256": "2b61b29763a84db67c97aa340e691930c7719af1e89c68f7458dec0220e9db95",
+      "same": true
+    },
+    {
+      "path": "assets/icon_trash.svg",
+      "sha256": "a5762491a1b76c2782167ad51ca2c043c94f06acee97d270d5bbb465c6ae743a",
+      "same": true
+    },
+    {
+      "path": "assets/icon_undo.svg",
+      "sha256": "b3868f146d0dc3b4c7631f1c0f3842703a4b7a9c5d12ca7b9c7cc4a47478f978",
+      "same": true
+    },
+    {
+      "path": "assets/index-el8OXdoJ.js",
+      "sha256": "5aa8525f410351fe9eaa381d7688e9cf1c9c38ffe115218f056c4242f7e6b8c3",
+      "same": true
+    }
+  ]
+}

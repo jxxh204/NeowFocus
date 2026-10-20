@@ -1,23 +1,20 @@
-import { BrowserWindow } from 'electron'
+import type { BrowserWindow } from 'electron'
+
+const keepWindowAboveApps = (mainWindow: BrowserWindow): void => {
+  // Floating panels stay above app content but below Dock and system menus.
+  mainWindow.setAlwaysOnTop(true, 'floating')
+}
 
 export const handleWindow = (mainWindow: BrowserWindow): void => {
-  if (mainWindow) {
-    // 전체화면 앱 위에 표시하기 위한 설정
-    // skipTransformProcessType을 사용하여 Dock 숨김 현상 방지
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    // `type: panel` supplies the nonactivating native window. Keep the
+    // application foreground-capable so its Dock icon remains available.
     mainWindow.setVisibleOnAllWorkspaces(true, {
       visibleOnFullScreen: true,
       skipTransformProcessType: true
     })
 
-    // 가장 높은 레벨로 항상 최상위 설정
-    mainWindow.setAlwaysOnTop(true, 'screen-saver', 1)
-
-    // 전체화면 작동을 위해 윈도우를 강제로 다시 focus
-    // Electron 버그 우회: https://github.com/electron/electron/issues/36364
-    setTimeout(() => {
-      mainWindow.focus()
-      mainWindow.setAlwaysOnTop(true, 'screen-saver', 1)
-    }, 100)
+    keepWindowAboveApps(mainWindow)
 
     if (process.env.NODE_ENV === 'development') {
       console.log('Window settings applied:', {
@@ -26,6 +23,17 @@ export const handleWindow = (mainWindow: BrowserWindow): void => {
       })
     }
   }
+}
+
+export const revealWindow = (mainWindow: BrowserWindow): void => {
+  if (!mainWindow || mainWindow.isDestroyed()) return
+  if (mainWindow.isMinimized()) mainWindow.restore()
+  keepWindowAboveApps(mainWindow)
+  // BrowserWindow.show() activates the whole app and can leave the current
+  // full-screen Space. A panel can accept keyboard input without that switch.
+  if (process.platform === 'darwin') mainWindow.showInactive()
+  else mainWindow.show()
+  mainWindow.focus()
 }
 
 const getWindowPosition = (tray, mainWindow): void | object => {
@@ -72,8 +80,8 @@ const getWindowPosition = (tray, mainWindow): void | object => {
 }
 
 export const showWindow = (tray, mainWindow: BrowserWindow): void => {
+  if (!mainWindow || mainWindow.isDestroyed()) return
   const position = getWindowPosition(tray, mainWindow) as { x; y }
   if (position) mainWindow?.setPosition(position?.x, position?.y, false)
-  mainWindow?.show()
-  mainWindow?.focus()
+  revealWindow(mainWindow)
 }

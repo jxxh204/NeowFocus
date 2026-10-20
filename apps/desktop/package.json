@@ -1,7 +1,7 @@
 {
   "name": "neow-focus-vite",
   "productName": "NeowFocus",
-  "version": "1.2.2",
+  "version": "1.3.8",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -27,18 +27,21 @@
     "test:local": "pnpm run build:local && open out/NeowFocus-darwin-universal/NeowFocus.app",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "build:cloud-native": "bash scripts/build-cloud-native.sh",
+    "package:testflight": "pnpm run build && pnpm run build:cloud-native && node scripts/package-testflight.cjs"
   },
   "dependencies": {
-    "@neowfocus/core": "workspace:*",
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
+    "@neowfocus/core": "workspace:*",
     "dayjs": "^1.11.19",
     "i18next": "^25.6.2",
     "react-i18next": "^16.2.4",
     "react-router-dom": "^6.22.3",
     "styled-components": "^6.1.8",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.9.0",
@@ -57,6 +60,7 @@
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@types/uuid": "^11.0.0",
+    "@types/ws": "^8.18.2",
     "@vitejs/plugin-react": "^4.2.1",
     "electron": "^28.2.0",
     "electron-vite": "^2.3.0",

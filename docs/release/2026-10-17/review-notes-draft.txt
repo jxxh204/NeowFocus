@@ -1,0 +1,15 @@
+No login is required for the local focus timer and records.
+
+Start: enter a task and choose a duration. The focus screen shows the task and progress gauge without countdown digits. Pause or finish manually to record the actual focused time.
+
+Automatic break: Settings > 집중 후 10분 휴식 is OFF by default. Enable it and complete a focus to start a 10-minute break. The break can be ended early and never automatically starts another focus.
+
+Day summary: tap 오늘은 여기까지 after completing a focus to see daily totals and the pixel cat animation.
+
+iCloud is optional and uses the signed-in Apple account private CloudKit database. The local timer and records remain usable with sync disabled.
+
+Widgets and Live Activities use the current focus deadline. The app does not guarantee creation of a new iPhone Live Activity from a remote Mac start while the iPhone is locked.
+
+Guideline 2.5.1 correction in build 12: the unused Screen Time integration has been removed entirely. Neither the app nor the WidgetKit extension contains or links FamilyControls, ManagedSettings, or DeviceActivity. The native blocking bridge, app picker, monitor source, and unavailable blocking controls were removed. No Screen Time authorization is requested. The signed release archive was checked for framework links and entitlements.
+
+Privacy policy and support contact can be opened from Settings. The in-app privacy policy is bundled and can be read offline.

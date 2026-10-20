@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+  <meta charset="utf-8" /><title>NeowFocus 집중 보호</title
+  ><link rel="stylesheet" href="style.css" />
+  <body>
+    <main>
+      <h1>집중 중 사이트 차단</h1>
+      <p>Mac 앱에서 고른 사이트만 집중 중에 차단해요.</p>
+      <label for="code">Mac 앱의 연결 코드</label
+      ><input
+        id="code"
+        type="password"
+        autocomplete="off"
+        spellcheck="false"
+        maxlength="64"
+        placeholder="설정에서 복사한 코드 붙여넣기"
+      /><button id="connect">연결하기</button>
+      <p id="status" role="status">연결을 확인하고 있어요.</p>
+      <ul id="sites"></ul>
+      <button id="allow" hidden>선택한 사이트 접근 허용</button
+      ><button id="disconnect" class="quiet">연결 해제 · 차단 풀기</button
+      ><small
+        >방문 기록이나 작업명은 수집하지 않아요. 앱이 종료되거나 연결이 끊기면 차단을 풀어요.</small
+      >
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

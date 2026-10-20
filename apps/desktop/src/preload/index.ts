@@ -11,6 +11,26 @@ const message = {
 }
 
 const windowAPI = {
+  playCompletionFeedback: () => ipcRenderer.invoke('FOCUS_COMPLETION_FEEDBACK'),
+  browserBlockStatus: () => ipcRenderer.invoke('FOCUS_BROWSER_STATUS'),
+  browserBlockConfigure: (value: { enabled: boolean; domains: string[] }) =>
+    ipcRenderer.invoke('FOCUS_BROWSER_SETTINGS', value),
+  browserBlockPublish: (value: { status: string; endsAt: number | null }) =>
+    ipcRenderer.invoke('FOCUS_BROWSER_PUBLISH', value),
+  browserBlockOpenExtension: () => ipcRenderer.invoke('FOCUS_BROWSER_OPEN_EXTENSION'),
+  browserBlockCopyCode: () => ipcRenderer.invoke('FOCUS_BROWSER_COPY_CODE'),
+  focusCloudSubscribe: () => ipcRenderer.invoke('FOCUS_CLOUD_SUBSCRIBE'),
+  onFocusCloudChanged: (callback: () => void) => {
+    const listener = () => callback()
+    ipcRenderer.on('FOCUS_CLOUD_CHANGED', listener)
+    return () => {
+      ipcRenderer.removeListener('FOCUS_CLOUD_CHANGED', listener)
+    }
+  },
+  focusCloudCapabilities: () => ipcRenderer.invoke('FOCUS_CLOUD_CAPABILITIES'),
+  focusCloudRead: () => ipcRenderer.invoke('FOCUS_CLOUD_READ'),
+  focusCloudWrite: (json: string, tag: string | null) =>
+    ipcRenderer.invoke('FOCUS_CLOUD_WRITE', json, tag),
   windowMove: (deltaX: number, deltaY: number) => {
     ipcRenderer.send('window-move', { deltaX, deltaY })
   },

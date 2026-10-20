@@ -1,10 +1,10 @@
-import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'react-i18next'
 import Container from '@components/Container'
 import Icon from '@renderer/component/ui/Icon'
-import { WINDOW_SIZE, IPC_CHANNELS, ROUTES } from '@renderer/constants'
+import { WINDOW_SIZE, ROUTES } from '@renderer/constants'
+import { useTaskContext } from '@renderer/context/TaskContext'
 import {
   useSettingsContext,
   THEME_COLORS,
@@ -100,6 +100,49 @@ const SettingLabel = styled.span`
   color: ${({ theme }) => theme.color.text.primary};
 `
 
+const Toggle = styled.button`
+  width: 38px;
+  height: 23px;
+  padding: 3px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.color.gray[500]};
+  cursor: pointer;
+  &::before {
+    content: '';
+    display: block;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: white;
+  }
+  &[aria-checked='true'] {
+    background: ${({ theme }) => theme.color.primary[500]};
+  }
+  &[aria-checked='true']::before {
+    transform: translateX(15px);
+    background: ${({ theme }) => theme.color.black};
+  }
+`
+
+const Detail = styled.p`
+  margin: 6px 0 0;
+  color: ${({ theme }) => theme.color.text.muted};
+  font-size: 11px;
+  line-height: 16px;
+`
+
+const Retry = styled.button`
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: ${({ theme }) => theme.color.text.primary};
+  text-decoration: underline;
+  cursor: pointer;
+`
+
 // 타이머 시간 선택 버튼 그룹
 const DurationButtonGroup = styled.div`
   display: flex;
@@ -149,21 +192,14 @@ const ColorButton = styled.button<{ $color: string; $isSelected: boolean }>`
 `
 
 const SETTINGS_TOP_SECTION_HEIGHT = 16
-const SETTINGS_BODY_HEIGHT = 230
-const SETTINGS_WINDOW_HEIGHT = SETTINGS_TOP_SECTION_HEIGHT + SETTINGS_BODY_HEIGHT
+const SETTINGS_BODY_HEIGHT = 540
 
 function SettingsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { settings, timerDurationMinutes, setTimerDuration, setThemeColor } = useSettingsContext()
-
-  useEffect(() => {
-    // 설정 페이지 진입 시 윈도우 크기 조정
-    window.message?.send(IPC_CHANNELS.WINDOW_SIZE_CHANGE, {
-      width: WINDOW_SIZE.DEFAULT_WIDTH,
-      height: SETTINGS_WINDOW_HEIGHT
-    })
-  }, [])
+  const { settings, timerDurationMinutes, setTimerDuration, setThemeColor, updateExperience } =
+    useSettingsContext()
+  const { syncEnabled, syncStatus, setSyncEnabled, retrySync, updateDraft } = useTaskContext()
 
   const handleBack = () => {
     navigate(ROUTES.INPUT)
@@ -193,7 +229,10 @@ function SettingsPage() {
                   <DurationButton
                     key={minutes}
                     $isSelected={timerDurationMinutes === minutes}
-                    onClick={() => setTimerDuration(minutes)}
+                    onClick={() => {
+                      setTimerDuration(minutes)
+                      updateDraft({ minutes })
+                    }}
                   >
                     {minutes}
                     {t('settings.timer.minutes')}
@@ -216,6 +255,65 @@ function SettingsPage() {
                   />
                 ))}
               </ColorButtonGroup>
+            </SettingItem>
+            <SectionTitle>연결 및 알림</SectionTitle>
+            <SettingItem>
+              <div>
+                <SettingLabel id="sync-label">iCloud 동기화</SettingLabel>
+                <Detail aria-live="polite">
+                  {!syncEnabled
+                    ? '이 Mac에만 저장'
+                    : syncStatus === 'offline'
+                      ? '연결할 수 없어요. 기록은 이 Mac에 보관돼요.'
+                      : syncStatus === 'connecting'
+                        ? '연결 중…'
+                        : 'iPhone과 집중·기록을 함께 사용해요.'}
+                </Detail>
+                {syncEnabled && syncStatus === 'offline' && (
+                  <Retry type="button" onClick={retrySync}>
+                    다시 시도
+                  </Retry>
+                )}
+              </div>
+              <Toggle
+                type="button"
+                role="switch"
+                aria-labelledby="sync-label"
+                aria-checked={syncEnabled}
+                onClick={() => setSyncEnabled(!syncEnabled)}
+              />
+            </SettingItem>
+            <SettingItem>
+              <SettingLabel id="alerts-label">완료 소리·진동</SettingLabel>
+              <Toggle
+                type="button"
+                role="switch"
+                aria-labelledby="alerts-label"
+                aria-checked={settings.alerts !== false}
+                onClick={() => updateExperience({ alerts: settings.alerts === false })}
+              />
+            </SettingItem>
+            <SettingItem>
+              <div>
+                <SettingLabel id="break-label">집중 후 10분 휴식</SettingLabel>
+                <Detail>켜두면 집중을 마친 뒤 자동으로 쉬어요.</Detail>
+              </div>
+              <Toggle
+                type="button"
+                role="switch"
+                aria-labelledby="break-label"
+                aria-checked={settings.autoBreak === true}
+                onClick={() => updateExperience({ autoBreak: settings.autoBreak !== true })}
+              />
+            </SettingItem>
+            <SettingItem
+              as="button"
+              type="button"
+              onClick={() => navigate('/blocking')}
+              style={{ border: 0, cursor: 'pointer' }}
+            >
+              <SettingLabel>집중 중 사이트 차단</SettingLabel>
+              <Icon name="chevron" size={16} />
             </SettingItem>
           </SettingsContent>
         </SettingsWrapper>

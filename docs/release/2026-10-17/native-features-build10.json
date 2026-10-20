@@ -1,0 +1,15 @@
+{
+  "appVersion": "0.1.0",
+  "appBuild": "10",
+  "widgetBuild": "10",
+  "pixelAssetsUnchangedFromBuild9": true,
+  "pixelAssets": [
+    [
+      "assets/assets/completion-pixel/cat-stamp-pixel-v1.png",
+      "5c308540d30e9cc937e544a7ce9f68ebf77fd7038fd3f210096b93d7321e7642"
+    ]
+  ],
+  "autoBreak": true,
+  "introAbsent": true,
+  "screenTimeFree": true
+}

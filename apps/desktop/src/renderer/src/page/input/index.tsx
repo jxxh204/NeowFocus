@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { useTaskContext } from '@renderer/context/TaskContext'
@@ -38,13 +37,14 @@ const IconButton = styled.button`
 function InputPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { startTask } = useTaskContext()
-  const [text, setText] = useState('')
+  const { startTask, readyDraft, updateDraft } = useTaskContext()
+  const text = readyDraft.task
+  const setText = (task: string) => updateDraft({ task })
 
   const onSubmitHandler = (e: React.FormEvent) => {
     e.preventDefault()
-    if (text.length === 0) return
-    startTask(text)
+    if (!text.trim()) return
+    startTask(text, readyDraft.minutes)
     navigate(ROUTES.FOCUS)
   }
 
@@ -88,7 +88,7 @@ function InputPage() {
         />
       </Container.Body>
       <Container.Bottom height={WINDOW_SIZE.BOTTOM_SECTION_HEIGHT}>
-        <Container.Button type="submit" disabled={text.length === 0}>
+        <Container.Button type="submit" disabled={!text.trim()}>
           {t('input.startButton')}
           <Icon name="timer" alt="timer" size={16} />
         </Container.Button>

@@ -11,12 +11,12 @@ type Props = {
 }
 
 /** 데스크톱 CircularTimer와 같은 표현: 남은 만큼의 게이지와 게이지 끝을 가리키는 바늘. */
-export function CircularTimer({ remaining, paused = false, size = 180, strokeWidth = 10 }: Props) {
+export function CircularTimer({ remaining, paused = false, size = 180, strokeWidth = 22 }: Props) {
   const r = (size - strokeWidth) / 2
   const c = size / 2
   const circumference = 2 * Math.PI * r
   const angle = ((-90 + remaining * 360) * Math.PI) / 180
-  const hand = r * 0.6
+  const hand = r * 0.55
   const stroke = paused ? color.paused : color.timer
 
   return (

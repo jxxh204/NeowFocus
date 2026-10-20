@@ -1,27 +1,21 @@
 import { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()],
+    plugins: [],
     build: {
       sourcemap: false,
-      minify: process.env.NODE_ENV === 'production',
-      rollupOptions: {
-        external: Object.keys(require('./package.json').dependencies || {})
-      }
+      minify: process.env.NODE_ENV === 'production'
     }
   },
   preload: {
-    plugins: [externalizeDepsPlugin()],
+    plugins: [],
     build: {
       sourcemap: false,
-      minify: process.env.NODE_ENV === 'production',
-      rollupOptions: {
-        external: Object.keys(require('./package.json').dependencies || {})
-      }
+      minify: process.env.NODE_ENV === 'production'
     }
   },
   renderer: {

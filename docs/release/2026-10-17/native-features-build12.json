@@ -1,0 +1,13 @@
+{
+  "appVersion": "0.1.0",
+  "appBuild": "12",
+  "widgetBuild": "12",
+  "autoBreak": true,
+  "introAbsent": true,
+  "pixelAssetsUnchangedFromBuild9": true,
+  "privacyPolicyIncluded": true,
+  "supportContactIncluded": true,
+  "screenTimeFree": true,
+  "unusedCustomUserDefaultsReasonAbsent": true,
+  "privacyManifestCount": 13
+}

@@ -83,4 +83,30 @@ describe('useLocalStorage', () => {
     
     expect(hook2.current[0]).toBe('updated')
   })
+  it('syncs same-window hooks without a synthetic storage event', () => {
+    const { result: first } = renderHook(() => useLocalStorage('shared', 0))
+    const { result: second } = renderHook(() => useLocalStorage('shared', 0))
+    act(() => {
+      first.current[1]((n) => n + 1)
+      second.current[1]((n) => n + 1)
+    })
+    expect(first.current[0]).toBe(2)
+    expect(second.current[0]).toBe(2)
+  })
+
+  it('handles another window removing data and ignores other keys', () => {
+    const { result } = renderHook(() => useLocalStorage('shared', 'fallback'))
+    act(() => result.current[1]('saved'))
+    act(() => {
+      localStorage.setItem('other', JSON.stringify('unrelated'))
+      window.dispatchEvent(new StorageEvent('storage', { key: 'other', storageArea: localStorage }))
+    })
+    expect(result.current[0]).toBe('saved')
+    act(() => {
+      localStorage.removeItem('shared')
+      window.dispatchEvent(new StorageEvent('storage', { key: 'shared', storageArea: localStorage }))
+    })
+    expect(result.current[0]).toBe('fallback')
+  })
+
 })

@@ -9,6 +9,7 @@ export const color = {
   timer: '#FFFFFF',
   timerTrack: 'rgba(255, 255, 255, 0.1)',
   paused: '#8C8C8C',
+  switchOff: '#4C4C4C',
   primaryText: '#1B1B1B'
 } as const
 

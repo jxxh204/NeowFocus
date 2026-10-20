@@ -5,10 +5,15 @@ import { storage } from './storage'
 export type Settings = {
   defaultMinutes: number
   /** 완료 알림과 진동 */
+  autoBreak: boolean
   alerts: boolean
+  syncEnabled: boolean
+  showTaskOnLockScreen: boolean
+  restDay?: string
+  lastDayEndEntry?: string
 }
 
-const DEFAULT_SETTINGS: Settings = { defaultMinutes: DEFAULT_FOCUS_MINUTES, alerts: true }
+const DEFAULT_SETTINGS: Settings = { defaultMinutes: DEFAULT_FOCUS_MINUTES, alerts: true, autoBreak: false, syncEnabled: false, showTaskOnLockScreen: false }
 
 type SettingsContextValue = {
   settings: Settings
@@ -23,13 +28,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     storage.loadSettings<Partial<Settings>>().then((saved) => {
-      if (saved) setSettings((prev) => ({ ...prev, ...saved }))
+      if (saved) setSettings((prev) => ({ ...prev, ...saved,
+        alerts: typeof saved.alerts === 'boolean' ? saved.alerts : prev.alerts,
+        autoBreak: saved.autoBreak === true }))
       setLoaded(true)
     })
   }, [])
 
   useEffect(() => {
-    if (loaded) storage.saveSettings(settings)
+    if (loaded) void storage.saveSettings(settings).catch(() => {})
   }, [loaded, settings])
 
   const update = useCallback(

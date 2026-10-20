@@ -2,6 +2,7 @@ import { Platform } from 'react-native'
 import * as Haptics from 'expo-haptics'
 import * as Notifications from 'expo-notifications'
 import { formatDuration } from './format'
+import Native from '../../modules/neowfocus-native'
 
 // 웹 미리보기에서는 알림·진동을 쓰지 않는다.
 const native = Platform.OS !== 'web'
@@ -51,7 +52,12 @@ export async function cancelCompletion(id: string) {
   await Notifications.cancelScheduledNotificationAsync(id).catch(() => {})
 }
 
-export function vibrateCompletion() {
+export function playCompletionFeedback() {
   if (!native) return
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
+  const tap = () => { void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft).catch(() => {}) }
+  if (Native) {
+    void Native.playCompletionFeedback().catch(tap)
+  } else {
+    tap()
+  }
 }

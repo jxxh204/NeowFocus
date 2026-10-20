@@ -43,15 +43,16 @@ describe('mergeCurrent: 다른 집중', () => {
     expect(mergeCurrent(s, null, T0).current).toBe(s)
   })
 
-  it('둘 다 진행 중이면 나중에 시작한 것을 잇고, 밀려난 집중은 그때까지로 마친다', () => {
+  it('서로 다른 진행 중 집중은 선택 전까지 둘 다 보존한다', () => {
     const onMac = start('mac-1', T0, 'mac')
     const onPhone = start('phone-1', T0 + 3 * MIN, 'phone')
     const now = T0 + 10 * MIN
 
     const result = mergeCurrent(onMac, onPhone, now)
-    expect(result.current).toBe(onPhone)
-    expect(result.displaced).toMatchObject({ id: 'mac-1', status: 'finished', focusedMs: 10 * MIN })
-    expect(mergeCurrent(onPhone, onMac, now).current).toBe(onPhone)
+    expect(result.current).toBe(onMac)
+    expect(result.displaced).toBeNull()
+    expect(result.conflicts).toEqual([onMac, onPhone])
+    expect(mergeCurrent(onPhone, onMac, now).conflicts).toEqual(result.conflicts)
   })
 
   it('진행 중인 집중이 끝난 집중보다 우선한다', () => {
@@ -83,7 +84,7 @@ describe('mergeRecords', () => {
 })
 
 describe("focusReducer 'sync'", () => {
-  it('다른 기기의 상태를 합치고, 밀려난 집중도 기록에 남긴다', () => {
+  it('다른 기기의 집중을 자동 종료하지 않고 충돌 후보로 유지한다', () => {
     const local = focusReducer(EMPTY_STATE, {
       type: 'start',
       id: 'mac-1',
@@ -100,8 +101,9 @@ describe("focusReducer 'sync'", () => {
       records: [],
       now: T0 + 10 * MIN
     })
-    expect(merged.current?.id).toBe('phone-1')
-    expect(merged.records.map((r) => r.id)).toEqual(['mac-1'])
-    expect(merged.displaced?.id).toBe('mac-1')
+    expect(merged.current?.id).toBe('mac-1')
+    expect(merged.records).toEqual([])
+    expect(merged.conflicts?.map((s) => s.id)).toEqual(['mac-1', 'phone-1'])
+    expect(merged.displaced).toBeUndefined()
   })
 })

@@ -1,6 +1,7 @@
 import { nativeImage, Tray, Menu, BrowserWindow, app } from 'electron'
 import path from 'path'
 import { t } from '../i18n'
+import { revealWindow } from './windowHandler'
 
 export const createTray = (mainWindow: BrowserWindow): Tray => {
   // 프로덕션과 개발 환경에서 다른 경로 사용
@@ -29,11 +30,7 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
           console.log('Window was destroyed, cannot show')
           return
         }
-        mainWindow.show()
-        if (mainWindow.isMinimized()) {
-          mainWindow.restore()
-        }
-        mainWindow.focus()
+        revealWindow(mainWindow)
       }
     },
     {
@@ -57,8 +54,7 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
           return
         }
         mainWindow.webContents.send('NAVIGATE_TO', '/dashboard')
-        mainWindow.show()
-        mainWindow.focus()
+        revealWindow(mainWindow)
       }
     },
     {
@@ -69,8 +65,7 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
           return
         }
         mainWindow.webContents.send('NAVIGATE_TO', '/settings')
-        mainWindow.show()
-        mainWindow.focus()
+        revealWindow(mainWindow)
       }
     },
     {
@@ -86,23 +81,9 @@ export const createTray = (mainWindow: BrowserWindow): Tray => {
 
   // 오른쪽 클릭 시에만 컨텍스트 메뉴 표시 (macOS에서는 Ctrl+클릭도 포함)
   tray.on('right-click', (_event, bounds) => {
-    // 메뉴가 창 뒤로 가지 않도록 창의 레벨을 잠시 낮춤
-    if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible()) {
-      const currentLevel = mainWindow.isAlwaysOnTop()
-      mainWindow.setAlwaysOnTop(false)
-
-      // 메뉴 표시
-      tray.popUpContextMenu(contextMenu, bounds)
-
-      // 메뉴가 닫힌 후 원래 레벨로 복구
-      setTimeout(() => {
-        if (mainWindow && !mainWindow.isDestroyed()) {
-          mainWindow.setAlwaysOnTop(currentLevel)
-        }
-      }, 100)
-    } else {
-      tray.popUpContextMenu(contextMenu, bounds)
-    }
+    // The floating level is below menus, so showing a menu must not unpin
+    // the panel or reset its full-screen behavior.
+    tray.popUpContextMenu(contextMenu, bounds)
   })
 
   return tray

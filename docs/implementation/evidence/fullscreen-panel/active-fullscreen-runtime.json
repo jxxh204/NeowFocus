@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-10-18T17:23:35.548408+09:00",
+  "app": {
+    "electron": "28.3.3",
+    "dockVisible": true,
+    "windows": [
+      {
+        "native": {
+          "windowClass": "ElectronNSPanel",
+          "nonactivatingPanel": true,
+          "activationPolicy": 0,
+          "visible": true,
+          "onActiveSpace": true,
+          "canJoinAllSpaces": true,
+          "level": 3,
+          "screen": 3,
+          "fullScreenAuxiliary": true
+        },
+        "title": "Electron",
+        "visible": true,
+        "minimized": false,
+        "alwaysOnTop": true,
+        "allSpaces": true,
+        "focused": true,
+        "bounds": {
+          "x": 1129,
+          "y": 104,
+          "width": 402,
+          "height": 186
+        }
+      }
+    ]
+  },
+  "otherApplication": {
+    "fullScreen": true,
+    "active": true,
+    "visible": true
+  },
+  "passed": true
+}

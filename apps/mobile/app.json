@@ -17,7 +17,8 @@
       "appleTeamId": "L67FAG9382",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "12"
     },
     "web": {
       "bundler": "metro",
@@ -25,7 +26,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-notifications"
+      "./plugins/withSceneLifecycle.cjs",
+      "expo-notifications",
+      [
+        "./plugins/withNeowFocusNative.cjs",
+        {
+          "cloudKit": true
+        }
+      ]
     ]
   }
 }

@@ -1,4 +1,15 @@
-import { app, shell, BrowserWindow, ipcMain, globalShortcut, nativeTheme } from 'electron'
+import { registerFocusCloud, playDesktopCompletionFeedback } from './focusCloud'
+import {
+  app,
+  shell,
+  BrowserWindow,
+  ipcMain,
+  globalShortcut,
+  nativeTheme,
+  clipboard
+} from 'electron'
+import { BrowserBlockingBridge } from './browserBlocking'
+import type { BrowserSettings, BrowserFocus } from '../shared/browserBlocking'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { handleWindow, showWindow } from './handlers/windowHandler'
@@ -24,6 +35,9 @@ import {
 
 // 앱 종료 플래그
 let isQuitting = false
+let browserBlocking: BrowserBlockingBridge
+if (process.env.NEOWFOCUS_TEST_USER_DATA)
+  app.setPath('userData', process.env.NEOWFOCUS_TEST_USER_DATA)
 
 function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
   // Force dark mode
@@ -31,6 +45,9 @@ function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
 
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    // A nonactivating macOS panel can join another app's full-screen Space
+    // without hiding this app's Dock icon or changing the renderer's design.
+    ...(process.platform === 'darwin' ? { type: 'panel' } : {}),
     width: WINDOW_SIZE.DEFAULT_WIDTH,
     height: WINDOW_SIZE.DEFAULT_HEIGHT,
     minHeight: WINDOW_SIZE.MIN_HEIGHT,
@@ -92,6 +109,38 @@ function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
   })
 
   mainWindow?.isDestroyed()
+  registerFocusCloud(mainWindow)
+  const browserHandlers = {
+    FOCUS_COMPLETION_FEEDBACK: () => playDesktopCompletionFeedback(),
+    FOCUS_BROWSER_STATUS: () => browserBlocking.status(),
+    FOCUS_BROWSER_SETTINGS: (_event: Electron.IpcMainInvokeEvent, value: BrowserSettings) =>
+      browserBlocking.configure(value),
+    FOCUS_BROWSER_PUBLISH: (_event: Electron.IpcMainInvokeEvent, value: BrowserFocus) => {
+      browserBlocking.publish(value)
+    },
+    FOCUS_BROWSER_OPEN_EXTENSION: async () => {
+      const error = await shell.openPath(
+        app.isPackaged
+          ? join(process.resourcesPath, 'chrome-extension')
+          : join(app.getAppPath(), 'chrome-extension')
+      )
+      if (error) throw new Error(error)
+    },
+    FOCUS_BROWSER_COPY_CODE: () => {
+      clipboard.writeText(browserBlocking.connectionCode())
+    }
+  }
+  for (const [channel, handler] of Object.entries(browserHandlers)) {
+    ipcMain.removeHandler(channel)
+    ipcMain.handle(channel, (event, ...args) => {
+      if (
+        event.sender !== mainWindow.webContents ||
+        event.senderFrame !== mainWindow.webContents.mainFrame
+      )
+        throw new Error('허용되지 않은 요청이에요.')
+      return (handler as (...args: any[]) => unknown)(event, ...args)
+    })
+  }
   windowSizeChange(mainWindow)
   notificationProtocol()
   showWindowProtocol(mainWindow)
@@ -108,6 +157,8 @@ function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
 }
 
 app.whenReady().then(() => {
+  browserBlocking = new BrowserBlockingBridge(app.getPath('userData'))
+  browserBlocking.start()
   electronApp.setAppUserModelId(APP_CONFIG.USER_MODEL_ID)
 
   // i18n 초기화
@@ -139,6 +190,7 @@ app.whenReady().then(() => {
   // 앱 종료 전 플래그 설정
   app.on('before-quit', () => {
     isQuitting = true
+    void browserBlocking.stop()
   })
 
   app.on('browser-window-focus', () => {

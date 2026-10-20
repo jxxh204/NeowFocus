@@ -37,7 +37,7 @@ const MinimizeButton = ({ onClick }: MinimizeButtonProps) => {
     if (onClick) {
       onClick()
     } else {
-      window.electron.minimizeWindow()
+      window.electron?.minimizeWindow?.()
     }
   }
 

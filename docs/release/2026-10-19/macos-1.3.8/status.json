@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-19T22:22:53.079997+09:00",
+  "appId": "6751244958",
+  "platform": "macOS",
+  "version": "1.3.8",
+  "build": "1.3.8",
+  "requestedDelivery": "Public App Store release",
+  "uploaded": true,
+  "processingState": "COMPLETE",
+  "testerAvailabilityVerified": true,
+  "testFlightEvidence": "../../2026-10-18/testflight-1.3.8/status.json",
+  "submitted": false,
+  "currentPublicReviewStatusVerified": false,
+  "existingPublicReviewModified": false,
+  "iOSModified": false,
+  "status": "AWAITING_APP_STORE_CONNECT_LOGIN",
+  "blockers": [
+    "App Store Connect web shows login form (authResult=FAILED); user sign-in requested"
+  ],
+  "submissionContent": "submission-content.json"
+}

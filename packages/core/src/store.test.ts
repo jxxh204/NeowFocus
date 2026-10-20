@@ -51,10 +51,11 @@ describe('focusReducer', () => {
     expect(state.records).toHaveLength(1)
   })
 
-  it('1분 미만으로 마친 집중은 기록하지 않는다', () => {
+  it('1분 미만으로 직접 마친 집중도 한 번의 성취로 기록한다', () => {
     const state = run(startAction(), { type: 'finish', now: T0 + 30_000, deviceId: 'phone' })
     expect(state.current?.status).toBe('finished')
-    expect(state.records).toHaveLength(0)
+    expect(state.records).toHaveLength(1)
+    expect(state.records[0]).toMatchObject({ focusedMs: 30_000, finishReason: 'manual' })
   })
 })
 

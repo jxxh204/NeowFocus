@@ -1,0 +1,11 @@
+{
+  "appVersion": "0.1.0",
+  "appBuild": "11",
+  "widgetBuild": "11",
+  "autoBreak": true,
+  "introAbsent": true,
+  "pixelAssetsUnchangedFromBuild9": true,
+  "privacyPolicyIncluded": true,
+  "supportContactIncluded": true,
+  "screenTimeFree": true
+}

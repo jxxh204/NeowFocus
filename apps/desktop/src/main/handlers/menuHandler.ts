@@ -2,6 +2,7 @@ import { Menu, app, nativeImage, dialog, BrowserWindow } from 'electron'
 import path from 'path'
 import { APP_INFO } from '../constants'
 import { t } from '../i18n'
+import { revealWindow } from './windowHandler'
 
 let mainWindowRef: BrowserWindow | null = null
 
@@ -49,8 +50,7 @@ export const setupApplicationMenu = (): void => {
           click: () => {
             if (mainWindowRef && !mainWindowRef.isDestroyed()) {
               mainWindowRef.webContents.send('NAVIGATE_TO', '/settings')
-              mainWindowRef.show()
-              mainWindowRef.focus()
+              revealWindow(mainWindowRef)
             }
           }
         },

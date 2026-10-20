@@ -1,4 +1,5 @@
 import { ipcMain, app } from 'electron'
+import { revealWindow } from './handlers/windowHandler'
 
 export const windowSizeChange = (mainWindow): void => {
   ipcMain.on('WINDOW_SIZE_CHANGE', (_e: Electron.IpcMainEvent, size) => {
@@ -31,7 +32,7 @@ export const notificationProtocol = (): void => {
       new Notification({
         title: title,
         body: body,
-        silent: false
+        silent: true
       }).show()
     }
   })
@@ -40,8 +41,7 @@ export const notificationProtocol = (): void => {
 export const showWindowProtocol = (mainWindow): void => {
   ipcMain.on('SHOW_WINDOW', () => {
     if (mainWindow && !mainWindow.isVisible()) {
-      mainWindow.show()
-      mainWindow.focus()
+      revealWindow(mainWindow)
     }
   })
 }
@@ -58,8 +58,7 @@ export const navigateToProtocol = (mainWindow: Electron.BrowserWindow): void => 
   ipcMain.on('NAVIGATE_TO', (_e: Electron.IpcMainEvent, route: string) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('NAVIGATE_TO', route)
-      mainWindow.show()
-      mainWindow.focus()
+      revealWindow(mainWindow)
     }
   })
 }

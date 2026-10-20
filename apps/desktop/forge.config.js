@@ -1,5 +1,5 @@
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 
 module.exports = {
   packagerConfig: {
@@ -42,6 +42,8 @@ module.exports = {
 
     // Extra resources
     extraResource: [
+      path.join(__dirname, 'chrome-extension'),
+      path.join(__dirname, 'build', 'native', 'focus-cloud.node'),
       path.join(__dirname, 'build', 'compiled', 'Assets.car'),
       path.join(__dirname, 'build', 'compiled', 'AppIcon.icns'),
       path.join(__dirname, 'resources', 'tray.png'),
@@ -67,6 +69,7 @@ module.exports = {
   ],
 
   hooks: {
+    prePackage: async () => { execFileSync('bash', [path.join(__dirname, 'scripts', 'build-cloud-native.sh')], { stdio: 'inherit' }); },
     postPackage: async (forgeConfig, options) => {
       const outputDir = options.outputPaths[0];
       const appPath = path.join(outputDir, 'NeowFocus.app');
@@ -85,13 +88,13 @@ module.exports = {
             type: 'distribution',
             provisioningProfile: path.join(__dirname, 'build', 'NeowFocus_Mac_App_Store.provisionprofile'),
             optionsForFile: (filePath) => {
-              // 리소스 파일 (.pak, .dat, .bin 등)은 서명하지 않음
+              // 리소스 경로에는 osx-sign 기본 옵션 사용 (네이티브 .node 포함)
               const ext = path.extname(filePath);
               const resourceExtensions = ['.pak', '.dat', '.bin', '.lproj', '.txt', '.html', '.js', '.json'];
 
-              // 확장자로 판단하거나 Resources 폴더 내 파일이면 건너뛰기
+              // 비실행 리소스와 Resources 내부 바이너리의 옵션은 서명 라이브러리에 위임
               if (resourceExtensions.includes(ext) || filePath.includes('/Resources/') || filePath.includes('.lproj/')) {
-                return null; // null을 반환하면 서명하지 않음
+                return null; // null이면 osx-sign의 기본 서명 옵션 사용
               }
 
               const entitlements = filePath.includes('.app/')
