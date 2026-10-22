@@ -89,7 +89,7 @@ for(let band=5;band>=0;band--){const patterns=[0,1,2].map(col=>PATTERNS[(band*5+
 function blockCount(){return Math.min(plan.length,Math.floor(elapsed/DURATION*plan.length+1e-8))}
 function draw(now){const canvas=$('scene'),box=document.querySelector('.scene').getBoundingClientRect();if(!box.width||!box.height)return;const dpr=Math.min(devicePixelRatio||1,2);if(canvas.width!==Math.round(box.width*dpr)||canvas.height!==Math.round(box.height*dpr)){canvas.width=Math.round(box.width*dpr);canvas.height=Math.round(box.height*dpr)}const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,box.width,box.height);if(theme==='classic')return;const progress=elapsed/DURATION;
  if(theme==='water'){
-  if(progress<=0)return;const level=box.height*(1-progress),amplitude=$('reduce').checked||progress===1?0:Math.min(6,progress*70),surface=x=>level+Math.sin(x/62+wave)*amplitude+Math.sin(x/113-wave*.65)*amplitude*.35;
+  if(progress<=0)return;const level=box.height*(1-progress),amplitude=$('reduce').checked||progress===1?0:10,surface=x=>level+Math.sin(x/52+wave*3.2)*amplitude+Math.sin(x/31-wave*4.1)*amplitude*.4;
   const fill=ctx.createLinearGradient(0,level,0,box.height);fill.addColorStop(0,'#526d78');fill.addColorStop(1,'#304a56');ctx.fillStyle=fill;ctx.beginPath();ctx.moveTo(0,surface(0));for(let x=0;x<=box.width+5;x+=5)ctx.lineTo(x,surface(x));ctx.lineTo(box.width,box.height);ctx.lineTo(0,box.height);ctx.closePath();ctx.fill();
   ctx.strokeStyle='#a8c2c780';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,surface(0));for(let x=0;x<=box.width+5;x+=5)ctx.lineTo(x,surface(x));ctx.stroke();return;
  }
