@@ -1,0 +1,39 @@
+{
+  "platform": "iOS",
+  "version": "0.1.1",
+  "build": "14",
+  "sourceCommit": "a7127b81565bdc1faac9d57b31770494298a7a31",
+  "status": "AVAILABLE_TO_INTERNAL_GROUP",
+  "uploaded": true,
+  "processingComplete": true,
+  "testerAccessVerified": true,
+  "physicalDeviceVerified": false,
+  "realAccountCloudCalendarVerified": false,
+  "testFlightAppId": "6751244958",
+  "existingInternalGroup": "더기와 쟈니들",
+  "publicSubmissionRequested": false,
+  "sourceChecks": {
+    "typecheck": true,
+    "timerStyles": true,
+    "coreTests": 84
+  },
+  "archiveVerified": true,
+  "uploadExitCode": 0,
+  "uploadedAt": "2026-10-23T02:34:53.912+09:00",
+  "uploadLog": "apps/mobile/build-output/upload-0.1.1-14.log",
+  "frameworkSymbolWarnings": [
+    "React.framework",
+    "ReactNativeDependencies.framework",
+    "hermesvm.framework"
+  ],
+  "testFlightBuildId": "575023ac-3c53-48b4-92b1-c713519c32bb",
+  "testFlightUrl": "https://appstoreconnect.apple.com/teams/e5ec510c-eb5f-47f1-99e1-31e2ce1e77cc/apps/6751244958/testflight/ios/575023ac-3c53-48b4-92b1-c713519c32bb",
+  "uploadRowVerified": true,
+  "groupTesterCount": 2,
+  "groupId": "28bc289e-316b-4ce0-ba1c-a7188672b5ed",
+  "testNotesSaved": true,
+  "testNotesLocale": "ko",
+  "availabilityCheckedAt": "2026-10-23T02:46:10.022896+09:00",
+  "distribution": "automatically attached to existing group",
+  "evidence": "testflight-internal.png"
+}
