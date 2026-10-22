@@ -30,6 +30,7 @@ import { useFocus } from '@/focus/FocusProvider'
 import { SyncConflict } from '@/focus/SyncConflict'
 import { formatDuration } from '@/focus/format'
 import { useSettings } from '@/focus/SettingsProvider'
+import { sessionAppearance, type SessionAppearance, type TimerStyle } from '@/focus/timerStyle'
 import { RecordsPanel } from '@/ui/RecordsPanel'
 import { SettingsPanel } from '@/ui/SettingsPanel'
 import { FIRST_TASK, FIRST_TASK_MINUTES, useFirstTaskSuggestion } from '@/ui/useFirstTaskSuggestion'
@@ -46,9 +47,16 @@ export default function FocusScreen() {
   const insets = useSafeAreaInsets()
   const { width, height } = useWindowDimensions()
   const [panel, setPanel] = useState<Panel>(null)
-  const params = useLocalSearchParams<{ panel?: string; prepare?: string }>()
+  const [recordDay, setRecordDay] = useState<string>()
+  const params = useLocalSearchParams<{ panel?: string; prepare?: string; recordDay?: string }>()
   const router = useRouter()
   const current = state.current
+  const active = current?.status === 'running' || current?.status === 'paused'
+  const [appearance, setAppearance] = useState<SessionAppearance | null>(null)
+  const nextAppearance = sessionAppearance(appearance, current?.id ?? null, active, settings.timerStyle)
+  // A guarded render-time update keeps completion's first frame on the same scene.
+  if (nextAppearance !== appearance) setAppearance(nextAppearance)
+  const sceneStyle = nextAppearance.timerStyle
   const screen = useRef<View>(null)
   const [mode, setMode] = useState<'home' | 'today'>('home')
   const [dayVisit, setDayVisit] = useState(0)
@@ -59,7 +67,6 @@ export default function FocusScreen() {
   const lastFinished = useRef<FocusSession | null>(null)
   if (current?.status === 'finished') lastFinished.current = current
   const today = achievementForDay(state.records, now)
-  const active = current?.status === 'running' || current?.status === 'paused'
   const dayId = mode === 'today' && !active && !state.conflicts?.length ? `${today.day}-${dayVisit}` : undefined
   const [pawTarget, setPawTarget] = useState<(PawTarget & { dayId: string }) | null>(null)
   const [catImageLoaded, setCatImageLoaded] = useState(false)
@@ -97,9 +104,10 @@ export default function FocusScreen() {
   // Old links keep working, but records and settings now open over the same canvas.
   useEffect(() => {
     if (params.panel !== 'records' && params.panel !== 'settings') return
+    setRecordDay(params.panel === 'records' ? params.recordDay : undefined)
     setPanel(params.panel)
-    router.setParams({ panel: undefined })
-  }, [params.panel, router])
+    router.setParams({ panel: undefined, recordDay: undefined })
+  }, [params.panel, params.recordDay, router])
 
   useEffect(() => {
     if (params.prepare && (current || state.conflicts?.length)) router.setParams({ prepare: undefined })
@@ -107,13 +115,14 @@ export default function FocusScreen() {
 
   const openPanel = (next: Panel) => {
     Keyboard.dismiss()
+    setRecordDay(undefined)
     setPanel(next)
   }
 
   return (
     <View ref={screen} collapsable={false} style={styles.screen}>
       {!state.conflicts?.length && !dayId && current && (active || current.status === 'finished') && <TimerScene
-        key={`${current.id}-${settings.timerStyle}`} style={settings.timerStyle}
+        key={`${current.id}-${sceneStyle}`} style={sceneStyle}
         progress={clampProgress(current.status === 'finished' ? current.focusedMs / current.plannedMs : 1 - remainingOf(current, now) / current.plannedMs)}
         running={current.status === 'running' && panel === null} />}
       <KeyboardAvoidingView
@@ -139,12 +148,12 @@ export default function FocusScreen() {
           {!state.conflicts?.length && (active && current ? <Session session={current} timerSize={timerSize} />
             : dayId ? <Today count={displayedCount} actualCount={today.count} focusedMs={today.focusedMs} tasks={today.tasks}
                 progress={dayMotion.stamp} catProgress={dayMotion.progress} rotation={stampRotation} onTarget={measurePawTarget} onContinue={() => prepareNext()} onRest={rest} />
-            : current?.status === 'finished' ? <Done session={current} onAgain={() => prepareNext()} onNew={() => prepareNext(false)} onToday={showToday} />
+            : current?.status === 'finished' ? <Done session={current} timerStyle={sceneStyle} onAgain={() => prepareNext()} onNew={() => prepareNext(false)} onToday={showToday} />
             : settings.restDay === localDayKey(now) ? <Rest count={today.count} onStart={() => prepareNext(false)} />
             : <Ready key={readyVisit} timerSize={timerSize} seed={seed} todayCount={today.count} prepareFirstTask={params.prepare === 'first-task'} onPrepared={() => router.setParams({ prepare: undefined })} />)}
         </ScrollView>
         <SecondarySheet closeLabel={panel === 'settings' ? '완료' : '닫기'} title={panel === 'records' ? '집중 기록' : '설정'} visible={panel !== null} onClose={() => setPanel(null)}>
-          {panel === 'records' ? <RecordsPanel /> : panel === 'settings' ? <SettingsPanel /> : null}
+          {panel === 'records' ? <RecordsPanel day={recordDay} /> : panel === 'settings' ? <SettingsPanel /> : null}
         </SecondarySheet>
       </KeyboardAvoidingView>
       {dayId && targetReady && panel === null && pawTarget && <CompletionCat target={pawTarget} progress={dayMotion.progress} entry={dayEntry} viewport={{ width, height }} onReady={() => setCatImageLoaded(true)} />}
@@ -293,10 +302,9 @@ function Session({ session, timerSize }: { session: FocusSession; timerSize: num
   </View>
 }
 
-function Done({ session, onAgain, onNew, onToday }: { session: FocusSession; onAgain: () => void; onNew: () => void; onToday: () => void }) {
+function Done({ session, timerStyle, onAgain, onNew, onToday }: { session: FocusSession; timerStyle: TimerStyle; onAgain: () => void; onNew: () => void; onToday: () => void }) {
   const { breakRemaining, breakFinished, finishBreak } = useFocus()
-  const { settings } = useSettings()
-  const sceneText = settings.timerStyle !== 'classic' && styles.sceneText
+  const sceneText = timerStyle !== 'classic' && styles.sceneText
   return <View style={styles.fill}>
     <View style={[styles.main, styles.done]}>
       <View style={styles.completedPaw}><Paw size={52} /></View>

@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.source_files = '**/*.swift'
   s.resource_bundles = { 'NeowFocusNative_privacy' => ['PrivacyInfo.xcprivacy'] }
-  s.frameworks = 'ActivityKit', 'WidgetKit', 'CloudKit', 'SwiftUI'
+  s.frameworks = 'ActivityKit', 'WidgetKit', 'CloudKit', 'SwiftUI', 'EventKit'
   s.swift_version = '5.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 end

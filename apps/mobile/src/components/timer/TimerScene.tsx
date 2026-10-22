@@ -29,12 +29,12 @@ function useSceneClock(enabled: boolean) {
 export function TimerScene({ style, progress, running }: { style: TimerStyle; progress: number; running: boolean }) {
   const [size, setSize] = useState({ width: 0, height: 0 })
   const { active, reduced } = useMotionPreference()
-  if (style === 'classic') return null
+  if (style !== 'water' && style !== 'blocks') return null
   return <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
     style={styles.scene} onLayout={event => setSize(event.nativeEvent.layout)}>
     {size.width > 0 && (style === 'water'
       ? <Water {...size} progress={progress} moving={running && active && reduced === false} reduced={reduced !== false} />
-      : <Blocks {...size} progress={progress} moving={running && active && reduced === false} />)}
+      : style === 'blocks' ? <Blocks {...size} progress={progress} moving={running && active && reduced === false} /> : null)}
   </View>
 }
 

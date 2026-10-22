@@ -23,6 +23,19 @@ const active = (id: string): FocusState => ({ current: startFocus({ id, task: id
   now: NOW, deviceId: id }), records: [] })
 
 describe('FocusReplicator', () => {
+  it('restores the completed focus list from cloud on a fresh device', async () => {
+    let completed = active('phone');
+    completed = focusReducer(completed, { type: 'tick', now: NOW + 300_000 });
+    completed = focusReducer(completed, { type: 'dismiss' });
+    let json: string | null = null;
+    const transport = { read: async () => ({ json, changeTag: json ? 'saved' : null }),
+      write: async (payload: string) => { json = payload; return 'saved' } };
+    await harness(transport, completed).worker.sync();
+    const fresh = harness(transport);
+    await fresh.worker.sync();
+    expect(fresh.get().records).toEqual(completed.records);
+    expect(fresh.get().records[0]).toMatchObject({ task: 'phone', focusedMs: 300_000 });
+  })
   it('re-reads after compare-and-swap rejection and preserves concurrent offline work', async () => {
     const remote = active('phone')
     let json: string | null = null

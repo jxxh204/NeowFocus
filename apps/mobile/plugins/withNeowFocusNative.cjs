@@ -63,6 +63,8 @@ module.exports = function withNeowFocusNative(config, options = {}) {
   config = withInfoPlist(config, mod => {
     mod.modResults.NSSupportsLiveActivities = true;
     mod.modResults.NeowFocusCloudEnabled = cloudEnabled;
+    mod.modResults.NSCalendarsUsageDescription = '냐우포커스 전용 iCloud 캘린더에 하루 집중 횟수와 총 시간을 저장하고 갱신합니다. 다른 일정은 변경하지 않습니다.';
+    mod.modResults.NSCalendarsFullAccessUsageDescription = mod.modResults.NSCalendarsUsageDescription;
     if (cloudEnabled) mod.modResults.UIBackgroundModes = [...new Set([...(mod.modResults.UIBackgroundModes || []), 'remote-notification'])];
     delete mod.modResults.NeowFocusBlockingEnabled;
     return mod;

@@ -3,15 +3,22 @@ const fs = require('node:fs')
 const path = require('node:path')
 const vm = require('node:vm')
 const ts = require('typescript')
-function load(relative) {
+function load(relative, mocks = {}) {
   const filename = path.resolve(__dirname, relative)
   const exports = {}
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true }
-  }).outputText, { exports, require: request => require(path.resolve(path.dirname(filename), request)), Math, Number })
+    compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true, jsx: ts.JsxEmit.ReactJSX }
+  }).outputText, { exports, require: request => mocks[request] ?? require(path.resolve(path.dirname(filename), request)), Math, Number })
   return exports
 }
-const { normalizeTimerAppearance } = load('../src/focus/timerStyle.ts')
+const { normalizeTimerAppearance, sessionAppearance } = load('../src/focus/timerStyle.ts')
+let appearance = sessionAppearance(null, 'first', true, 'water')
+assert.equal(sessionAppearance(appearance, 'first', false, 'blocks').timerStyle, 'water', 'completion cannot pick up a different preference')
+appearance = sessionAppearance(appearance, 'first', true, 'blocks')
+assert.equal(appearance.timerStyle, 'blocks', 'explicit active-session style changes still apply')
+assert.equal(sessionAppearance(appearance, 'first', false, 'water').timerStyle, 'blocks')
+assert.equal(sessionAppearance(appearance, 'next', true, 'water').timerStyle, 'water', 'new session uses selected style')
+assert.equal(sessionAppearance(null, 'restored', false, 'water').timerStyle, 'water', 'cold restored completion uses saved preference')
 for (const saved of [null, {}, { timerStyle: 'future', showRemainingTime: 'true' }]) {
   const result = normalizeTimerAppearance(saved)
   assert.equal(result.timerStyle, 'classic')
@@ -54,3 +61,22 @@ for (const [width, height] of [[320,568], [390,844], [440,956]]) {
   }
 }
 console.log('Passed: settings migration, 72 physically droppable pieces / 288-cell full cover, restoration counts, water levels/speed and Reduce Motion.')
+
+// Render the real scene boundary at completion; a missing style must never fall through to blocks.
+const jsx = (type, props) => ({ type, props })
+const { TimerScene } = load('../src/components/timer/TimerScene.tsx', {
+  react: { memo: value => value, useEffect() {}, useRef: current => ({ current }), useState: () => [{ width: 390, height: 844 }, () => {}] },
+  'react/jsx-runtime': { jsx, jsxs: jsx },
+  'react-native': { View: 'View', StyleSheet: { create: value => value } },
+  'react-native-svg': {},
+  '../motionPreference': { useMotionPreference: () => ({ active: true, reduced: false }) },
+  './geometry': { BLOCK_PLAN, COLS, ROWS, blockCount, waterPaths, WAVE_SPEED }
+})
+for (const style of ['water', 'blocks']) {
+  for (const [progress, running] of [[.99, true], [1, false], [.4, false]]) {
+    const scene = TimerScene({ style, progress, running })
+    assert.equal(scene.props.children.type.name, style === 'water' ? 'Water' : 'Blocks', `${style} stays selected through completion and pause`)
+  }
+}
+for (const style of ['classic', undefined, null, 'future']) assert.equal(TimerScene({ style, progress: 1, running: false }), null)
+console.log('Passed: real TimerScene preserves water/blocks through completion, pause and unknown-style recovery.')

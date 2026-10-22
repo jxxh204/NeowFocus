@@ -5,10 +5,10 @@ import { useFocus } from '@/focus/FocusProvider'
 import { formatDay, formatDuration } from '@/focus/format'
 import { color } from '@/theme'
 
-export function RecordsPanel() {
+export function RecordsPanel({ day }: { day?: string } = {}) {
   const { state, deleteRecord, undoDeleteRecord } = useFocus()
   const [deleted, setDeleted] = useState<Array<{ id: string; task: string }>>([])
-  const sections = groupRecordsByDay(state.records).map((group) => ({
+  const sections = groupRecordsByDay(state.records).filter(group => !day || group.day === day).map((group) => ({
     ...group,
     data: group.records
   }))
@@ -21,7 +21,7 @@ export function RecordsPanel() {
       stickySectionHeadersEnabled={false}
       ListEmptyComponent={
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>첫 집중을 마치면 여기에 남아요.</Text>
+          <Text style={styles.emptyText}>{day ? '이날의 집중 기록이 없어요. iCloud 동기화 상태를 확인해 주세요.' : '첫 집중을 마치면 여기에 남아요.'}</Text>
         </View>
       }
       ListHeaderComponent={deleted.length ? (

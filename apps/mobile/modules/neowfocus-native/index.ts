@@ -33,6 +33,7 @@ export type NativeCapabilities = {
   widgets: boolean
   liveActivities: boolean
   cloudKit: boolean
+  calendar?: boolean
 }
 export type CloudState = { json: string | null; changeTag: string | null }
 export interface NeowFocusNativeModule {
@@ -47,6 +48,8 @@ export interface NeowFocusNativeModule {
   cloudAccountStatus(): Promise<string>
   cloudRead(): Promise<CloudState>
   cloudWrite(json: string, expectedChangeTag: string | null): Promise<string>
+  calendarConnect(): Promise<void>
+  calendarSync(json: string): Promise<void>
 }
 // Expo Go and web intentionally return null; callers must expose unavailable capabilities.
 export const NeowFocusNative = requireOptionalNativeModule<NeowFocusNativeModule>('NeowFocusNative')

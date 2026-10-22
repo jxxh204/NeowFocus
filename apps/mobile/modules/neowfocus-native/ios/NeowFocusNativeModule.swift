@@ -35,7 +35,7 @@ public class NeowFocusNativeModule: Module {
       }
     }
     Function("getCapabilities") { () -> [String: Bool] in
-      ["widgets": FocusStore.directory != nil, "liveActivities": ActivityAuthorizationInfo().areActivitiesEnabled, "cloudKit": Bundle.main.object(forInfoDictionaryKey: "NeowFocusCloudEnabled") as? Bool ?? false]
+      ["widgets": FocusStore.directory != nil, "liveActivities": ActivityAuthorizationInfo().areActivitiesEnabled, "cloudKit": Bundle.main.object(forInfoDictionaryKey: "NeowFocusCloudEnabled") as? Bool ?? false, "calendar": true]
     }
     AsyncFunction("publishSnapshot") { (json: String) async throws in
       guard let data = json.data(using: .utf8) else { return }
@@ -56,6 +56,10 @@ public class NeowFocusNativeModule: Module {
       try FocusStore.transaction { $0.commands.removeAll { ids.contains($0.id) } }
     }
     AsyncFunction("cloudAccountStatus") { () async throws -> String in try await self.cloud.accountStatus() }
+    AsyncFunction("calendarConnect") { () async throws in try await FocusCalendarStore.shared.connect() }
+    AsyncFunction("calendarSync") { (json: String) async throws in
+      try await FocusCalendarStore.shared.reconcile(json)
+    }
     AsyncFunction("cloudRead") { () async throws -> [String: Any?] in try await self.cloud.read() }
     AsyncFunction("cloudWrite") { (json: String, expectedTag: String?) async throws -> String in
       let tag = try await self.cloud.write(json, expectedTag: expectedTag)

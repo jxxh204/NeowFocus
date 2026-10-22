@@ -1,6 +1,6 @@
 export const SUPPORT_EMAIL = 'ahhancom@gmail.com'
 export const SUPPORT_URL = 'https://github.com/jxxh204/NeowFocus'
-export const PRIVACY_UPDATED = '2026년 10월 17일'
+export const PRIVACY_UPDATED = '2026년 10월 22일'
 
 export const PRIVACY_SECTIONS = [
   {
@@ -10,6 +10,10 @@ export const PRIVACY_SECTIONS = [
   {
     title: '선택형 iCloud 동기화',
     body: 'iCloud 동기화는 기본 꺼짐입니다. 설정에서 켜면 할 일, 집중 상태와 기록, 변경·삭제 이력, 기기 식별자가 같은 Apple 계정의 개인 CloudKit 데이터베이스로 전송됩니다. 연결한 Mac과 iPhone에서 이어가기 위해 사용하며, 개발자가 운영하는 별도 서버로 전송하지 않습니다. Apple의 iCloud 서비스 이용에는 Apple의 개인정보 보호 정책이 적용됩니다.'
+  },
+  {
+    title: '선택형 냐우캘린더 연동',
+    body: '냐우캘린더 연동은 기본 꺼짐입니다. 켜면 iCloud 동기화도 켜지고, 사용자에게 iPhone 캘린더 전체 접근 권한을 요청합니다. 전용 냐우포커스 iCloud 캘린더에 하루 집중 횟수와 실제 집중 시간의 합계를 일정으로 저장·갱신합니다. 작업 이름은 일정에 포함하지 않습니다. 기존 집중 기록을 삭제하거나 복원하면 해당 하루 합계를 갱신하며, 다른 일정은 변경하지 않습니다. 일정은 같은 Apple 계정의 캘린더 및 접근을 허용한 냐우캘린더 등 캘린더 앱에서 볼 수 있습니다. 연동을 끄더라도 기존 일정은 남으며 캘린더 앱에서 관리할 수 있습니다.'
   },
   {
     title: '위젯·잠금화면·알림',

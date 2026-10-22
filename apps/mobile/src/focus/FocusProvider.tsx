@@ -3,7 +3,7 @@ import { AppState, Text, View } from 'react-native'
 import { randomUUID } from 'expo-crypto'
 import {
   EMPTY_STATE, focusReducer, parseFocusState, createSyncEnvelope, serializeFocusState, FocusReplicator,
-  remainingOf, localDayKey, canSuggestFirstFocus, achievementForDay, isFeedbackCompletion, breakAfterCompletion, restoreFocusBreak, type FocusBreak, type FocusAction, type FocusState, type SyncStatus
+  remainingOf, localDayKey, canSuggestFirstFocus, achievementForDay, focusCalendarDays, isFeedbackCompletion, breakAfterCompletion, restoreFocusBreak, type FocusBreak, type FocusAction, type FocusState, type SyncStatus
 } from '@neowfocus/core'
 import Native, { type NativeCapabilities } from '../../modules/neowfocus-native'
 import { cancelCompletion, requestAlertPermission, scheduleCompletion, playCompletionFeedback } from './alerts'
@@ -29,6 +29,8 @@ type FocusContextValue = {
   markFirstSuggestion(day: string): void
   syncStatus: SyncStatus
   syncError?: string
+  calendarStatus: 'off' | 'waiting' | 'syncing' | 'synced' | 'error'
+  calendarError?: string
   nativeError?: string
   capabilities: NativeCapabilities
   retrySync(): void
@@ -51,6 +53,11 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   const [now, setNow] = useState(Date.now)
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('off')
   const [syncError, setSyncError] = useState<string>()
+  const syncStatusRef = useRef<SyncStatus>('off')
+  const [calendarStatus, setCalendarStatus] = useState<FocusContextValue['calendarStatus']>('off')
+  const [calendarError, setCalendarError] = useState<string>()
+  const [calendarRetry, setCalendarRetry] = useState(0)
+  const calendarQueue = useRef<Promise<void>>(Promise.resolve())
   const [nativeError, setNativeError] = useState<string>()
   const [appActive, setAppActive] = useState(AppState.currentState === 'active')
   const replicator = useRef<FocusReplicator | null>(null)
@@ -173,6 +180,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!deviceId || !settings.syncEnabled) {
       setSyncStatus('off')
+      syncStatusRef.current = 'off'
       setSyncError(undefined)
       return
     }
@@ -193,7 +201,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       },
       getState: () => stateRef.current,
       applyState: apply,
-      onStatus: (status, message) => { setSyncStatus(status); setSyncError(message) }
+      onStatus: (status, message) => { syncStatusRef.current = status; setSyncStatus(status); setSyncError(message) }
     })
     replicator.current = worker
     void worker.sync()
@@ -203,6 +211,39 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   }, [deviceId, settings.syncEnabled, capabilities.cloudKit, apply])
 
   useEffect(() => { if (deviceId) void replicator.current?.sync() }, [state, deviceId])
+  useEffect(() => {
+    if (!deviceId || !settings.calendarSyncEnabled || !settings.syncEnabled) {
+      setCalendarStatus('off'); setCalendarError(undefined)
+      return
+    }
+    if (!Native?.getCapabilities().calendar) {
+      setCalendarStatus('error'); setCalendarError('캘린더 연결을 지원하는 최신 iOS 앱을 설치해 주세요.')
+      return
+    }
+    if (!appActive) return
+    let canceled = false
+    setCalendarStatus('waiting')
+    calendarQueue.current = calendarQueue.current.catch(() => {}).then(async () => {
+      if (canceled) return
+      // Merge the complete iCloud history before publishing a daily aggregate.
+      const worker = replicator.current
+      if (!worker) return
+      await worker.sync()
+      if (canceled || replicator.current !== worker) return
+      if (syncStatusRef.current !== 'synced') { setCalendarStatus('waiting'); return }
+      setCalendarStatus('syncing')
+      await Native!.calendarSync(JSON.stringify(focusCalendarDays(stateRef.current)))
+      if (!canceled) { setCalendarStatus('synced'); setCalendarError(undefined) }
+    }).catch(error => {
+      if (!canceled) { setCalendarStatus('error'); setCalendarError(error instanceof Error ? error.message : String(error)) }
+    })
+    return () => { canceled = true }
+  }, [deviceId, state.records, state.recordChanges, settings.calendarSyncEnabled, settings.syncEnabled, appActive, calendarRetry, syncStatus === 'synced'])
+  useEffect(() => {
+    if (!appActive || !settings.syncEnabled || syncStatus !== 'offline') return
+    const retry = setInterval(() => { void refresh(); setCalendarRetry(value => value + 1) }, 30_000)
+    return () => clearInterval(retry)
+  }, [appActive, settings.syncEnabled, syncStatus, refresh])
   useEffect(() => {
     if (!appActive || (current?.status !== 'running' && !onBreak)) return
     const interval = setInterval(tick, 250)
@@ -270,7 +311,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   const value = useMemo<FocusContextValue>(() => {
     const at = () => ({ now: Date.now(), deviceId: deviceId ?? '' })
     return {
-      state, now, breakRemaining, breakFinished, finishBreak, capabilities, syncStatus, syncError, nativeError, completionFeedback,
+      state, now, breakRemaining, breakFinished, finishBreak, capabilities, syncStatus, syncError, calendarStatus, calendarError, nativeError, completionFeedback,
       start: (task, minutes) => {
         if (!task.trim() || !Number.isFinite(minutes) || minutes <= 0 || minutes > 180 || !deviceId) return
         dispatch({ type: 'start', id: randomUUID(), task, plannedMs: minutes * 60_000, ...at() })
@@ -286,9 +327,9 @@ export function FocusProvider({ children }: { children: ReactNode }) {
       firstSuggestionReady: !settings.syncEnabled || syncStatus === 'synced',
       firstSuggestionDay: state.firstSuggestions?.find((item) => item.day === localDayKey(Date.now()))?.day,
       markFirstSuggestion,
-      retrySync: () => { void refresh() }
+      retrySync: () => { void refresh(); setCalendarRetry(value => value + 1) }
     }
-  }, [state, now, breakRemaining, breakFinished, finishBreak, deviceId, settings.alerts, settings.syncEnabled, syncStatus, syncError, nativeError, capabilities, dispatch, refresh, markFirstSuggestion, completionFeedback])
+  }, [state, now, breakRemaining, breakFinished, finishBreak, deviceId, settings.alerts, settings.syncEnabled, syncStatus, syncError, calendarStatus, calendarError, nativeError, capabilities, dispatch, refresh, markFirstSuggestion, completionFeedback])
 
   // Keep storage failure visible rather than presenting an empty, apparently healthy app.
   if (!deviceId) return nativeError ? <View style={{ flex: 1, padding: 32, justifyContent: 'center', backgroundColor: '#272727' }}><Text accessibilityRole="alert" style={{ color: '#FFF' }}>{nativeError}</Text></View> : null
