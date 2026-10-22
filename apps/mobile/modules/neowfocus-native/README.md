@@ -43,6 +43,22 @@ xcodebuild -workspace ios/NeowFocus.xcworkspace -scheme NeowFocus \
 - 잠금화면의 작업명은 `showTaskOnLockScreen` true일 때만 표시한다. 본문 UI/알림도 같은 개인 정보 설정을 유지해야 한다.
 - CloudKit account/error/conflict 응답을 JS가 상태로 표시한다. 앱 bridge의 foreground read/write와 위젯 직접 조작 시 outbound write를 제공한다. 휴대폰으로 들어오는 원격 변경의 백그라운드 realtime 배달은 아직 구현하지 않았다.
 
+## 선택형 냐우캘린더 연동 (2026-10-22)
+
+- 기존 CloudKit 문서에는 완료한 집중 목록도 포함된다. `syncEnabled`를 켜면 같은 Apple 계정의 개인 데이터베이스에 저장한다. 첫 읽기가 실패하면 빈 로컬 상태를 원격에 덮어쓰지 않는다.
+- `FocusCalendar.swift`는 EventKit actor로 동작한다. 설정의 ‘냐우캘린더 연동’은 기본 꺼짐이며, 켤 때만 캘린더 전체 접근을 요청한다. 기존 하루 일정을 찾아 갱신하고 전용 캘린더를 만들기 위해 전체 접근이 필요하다. 연결하면 iCloud 동기화도 켜진다.
+- iCloud CalDAV source를 확인한 뒤 전용 `냐우포커스` 캘린더를 만든다. iCloud 캘린더가 없거나 확인할 수 없으면 안내 오류를 반환한다. Google/Exchange/기기 전용 캘린더로 자동 대체하지 않는다.
+- `focusCalendarDays`는 완료일의 기기 현지 날짜별로 실제 집중 시간을 합산한다. 수동 마침도 한 번으로 세고 충돌로 제외한 기록은 세지 않는다. 제목 예: `냐우포커스 · 3회 · 1시간 25분`. 작업 이름은 전송하지 않는다.
+- `neowfocus://daily/YYYY-MM-DD` URL이 일치하는 자체 생성 일정만 갱신·삭제한다. 기록 삭제·복원은 같은 날짜 합계를 갱신한다. 다른 일정과 캘린더는 삭제하지 않는다. 연동을 끄면 기존 일정은 남는다.
+- 앱이 실행 중이거나 다시 열렸을 때 iCloud 상태 병합을 먼저 마친 뒤 일정을 갱신한다. 오프라인/충돌 중에는 갱신을 기다린다. iOS 백그라운드 즉시 실행, EventKit의 다른 기기 반영 시각은 보장하지 않는다.
+- 냐우캘린더의 iPhone 캘린더 연결에서 접근을 허용하고 캘린더를 선택하면, 기존 선택과 함께 전용 캘린더의 NeowFocus URL 일정도 읽기 전용으로 표시한다. 두 앱의 업데이트가 필요하다. 일정의 URL을 열면 해당 날짜의 집중 목록으로 이동한다.
+
+검증: core 84 tests, 모바일 타입 검사·타이머 스타일/완료 분기·고양이 진입 geometry 검사, Calendar 타입 검사·lint 및 캘린더 연결 27 tests 통과. Swift 단독 iOS simulator SDK typecheck 및 config plugin 권한 키 생성 확인. 기존 시뮬레이터 설치본의 물 스타일 1분 자연 종료는 물 배경을 유지했으며 `docs/implementation/focus-calendar-evidence/water-natural-completion.png`에 저장했다. 보고된 자동 블록 전환은 이 조건에서 재현되지 않았고, 잘못된 스타일 값이 블록으로 처리되는 fallback은 제거했다. TestFlight 모바일 앱에서 발생했다는 사용자 확인을 받은 뒤, 완료 화면이 직전 진행 중 스타일을 별도로 유지하도록 보강하고 설정값이 달라져도 배경을 유지하는 회귀 검사를 추가했다. 실계정 iCloud 저장·복원 및 두 앱 사이의 일정 반영은 아직 확인하지 않았다. 이 변경은 기존 TestFlight 0.1.1(13)에 포함되어 있지 않다.
+
+최종 로컬 검증: `calendar-simulator-signed-build.log`의 `BUILD SUCCEEDED` 확인. Xcode 테스트 서명으로 App Group을 포함해 설치한 새 Release 앱에서 물 스타일 1분 자연 종료 후 물 배경 유지, 연결 설정 기본 꺼짐, 날짜 링크의 기록 시트 열기를 확인했다. `docs/implementation/focus-calendar-evidence/validation.json`에 소스 커밋·번들 해시·검증 범위를 기록했다. Calendar의 임시 체크아웃 변경은 같은 폴더의 패치에도 보관했다. 이 소스 변경은 로컬 커밋만 했으며 GitHub push, 새 TestFlight 업로드, 실계정 두 앱 연동 검증은 수행하지 않았다.
+
+근거: [Apple EventKit 접근](https://developer.apple.com/documentation/eventkit/accessing-calendar-using-eventkit-and-eventkitui), [캘린더 전체 접근 요청](https://developer.apple.com/documentation/eventkit/ekeventstore/requestfullaccesstoevents(completion:)), [Expo Calendar SDK 58](https://docs.expo.dev/versions/v58.0.0/sdk/calendar/).
+
 ## Screen Time 없는 출시 빌드
 
 현재 iOS 앱과 위젯은 FamilyControls/ManagedSettings/DeviceActivity API 및 entitlement를 사용하지 않는다. 위젯·Live Activity·선택형 CloudKit·집중 타이머는 유지한다. `app.json`의 런타임 false만으로 제한 API를 제거한 것으로 판단하지 않는다.
