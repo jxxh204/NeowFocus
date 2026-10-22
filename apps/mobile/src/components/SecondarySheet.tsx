@@ -8,11 +8,13 @@ export function SecondarySheet({
   title,
   visible,
   onClose,
-  children
+  children,
+  closeLabel = '닫기'
 }: {
   title: string
   visible: boolean
   onClose: () => void
+  closeLabel?: string
   children: ReactNode
 }) {
   const insets = useSafeAreaInsets()
@@ -36,7 +38,7 @@ export function SecondarySheet({
             accessibilityLabel={`${title} 닫기`}
             style={styles.close}
           >
-            <Text style={styles.closeText}>닫기</Text>
+            <Text style={styles.closeText}>{closeLabel}</Text>
           </Pressable>
         </View>
         {children}

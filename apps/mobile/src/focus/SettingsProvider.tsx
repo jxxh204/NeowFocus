@@ -1,9 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import { DEFAULT_FOCUS_MINUTES } from '@neowfocus/core'
 import { storage } from './storage'
+import { normalizeTimerAppearance, type TimerStyle } from './timerStyle'
 
 export type Settings = {
   defaultMinutes: number
+  timerStyle: TimerStyle
+  showRemainingTime: boolean
   /** 완료 알림과 진동 */
   autoBreak: boolean
   alerts: boolean
@@ -13,7 +16,7 @@ export type Settings = {
   lastDayEndEntry?: string
 }
 
-const DEFAULT_SETTINGS: Settings = { defaultMinutes: DEFAULT_FOCUS_MINUTES, alerts: true, autoBreak: false, syncEnabled: false, showTaskOnLockScreen: false }
+const DEFAULT_SETTINGS: Settings = { ...normalizeTimerAppearance(null), defaultMinutes: DEFAULT_FOCUS_MINUTES, alerts: true, autoBreak: false, syncEnabled: false, showTaskOnLockScreen: false }
 
 type SettingsContextValue = {
   settings: Settings
@@ -30,7 +33,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     storage.loadSettings<Partial<Settings>>().then((saved) => {
       if (saved) setSettings((prev) => ({ ...prev, ...saved,
         alerts: typeof saved.alerts === 'boolean' ? saved.alerts : prev.alerts,
-        autoBreak: saved.autoBreak === true }))
+        autoBreak: saved.autoBreak === true, ...normalizeTimerAppearance(saved) }))
       setLoaded(true)
     })
   }, [])

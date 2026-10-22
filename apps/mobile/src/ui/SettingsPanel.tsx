@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native'
 import Constants from 'expo-constants'
+import { TimerStyleSettings } from '@/components/timer/TimerStyleSettings'
 import { DurationChips } from '@/components/DurationChips'
 import { useSettings } from '@/focus/SettingsProvider'
 import { IntegrationSettings } from '@/focus/IntegrationSettings'
@@ -15,6 +16,7 @@ export function SettingsPanel() {
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
+      <TimerStyleSettings />
       <Text style={styles.sectionTitle}>기본 집중 시간</Text>
       <DurationChips
         value={settings.defaultMinutes}

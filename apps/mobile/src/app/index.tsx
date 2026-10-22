@@ -19,6 +19,9 @@ import { Button } from '@/components/Button'
 import { CompletionPaw, type PawTarget } from '@/components/CompletionPaw'
 import { CompletionCat, useDayEndMotion } from '@/components/CompletionCat'
 import { catEntryGeometry, nextCatEntry, type CatEntry } from '@/components/completionGeometry'
+import { FocusControlsSheet } from '@/components/FocusControlsSheet'
+import { TimerScene } from '@/components/timer/TimerScene'
+import { clampProgress } from '@/components/timer/geometry'
 import { CircularTimer } from '@/components/CircularTimer'
 import { DurationChips } from '@/components/DurationChips'
 import { CatFace, ChartIcon, SettingsIcon, Paw } from '@/components/Icons'
@@ -109,6 +112,10 @@ export default function FocusScreen() {
 
   return (
     <View ref={screen} collapsable={false} style={styles.screen}>
+      {!state.conflicts?.length && !dayId && current && (active || current.status === 'finished') && <TimerScene
+        key={`${current.id}-${settings.timerStyle}`} style={settings.timerStyle}
+        progress={clampProgress(current.status === 'finished' ? current.focusedMs / current.plannedMs : 1 - remainingOf(current, now) / current.plannedMs)}
+        running={current.status === 'running' && panel === null} />}
       <KeyboardAvoidingView
         style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -124,7 +131,7 @@ export default function FocusScreen() {
         </View>
         <ScrollView
           style={styles.body}
-          contentContainerStyle={styles.canvas}
+          contentContainerStyle={[styles.canvas, active && !state.conflicts?.length && styles.activeCanvas]}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
         >
@@ -136,7 +143,7 @@ export default function FocusScreen() {
             : settings.restDay === localDayKey(now) ? <Rest count={today.count} onStart={() => prepareNext(false)} />
             : <Ready key={readyVisit} timerSize={timerSize} seed={seed} todayCount={today.count} prepareFirstTask={params.prepare === 'first-task'} onPrepared={() => router.setParams({ prepare: undefined })} />)}
         </ScrollView>
-        <SecondarySheet title={panel === 'records' ? '집중 기록' : '설정'} visible={panel !== null} onClose={() => setPanel(null)}>
+        <SecondarySheet closeLabel={panel === 'settings' ? '완료' : '닫기'} title={panel === 'records' ? '집중 기록' : '설정'} visible={panel !== null} onClose={() => setPanel(null)}>
           {panel === 'records' ? <RecordsPanel /> : panel === 'settings' ? <SettingsPanel /> : null}
         </SecondarySheet>
       </KeyboardAvoidingView>
@@ -216,7 +223,7 @@ function Ready({ timerSize, seed, todayCount, prepareFirstTask, onPrepared }: { 
           </View>
         )}
         <View style={styles.timer}>
-          <CircularTimer remaining={1} size={timerSize} />
+          {settings.timerStyle === 'classic' && <CircularTimer remaining={1} size={timerSize} />}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`집중 시간 ${minutes || customMinutes || '입력 필요'}분, 수정`}
@@ -261,49 +268,50 @@ function Ready({ timerSize, seed, todayCount, prepareFirstTask, onPrepared }: { 
 
 function Session({ session, timerSize }: { session: FocusSession; timerSize: number }) {
   const { now, pause, resume, finish } = useFocus()
+  const { settings } = useSettings()
+  const [controls, setControls] = useState(false)
   const paused = session.status === 'paused'
   const remaining = remainingOf(session, now)
+  const progress = clampProgress(1 - remaining / session.plannedMs)
+  const classic = settings.timerStyle === 'classic'
 
-  return (
-    <View style={styles.fill}>
-      <View style={styles.main}>
-        <Text style={styles.task} accessibilityRole="header">{session.task}</Text>
-        <View accessibilityRole="progressbar" accessibilityLabel={paused ? "집중 잠시 멈춤" : "집중 중"} accessibilityValue={{ min: 0, max: 100, now: Math.round((1 - remaining / session.plannedMs) * 100) }} style={styles.timer}>
-          <CircularTimer remaining={remaining / session.plannedMs} paused={paused} size={timerSize} />
-          {paused && <Text style={styles.pausedLabel}>잠시 멈춤</Text>}
-        </View>
+  return <View style={styles.fill}>
+    <Pressable style={[styles.main, styles.sessionCanvas]} accessibilityRole="button" accessibilityLabel={`${session.task}, ${paused ? '잠시 멈춤' : '집중 중'}, 타이머 조작 열기`}
+      accessibilityValue={{ text: `${Math.round(progress * 100)}퍼센트 진행${settings.showRemainingTime ? `, 남은 시간 ${formatClock(remaining)}` : ''}` }}
+      accessibilityHint="잠시 멈춤과 마침 버튼을 열어요." onPress={() => setControls(true)}>
+      <Text style={styles.task} accessibilityRole="header">{session.task}</Text>
+      <View accessibilityRole="progressbar" accessibilityLabel={paused ? '집중 잠시 멈춤' : '집중 중'}
+        accessibilityValue={{ min: 0, max: 100, now: Math.round(progress * 100) }} style={styles.timer}>
+        {classic && <CircularTimer remaining={remaining / session.plannedMs} paused={paused} size={timerSize} />}
+        <Text style={[styles.sessionCaption, !classic && styles.sceneCaption]}>
+          {paused ? '잠시 멈춤' : classic ? '집중 중' : `${Math.floor((session.plannedMs - remaining) / 60_000)}분의 집중`}
+        </Text>
+        {settings.showRemainingTime && <Text style={styles.clock} accessibilityLabel={`남은 시간 ${formatClock(remaining)}`}>{formatClock(remaining)}</Text>}
       </View>
-      <View style={styles.actions}>
-        <View style={styles.sessionActions}>
-          <View style={styles.sessionAction}>
-            <Button label={paused ? '다시 집중' : '잠시 멈춤'} onPress={paused ? resume : pause} />
-          </View>
-          <Pressable onPress={finish} style={({ pressed }) => [styles.finishButton, pressed && { opacity: 0.65 }]} accessibilityRole="button" accessibilityLabel="이번 집중 마침">
-            <Text style={styles.secondaryText}>마침</Text>
-          </Pressable>
-        </View>
-      </View>
-    </View>
-  )
+    </Pressable>
+    {controls && <FocusControlsSheet paused={paused} onToggle={paused ? resume : pause} onFinish={finish} onClose={() => setControls(false)} />}
+  </View>
 }
 
 function Done({ session, onAgain, onNew, onToday }: { session: FocusSession; onAgain: () => void; onNew: () => void; onToday: () => void }) {
   const { breakRemaining, breakFinished, finishBreak } = useFocus()
+  const { settings } = useSettings()
+  const sceneText = settings.timerStyle !== 'classic' && styles.sceneText
   return <View style={styles.fill}>
     <View style={[styles.main, styles.done]}>
       <View style={styles.completedPaw}><Paw size={52} /></View>
       <Text style={styles.doneTitle}>{breakRemaining > 0 ? '잠깐 쉬어가요.' : breakFinished ? '휴식이 끝났어요.' : '집중 하나가 쌓였어요.'}</Text>
       <Text style={styles.doneTask}>{session.task}</Text>
-      <Text style={styles.doneNote} accessibilityLabel={breakRemaining > 0 ? `휴식 남은 시간 ${formatClock(breakRemaining * 1000)}` : undefined}>
+      <Text style={[styles.doneNote, sceneText]} accessibilityLabel={breakRemaining > 0 ? `휴식 남은 시간 ${formatClock(breakRemaining * 1000)}` : undefined}>
         {breakRemaining > 0 ? `${formatClock(breakRemaining * 1000)} 남았어요.` : `${formatDuration(session.focusedMs)} 집중했어요.`}
       </Text>
     </View>
     <View style={styles.actions}>
       {breakRemaining > 0 ? <Button label="휴식 끝내기" onPress={finishBreak} /> : <View style={styles.sessionActions}>
         <View style={styles.sessionAction}><Button label="한번 더" onPress={onAgain} /></View>
-        <Pressable accessibilityRole="button" onPress={onNew} style={styles.finishButton}><Text style={styles.secondaryText}>새 작업</Text></Pressable>
+        <Pressable accessibilityRole="button" onPress={onNew} style={styles.finishButton}><Text style={[styles.secondaryText, sceneText]}>새 작업</Text></Pressable>
       </View>}
-      <Pressable accessibilityRole="button" onPress={onToday} style={styles.dayEndButton}><Text style={styles.secondaryText}>오늘은 여기까지</Text></Pressable>
+      <Pressable accessibilityRole="button" onPress={onToday} style={styles.dayEndButton}><Text style={[styles.secondaryText, sceneText]}>오늘은 여기까지</Text></Pressable>
     </View>
   </View>
 }
@@ -346,10 +354,15 @@ const styles = StyleSheet.create({
   iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   body: { flex: 1 },
   canvas: { flexGrow: 1, paddingHorizontal: 28, paddingTop: 12, paddingBottom: 24, width: '100%', maxWidth: 520, alignSelf: 'center' },
+  activeCanvas: { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0, maxWidth: '100%' },
+  sessionCanvas: { paddingHorizontal: 28 },
   fill: { flex: 1 },
   main: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 24 },
   input: { width: '100%', minHeight: 52, paddingHorizontal: 16, borderRadius: radius.control, backgroundColor: color.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: color.line, color: color.text, fontSize: 19, textAlign: 'center' },
-  task: { color: color.text, fontSize: 22, lineHeight: 30, fontWeight: '500', letterSpacing: -0.5, textAlign: 'center' },
+  sessionCaption: { color: color.muted, fontSize: 13, textAlign: 'center' },
+  sceneText: { color: '#e0ebef' },
+  sceneCaption: { color: '#e0ebef', textShadowColor: '#272727', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6 },
+  task: { textShadowColor: '#272727', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 6, color: color.text, fontSize: 22, lineHeight: 30, fontWeight: '500', letterSpacing: -0.5, textAlign: 'center' },
   timer: { marginTop: 32, alignItems: 'center', gap: 16 },
   clock: { color: color.timer, fontSize: 21, lineHeight: 27, fontWeight: '500', fontVariant: ['tabular-nums'] },
   pausedClock: { color: color.paused },
