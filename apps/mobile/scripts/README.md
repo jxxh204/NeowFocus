@@ -1,8 +1,8 @@
 # iOS TestFlight 배포
 
-기존 설정: bundle ID `com.neowfocus.pomodorotimer`, team `L67FAG9382`, version `0.1.0`.
+기존 설정: bundle ID `com.neowfocus.pomodorotimer`, team `L67FAG9382`, 현재 version/build는 `app.json`에서 관리한다(0.1.1 / 13).
 
-모바일 앱은 현재 로컬 집중 MVP다. 데스크톱 실시간 동기화 및 네이티브 위젯을 제공하는 배포본으로 안내하지 않는다.
+기본 타이머·기록은 로컬에 저장하며, 선택형 iCloud·위젯·Live Activity 구현을 포함한다. 실제 기기에서의 동작 확인과 업로드 완료는 구분한다. [최신 배포 상태](RELEASE-STATUS.md)를 먼저 확인한다.
 
 ## 준비
 
@@ -14,14 +14,14 @@
 ## 배포
 
 - `./scripts/archive-ios.sh`: Release 아카이브 생성
-- `./scripts/upload-testflight.sh`: App Store Connect 업로드
+- `./scripts/upload-testflight.sh <검증한 아카이브 경로> [내보내기 폴더]`: 지정한 아카이브를 App Store Connect에 업로드. 경로는 필수이며 실제 이번 배포 경로·명령은 최신 기록을 따른다.
 - 아카이브: `build-output/NeowFocus.xcarchive`
 - 업로드 성공 후 Apple 처리 완료와 TestFlight 테스트 그룹의 접근 가능 상태를 별도 확인한다.
 
 `TestFlight.plist`는 기존 팀 자동 서명과 빌드 번호 관리를 사용한다. 공개 App Store 심사 제출은 수행하지 않는다.
 
-## 로컬 알림 권한
+## 알림·네이티브 권한 검사
 
-현재 앱은 서버 푸시가 아닌 로컬 완료 알림만 쓴다. `withLocalNotificationsOnly.cjs`를 plugins 배열 첫 번째에 배치한다. Expo의 entitlement mod 실행 순서상 이 위치에서 마지막 결과의 `aps-environment`를 제거한다. 순서를 바꾸면 `expo-notifications`가 원격 푸시 권한을 다시 추가할 수 있다.
+완료 알림은 로컬 알림을 사용한다. 현재 `withNeowFocusNative.cjs`는 선택형 iCloud 변경 알림을 위한 push/CloudKit 권한, App Group과 위젯을 구성한다. 권한 구성과 실기기의 실제 알림·동기화 전달 여부는 구분해 확인한다.
 
-`pnpm exec expo config --type introspect --json`의 `_internal.modResults.ios.entitlements`에서 해당 키가 없음을 확인했다. 추후 원격 푸시를 추가할 때에는 이 플러그인을 제거하고 올바른 APNs 프로파일을 설정해야 한다.
+배포 아카이브는 `python3 scripts/verify-screen-time-free.py <아카이브 경로>`로 검사한다. 앱/위젯의 Screen Time 관련 framework·바이너리 참조·권한·확장·legacy flag가 없고 서명이 유효한지 확인한 뒤 업로드한다.

@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "sourceCommit": "9ee924b059c57e30d7796773fdc7ad278877c018",
+  "bundles": [
+    {
+      "id": "com.neowfocus.pomodorotimer",
+      "version": "0.1.1",
+      "build": "13"
+    },
+    {
+      "id": "com.neowfocus.pomodorotimer.widgets",
+      "version": "0.1.1",
+      "build": "13"
+    }
+  ],
+  "featuresInHermesBundle": {
+    "timerStyle": true,
+    "showRemainingTime": true,
+    "autoBreak": true,
+    "lastDayEndEntry": true,
+    "neowfocus.focus.v1": true
+  },
+  "bundleSha256": "19aed990591b5e133abd640f99d77a9edbecdb62903d216cf140d564352b3c1e",
+  "pixelAssetSha256": "5c308540d30e9cc937e544a7ce9f68ebf77fd7038fd3f210096b93d7321e7642",
+  "pixelAssetMatches": [
+    "assets/assets/completion-pixel/cat-stamp-pixel-v1.png"
+  ],
+  "nonExemptEncryption": false
+}

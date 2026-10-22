@@ -1,0 +1,32 @@
+{
+  "platform": "iOS",
+  "version": "0.1.1",
+  "build": "13",
+  "sourceCommit": "9ee924b059c57e30d7796773fdc7ad278877c018",
+  "status": "AVAILABLE_TO_INTERNAL_GROUP",
+  "archive": "apps/mobile/build-output/NeowFocus-0.1.1-13.xcarchive",
+  "uploaded": true,
+  "processingComplete": true,
+  "testerAccessVerified": true,
+  "physicalDeviceVerified": false,
+  "existingInternalGroup": {
+    "name": "더기와 쟈니들",
+    "id": "28bc289e-316b-4ce0-ba1c-a7188672b5ed",
+    "distribution": "automatic Xcode builds"
+  },
+  "publicSubmissionRequested": false,
+  "archiveVerified": true,
+  "uploadedAt": "2026-10-22T14:37:16+09:00",
+  "uploadExitCode": 0,
+  "frameworkSymbolWarnings": [
+    "React.framework",
+    "ReactNativeDependencies.framework",
+    "hermesvm.framework"
+  ],
+  "testFlightBuildId": "1f087b77-0990-44ed-8354-ff3aa81b188a",
+  "testFlightUrl": "https://appstoreconnect.apple.com/teams/e5ec510c-eb5f-47f1-99e1-31e2ce1e77cc/apps/6751244958/testflight/ios/1f087b77-0990-44ed-8354-ff3aa81b188a",
+  "availabilityCheckedAt": "2026-10-22T05:42:35.716378+00:00",
+  "groupTesterCount": 2,
+  "testNotesSaved": true,
+  "testNotesLocale": "ko"
+}
