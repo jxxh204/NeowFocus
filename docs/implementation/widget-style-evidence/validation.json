@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-23T13:15:08.759273+09:00",
+  "sourceCommit": "d6b6685c6b8d48f8db10d6c86b8b4108c04f79c6",
+  "localBuild": {
+    "platform": "iOS Simulator",
+    "configuration": "Release",
+    "version": "0.1.1",
+    "build": "15",
+    "widgetBuild": "15",
+    "result": "BUILD SUCCEEDED",
+    "strictSignatureVerified": true,
+    "installedInQASimulator": true,
+    "hermesSHA256": "4ace81cc8aa37f1eaf3f4e68eacdd13ebbdfb10c6a1680ba92d2c1246d0fb950"
+  },
+  "checks": {
+    "mobileTypecheck": true,
+    "timerStylesChecks": true,
+    "nativeLegacyDecodeAndStylePreservation": true,
+    "tetrominoes": 24,
+    "coveredCells": 96,
+    "nativeModelExecutablePassed": true,
+    "offscreenProductionViewsRendered": true,
+    "offscreenPausedLayoutsInspected": true,
+    "offscreenRunningProgressViewVerified": false,
+    "mechanicalDetectorFindings": 0
+  },
+  "actualWidgetHostDeliveryVerified": false,
+  "actualLockScreenAndDynamicIslandVerified": false,
+  "actualAnimationPlaybackVerified": false,
+  "physicalDeviceVerified": false,
+  "blocker": "CUA reported the Mac is locked. User unlock requested; no answer received during this implementation turn.",
+  "testFlightUploadedForTheseChanges": false,
+  "currentDeliveredTestFlightBuild": "0.1.1 (14)",
+  "evidenceType": "SwiftUI production components rendered offscreen in iOS; not screenshots of SpringBoard or Lock Screen"
+}
