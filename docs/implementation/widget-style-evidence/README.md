@@ -1,6 +1,6 @@
 # Timer styles in widgets and Live Activities
 
-Local candidate: **NeowFocus iOS 0.1.1 (15)**. The currently delivered TestFlight build remains **0.1.1 (14)**. No upload or public submission was performed for this candidate. The duck-boat removal was subsequently compiled and rendered offscreen; the earlier signed app build predates that visual-only follow-up.
+Local candidate: **NeowFocus iOS 0.1.1 (15)**. The currently delivered TestFlight build remains **0.1.1 (14)**. No upload or public submission was performed for this candidate. The signed Simulator Release app was rebuilt after duck-boat removal and installed in a dedicated QA simulator for host validation.
 
 ## Behavior
 
@@ -20,9 +20,28 @@ Local candidate: **NeowFocus iOS 0.1.1 (15)**. The currently delivered TestFligh
 - Offscreen rendering of the **production** `FocusWidgetContent`, `FocusLiveCard` and artwork in the iOS runtime. Selected paused and completed references are attached below. This is not a SpringBoard or Lock Screen screenshot.
 - New native artwork was inspected at 25%, 50% and 100%; small/medium layouts and large Dynamic Type were inspected offscreen. The mechanical design detector returned no findings for the changed Swift files.
 
+## Actual iOS host validation after Mac unlock
+
+On 2026-10-23, the signed 0.1.1 (15) candidate from `e44a5c7` was installed in a separate **NeowFocus Widget QA / iPhone 18 Pro / iOS 27.0 Simulator**. Existing Calendar test devices and data were left alone. The test used a local task named `123`; iCloud/calendar sync and lock-screen task visibility remained off.
+
+- Added the small home widget through the native gallery. Water completion, running blocks and the existing classic ring displayed in SpringBoard.
+- Running blocks and classic displayed in the compact Dynamic Island.
+- Water displayed in the actual Lock Screen Live Activity while running, paused, resumed and completed. The original paw appeared over the water on completion. No duck boat or yellow unsupported-view placeholder appeared in these host views.
+- Paused from the app's two-button bottom sheet: the Lock Screen card retained **14:34** across lock/unlock and a style change. Resuming in the app restarted the countdown and restored the running card.
+- Both five-minute sessions naturally finished while validating the views. The final longer QA session was manually ended after pause/resume checks; its completion card retained water.
+- Fresh simulator registration and the Live Activity permission prompts initially delayed the card. After registration and permission acceptance, host content rendered and the countdown advanced. The first running capture includes initial cached timer content; use the later observations and paused-state capture for state comparison.
+
+Host screenshots (actual Simulator UI, distinct from the offscreen references below):
+
+- [Water running](host/water-lock-screen.png), [paused](host/water-paused-lock-screen.png), [completed](host/water-completed-lock-screen.png)
+- [Blocks home widget and compact Dynamic Island](host/blocks-home-and-island.png)
+- [Classic home widget and compact Dynamic Island](host/classic-home-and-island.png)
+
 ## Still pending
 
-The CUA app connection reported **the Mac is locked**. The user was asked to unlock it; actual home-widget placement, tapping pause/resume, real Lock Screen/Dynamic Island delivery, native timer progress rendering, animation playback, Always-On and Reduce Motion device behavior remain **unverified**. No claim of a physical-device test is made.
+CUA coordinate clicks/drags repeatedly returned `noWindowsAvailable`; accessibility controls and native menus worked. Direct widget intent-button taps, expanded Dynamic Island gestures, medium-widget host layout, animation playback, Reduce Motion and physical-device Always-On behavior remain **unverified**. The app-driven pause/resume checks above do not establish widget-button interaction. No physical-device test or TestFlight upload is claimed.
+
+The fresh simulator also showed an initial notification-scheduling warning. Permission was subsequently granted, but the old warning remained visible in the app. This timer-style validation does not establish completion notification delivery.
 
 `ImageRenderer` cannot render system timer progress views: running-state captures show a yellow unsupported-view placeholder, including the pre-existing classic progress view. Do not treat those offscreen captures as a running WidgetKit test. Paused/completed view captures avoid this unsupported renderer path. The renderer also emits `IOSurfaceClientSetSurfaceNotify failed e00002c7` in this headless CLI context but completes with exit 0 and writes PNGs.
 
