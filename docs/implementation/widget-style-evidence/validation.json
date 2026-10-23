@@ -10,7 +10,8 @@
     "result": "BUILD SUCCEEDED",
     "strictSignatureVerified": true,
     "installedInQASimulator": true,
-    "hermesSHA256": "4ace81cc8aa37f1eaf3f4e68eacdd13ebbdfb10c6a1680ba92d2c1246d0fb950"
+    "hermesSHA256": "4ace81cc8aa37f1eaf3f4e68eacdd13ebbdfb10c6a1680ba92d2c1246d0fb950",
+    "scopeNote": "Signed Release app build predates the duck-boat removal. Removal verified by recompiling and rendering production SwiftUI components; full app not rebuilt for this visual-only follow-up."
   },
   "checks": {
     "mobileTypecheck": true,
@@ -31,5 +32,13 @@
   "blocker": "CUA reported the Mac is locked. User unlock requested; no answer received during this implementation turn.",
   "testFlightUploadedForTheseChanges": false,
   "currentDeliveredTestFlightBuild": "0.1.1 (14)",
-  "evidenceType": "SwiftUI production components rendered offscreen in iOS; not screenshots of SpringBoard or Lock Screen"
+  "evidenceType": "SwiftUI production components rendered offscreen in iOS; not screenshots of SpringBoard or Lock Screen",
+  "duckBoatRemoval": {
+    "checkedAt": "2026-10-23T14:14:30.743244+09:00",
+    "productionWidgetAndCardSourcesCompiled": true,
+    "offscreenProductionViewsRendered": true,
+    "pausedWaterCardInspected": true,
+    "twoWaveLayersRetained": true,
+    "testFlightUploaded": false
+  }
 }

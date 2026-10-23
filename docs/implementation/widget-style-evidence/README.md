@@ -1,13 +1,13 @@
 # Timer styles in widgets and Live Activities
 
-Local candidate: **NeowFocus iOS 0.1.1 (15)**. The currently delivered TestFlight build remains **0.1.1 (14)**. No upload or public submission was performed for this candidate.
+Local candidate: **NeowFocus iOS 0.1.1 (15)**. The currently delivered TestFlight build remains **0.1.1 (14)**. No upload or public submission was performed for this candidate. The duck-boat removal was subsequently compiled and rendered offscreen; the earlier signed app build predates that visual-only follow-up.
 
 ## Behavior
 
 - The existing `timerStyle` and `showRemainingTime` settings now travel through the native snapshot to the home widget, Lock Screen Live Activity and Dynamic Island.
-- Classic retains its existing ring. Blocks use a compact 12×8 exact-cover board derived from the incumbent mobile tile. Water uses two blue-gray surfaces and the existing cat in a small duck boat.
+- Classic retains its existing ring. Blocks use a compact 12×8 exact-cover board derived from the incumbent mobile tile. Water uses two blue-gray surfaces; the duck boat and its passenger have been removed.
 - Default/unknown/old snapshots resolve to classic. Optional native fields preserve old Codable payloads. Completion pins the last active style. Idle previews follow preference changes. Pause/resume and queued native commands retain appearance preferences.
-- New blocks transition in for 0.32s; water/boat positions transition for 0.45s. Both disable movement for Reduce Motion and reduced-luminance Always-On. No repeatForever, custom timer-font hack, frame loop or new background execution mode is used.
+- New blocks transition in for 0.32s; water levels transition for 0.45s. Both disable movement for Reduce Motion and reduced-luminance Always-On. No repeatForever, custom timer-font hack, frame loop or new background execution mode is used.
 - Artwork is a **snapshot**, not an autonomous background animation. Home-widget timeline delivery is owned by iOS; the existing minute entries are requests, not a guaranteed refresh rate. While foreground/running, themed artwork is republished at most once per wall-clock minute and on lifecycle/state/preference changes. Completed/paused sessions do not receive periodic artwork updates.
 - A suspended app cannot guarantee custom Live Activity artwork updates. The last artwork snapshot can remain visible while Apple's native `ProgressView(timerInterval:)` and optional timer text continue to advance. Pause/resume, foreground reconciliation or other valid state updates catch the artwork up. No server/push animation service was introduced.
 - Existing task-visibility privacy, widget controls, day count, app links and app-side timer scene remain in place. Publication reads current settings after native command replay, avoiding stale queued preference values.

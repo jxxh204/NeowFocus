@@ -239,41 +239,11 @@ private struct FocusWaterSurface: Shape {
 private struct FocusWaterArtwork: View {
   var progress: Double
   var body: some View {
-    GeometryReader { geometry in
-      let value = FocusStyleGeometry.clamped(progress)
-      let level = geometry.size.height * (1 - value)
-      ZStack(alignment: .topLeading) {
-        Color(white: 0.12)
-        FocusWaterSurface(progress: value, rear: true).fill(Color(red: 0.53, green: 0.65, blue: 0.69).opacity(0.55))
-        FocusWaterSurface(progress: value).fill(LinearGradient(colors: [Color(red: 0.32, green: 0.43, blue: 0.47), Color(red: 0.19, green: 0.29, blue: 0.34)], startPoint: .top, endPoint: .bottom))
-        if geometry.size.height >= 30 {
-          FocusDuckBoat().frame(width: 34, height: 23)
-            .position(x: geometry.size.width * 0.62, y: min(geometry.size.height - 12, max(12, level - 5)))
-        }
-      }
-    }
-  }
-}
-
-private struct FocusDuckBoat: View {
-  var body: some View {
-    GeometryReader { geometry in
-      ZStack(alignment: .topLeading) {
-        Path { p in
-          p.move(to: CGPoint(x: 2, y: 13))
-          p.addQuadCurve(to: CGPoint(x: 25, y: 13), control: CGPoint(x: 15, y: 18))
-          p.addLine(to: CGPoint(x: 25, y: 8))
-          p.addCurve(to: CGPoint(x: 34, y: 8), control1: CGPoint(x: 23, y: -1), control2: CGPoint(x: 35, y: -1))
-          p.addLine(to: CGPoint(x: 33, y: 15))
-          p.addQuadCurve(to: CGPoint(x: 18, y: 23), control: CGPoint(x: 32, y: 23))
-          p.addQuadCurve(to: CGPoint(x: 2, y: 13), control: CGPoint(x: 4, y: 24))
-          p.closeSubpath()
-        }.fill(Color(red: 0.80, green: 0.73, blue: 0.54))
-        Path { p in p.move(to: CGPoint(x: 33, y: 7)); p.addLine(to: CGPoint(x: 38, y: 9)); p.addLine(to: CGPoint(x: 33, y: 11)); p.closeSubpath() }
-          .fill(Color(red: 0.72, green: 0.50, blue: 0.32))
-        Circle().fill(Color(white: 0.15)).frame(width: 1.6, height: 1.6).offset(x: 29, y: 5)
-        FocusCat(focused: true).frame(width: 16, height: 16).offset(x: 9, y: -1)
-      }.scaleEffect(x: geometry.size.width / 38, y: geometry.size.height / 24, anchor: .topLeading)
+    let value = FocusStyleGeometry.clamped(progress)
+    ZStack(alignment: .topLeading) {
+      Color(white: 0.12)
+      FocusWaterSurface(progress: value, rear: true).fill(Color(red: 0.53, green: 0.65, blue: 0.69).opacity(0.55))
+      FocusWaterSurface(progress: value).fill(LinearGradient(colors: [Color(red: 0.32, green: 0.43, blue: 0.47), Color(red: 0.19, green: 0.29, blue: 0.34)], startPoint: .top, endPoint: .bottom))
     }
   }
 }
