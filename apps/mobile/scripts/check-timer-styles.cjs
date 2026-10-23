@@ -19,6 +19,7 @@ assert.equal(appearance.timerStyle, 'blocks', 'explicit active-session style cha
 assert.equal(sessionAppearance(appearance, 'first', false, 'water').timerStyle, 'blocks')
 assert.equal(sessionAppearance(appearance, 'next', true, 'water').timerStyle, 'water', 'new session uses selected style')
 assert.equal(sessionAppearance(null, 'restored', false, 'water').timerStyle, 'water', 'cold restored completion uses saved preference')
+assert.equal(sessionAppearance({ sessionId: null, timerStyle: 'classic' }, null, false, 'water').timerStyle, 'water', 'idle widget preview follows preference changes')
 for (const saved of [null, {}, { timerStyle: 'future', showRemainingTime: 'true' }]) {
   const result = normalizeTimerAppearance(saved)
   assert.equal(result.timerStyle, 'classic')

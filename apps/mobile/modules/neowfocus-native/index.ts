@@ -10,6 +10,8 @@ export type NativeFocusSnapshot = {
   revision: number
   updatedAt: number
   showTaskOnLockScreen: boolean
+  timerStyle?: 'classic' | 'blocks' | 'water'
+  showRemainingTime?: boolean
   notifyOnCompletion?: boolean
   sharedStateJSON?: string
   syncEnabled?: boolean

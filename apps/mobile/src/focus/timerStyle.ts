@@ -5,7 +5,7 @@ export type SessionAppearance = { sessionId: string | null; timerStyle: TimerSty
 
 /** Completion owns the last active appearance, even if a later preference changes. */
 export function sessionAppearance(previous: SessionAppearance | null, sessionId: string | null, active: boolean, selected: TimerStyle): SessionAppearance {
-  if (previous?.sessionId === sessionId && !active) return previous
+  if (sessionId !== null && previous?.sessionId === sessionId && !active) return previous
   if (previous?.sessionId === sessionId && previous.timerStyle === selected) return previous
   return { sessionId, timerStyle: selected }
 }

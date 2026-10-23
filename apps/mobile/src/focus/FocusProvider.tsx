@@ -9,6 +9,7 @@ import Native, { type NativeCapabilities } from '../../modules/neowfocus-native'
 import { cancelCompletion, requestAlertPermission, scheduleCompletion, playCompletionFeedback } from './alerts'
 import { useSettings } from './SettingsProvider'
 import { storage } from './storage'
+import { sessionAppearance, type SessionAppearance } from './timerStyle'
 
 type FocusContextValue = {
   state: FocusState
@@ -62,6 +63,7 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   const [appActive, setAppActive] = useState(AppState.currentState === 'active')
   const replicator = useRef<FocusReplicator | null>(null)
   const nativeQueue = useRef<Promise<void>>(Promise.resolve())
+  const nativeAppearance = useRef<SessionAppearance | null>(null)
   const storageQueue = useRef<Promise<void>>(Promise.resolve())
   const capabilities = useMemo(() => Native?.getCapabilities() ?? NO_CAPABILITIES, [])
   const current = state.current
@@ -259,10 +261,17 @@ export function FocusProvider({ children }: { children: ReactNode }) {
   }, [refresh])
 
   // A shared deadline powers the widget and ActivityKit; no background JS timer is required.
+  // Artwork can catch up while the app is visible and once when it backgrounds.
+  // Suspended apps cannot promise recurring custom Live Activity artwork updates.
+  const artworkMinute = appActive && current?.status === 'running' && settings.timerStyle !== 'classic'
+    ? Math.floor(now / 60_000) : 0
   useEffect(() => {
     if (!deviceId || !Native) return
     nativeQueue.current = nativeQueue.current.catch(() => {}).then(() => drainNativeCommands().catch((error) => setNativeError(String(error)))).then(async () => {
       const session = stateRef.current.current
+      const appearanceSettings = settingsRef.current
+      nativeAppearance.current = sessionAppearance(nativeAppearance.current, session?.id ?? null,
+        session?.status === 'running' || session?.status === 'paused', appearanceSettings.timerStyle)
       const conflict = Boolean(stateRef.current.conflicts?.length)
       const today = achievementForDay(stateRef.current.records, Date.now())
       await Native!.publishSnapshot(JSON.stringify({
@@ -274,17 +283,19 @@ export function FocusProvider({ children }: { children: ReactNode }) {
         durationSeconds: session ? session.plannedMs / 1000 : 0,
         revision: session?.revision ?? 0,
         updatedAt: session?.updatedAt ?? Date.now(),
-        showTaskOnLockScreen: settings.showTaskOnLockScreen,
-        notifyOnCompletion: Boolean(session && settings.alerts && !conflict && (session.startedBy ?? session.updatedBy) === deviceId),
+        showTaskOnLockScreen: appearanceSettings.showTaskOnLockScreen,
+        timerStyle: nativeAppearance.current.timerStyle,
+        showRemainingTime: appearanceSettings.showRemainingTime,
+        notifyOnCompletion: Boolean(session && appearanceSettings.alerts && !conflict && (session.startedBy ?? session.updatedBy) === deviceId),
         sharedStateJSON: serializeFocusState(stateRef.current),
-        syncEnabled: settings.syncEnabled,
+        syncEnabled: appearanceSettings.syncEnabled,
         deviceId,
-        suggestionEligible: canSuggestFirstFocus(stateRef.current, { now: Date.now(), syncEnabled: settings.syncEnabled, syncReady: syncStatus === 'synced' }),
-        defaultMinutes: settings.defaultMinutes,
+        suggestionEligible: canSuggestFirstFocus(stateRef.current, { now: Date.now(), syncEnabled: appearanceSettings.syncEnabled, syncReady: syncStatusRef.current === 'synced' }),
+        defaultMinutes: appearanceSettings.defaultMinutes,
         todayDay: today.day, todayCount: today.count, todayFocusedSeconds: today.focusedMs / 1000
       }))
     }).catch((error) => setNativeError(String(error)))
-  }, [state, deviceId, settings.showTaskOnLockScreen, settings.alerts, settings.syncEnabled, settings.defaultMinutes, syncStatus, drainNativeCommands])
+  }, [state, deviceId, appActive, artworkMinute, settings.showTaskOnLockScreen, settings.timerStyle, settings.showRemainingTime, settings.alerts, settings.syncEnabled, settings.defaultMinutes, syncStatus, drainNativeCommands])
 
   const notificationQueue = useRef<Promise<void>>(Promise.resolve())
   const notificationId = useRef<string | undefined>(undefined)

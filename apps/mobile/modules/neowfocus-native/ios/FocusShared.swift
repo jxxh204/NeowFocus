@@ -22,6 +22,9 @@ struct FocusSnapshot: Codable, Hashable {
   var todayDay: String? = nil
   var todayCount: Int? = nil
   var todayFocusedSeconds: Double? = nil
+  // Optional for snapshots written by installations before timer-style widgets.
+  var timerStyle: String? = nil
+  var showRemainingTime: Bool? = nil
 
   static let empty = FocusSnapshot(sessionId: nil, task: "", status: "idle", endsAt: nil, remainingSeconds: 0, durationSeconds: 1500, revision: 0, updatedAt: 0, showTaskOnLockScreen: false)
   func remaining(at date: Date = .now) -> Double {
@@ -83,6 +86,8 @@ enum FocusStore {
         state.snapshot.syncEnabled = next.syncEnabled
         state.snapshot.showTaskOnLockScreen = next.showTaskOnLockScreen
         state.snapshot.notifyOnCompletion = next.notifyOnCompletion
+        state.snapshot.timerStyle = next.timerStyle
+        state.snapshot.showRemainingTime = next.showRemainingTime
         state.snapshot.todayDay = next.todayDay
         state.snapshot.todayCount = next.todayCount
         state.snapshot.todayFocusedSeconds = next.todayFocusedSeconds

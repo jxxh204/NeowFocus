@@ -120,3 +120,160 @@ struct FocusCat: View {
     }.accessibilityLabel(focused ? "집중하는 고양이" : "고양이")
   }
 }
+
+// Compact versions of the incumbent mobile scenes. No repeating clock or
+// background frame loop: WidgetKit/ActivityKit own delivery and timer rendering.
+enum FocusTimerStyle: String, CaseIterable {
+  case classic, blocks, water
+  init(saved: String?) { self = Self(rawValue: saved ?? "") ?? .classic }
+  var title: String {
+    switch self { case .classic: return "기존 원형"; case .blocks: return "쌓이는 블록"; case .water: return "차오르는 물" }
+  }
+}
+
+struct FocusBlockPiece {
+  var cells: [(Int, Int)]
+  var tone: Int
+}
+
+enum FocusStyleGeometry {
+  static func progress(status: String, duration: Double, remaining: Double) -> Double {
+    if status == "completed" { return 1 }
+    guard status != "idle", duration.isFinite, duration > 0, remaining.isFinite else { return 0 }
+    return min(1, max(0, 1 - remaining / duration))
+  }
+  static func clamped(_ value: Double) -> Double { value.isFinite ? min(1, max(0, value)) : 0 }
+  // The first exact-cover tile from mobile's block-patterns.json, in drop order.
+  // Six tiles form a 12 × 8 board; every piece still consists of four cells.
+  static let pieces: [FocusBlockPiece] = {
+    let tile = [[(0,3),(1,3),(2,2),(2,3)], [(0,1),(0,2),(1,1),(1,2)],
+                [(0,0),(1,0),(2,0),(2,1)], [(3,0),(3,1),(3,2),(3,3)]]
+    var result: [FocusBlockPiece] = []
+    for band in (0...1).reversed() {
+      for (turn, cells) in tile.enumerated() {
+        for col in 0..<3 {
+          result.append(FocusBlockPiece(cells: cells.map { ($0.0 + col * 4, $0.1 + band * 4) },
+                                       tone: (result.count * 3 + turn) % 7))
+        }
+      }
+    }
+    return result
+  }()
+  static func blockCount(_ progress: Double) -> Int { min(pieces.count, Int(floor(clamped(progress) * Double(pieces.count) + 1e-8))) }
+}
+
+struct FocusStyleArtwork: View {
+  var style: FocusTimerStyle
+  var progress: Double
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @Environment(\.isLuminanceReduced) private var dimmed
+  private var motion: Bool { !reduceMotion && !dimmed }
+  var body: some View {
+    Group {
+      if style == .blocks {
+        FocusBlocksArtwork(progress: progress, motion: motion)
+      } else if style == .water {
+        FocusWaterArtwork(progress: progress)
+          .animation(motion ? .easeInOut(duration: 0.45) : nil, value: progress)
+      }
+    }
+    .clipped().accessibilityHidden(true)
+  }
+}
+
+private struct FocusBlocksArtwork: View {
+  var progress: Double
+  var motion: Bool
+  private let tones: [Color] = [Color(red: 0.28, green: 0.31, blue: 0.33), Color(red: 0.34, green: 0.35, blue: 0.33),
+    Color(red: 0.31, green: 0.33, blue: 0.35), Color(red: 0.36, green: 0.35, blue: 0.33),
+    Color(red: 0.30, green: 0.33, blue: 0.32), Color(red: 0.33, green: 0.33, blue: 0.36), Color(red: 0.25, green: 0.29, blue: 0.30)]
+  var body: some View {
+    let count = FocusStyleGeometry.blockCount(progress)
+    GeometryReader { geometry in
+      let w = geometry.size.width / 12
+      let h = geometry.size.height / 8
+      ZStack(alignment: .topLeading) {
+        Color(white: 0.12)
+        ForEach(0..<count, id: \.self) { index in
+          let piece = FocusStyleGeometry.pieces[index]
+          ZStack(alignment: .topLeading) {
+            ForEach(0..<4, id: \.self) { cell in
+              let point = piece.cells[cell]
+              RoundedRectangle(cornerRadius: min(1, w * 0.12))
+                .fill(tones[piece.tone])
+                .overlay(alignment: .top) { Color.white.opacity(0.16).frame(height: min(1, h * 0.12)) }
+                .frame(width: max(0, w - 0.8), height: max(0, h - 0.8))
+                .offset(x: CGFloat(point.0) * w + 0.4, y: CGFloat(point.1) * h + 0.4)
+            }
+          }
+          .transition(motion ? .asymmetric(insertion: .move(edge: .top).combined(with: .opacity), removal: .opacity) : .identity)
+        }
+      }.animation(motion ? .easeOut(duration: 0.32) : nil, value: count)
+    }
+  }
+}
+
+private struct FocusWaterSurface: Shape {
+  var progress: Double
+  var rear: Bool = false
+  var animatableData: Double { get { progress } set { progress = newValue } }
+  func path(in rect: CGRect) -> Path {
+    let value = FocusStyleGeometry.clamped(progress)
+    let level = rect.height * (1 - value)
+    let amplitude = value > 0 && value < 1 ? min(2.4, rect.height * 0.045) : 0
+    var path = Path()
+    for index in 0...32 {
+      let x = rect.width * CGFloat(index) / 32
+      let wave = sin(Double(index) / 32 * .pi * 2 + (rear ? 1.2 : 0))
+      let y = level + (rear ? -1.5 : 1.0) * (amplitude > 0 ? 1 : 0) + wave * amplitude
+      if index == 0 { path.move(to: CGPoint(x: x, y: y)) }
+      else { path.addLine(to: CGPoint(x: x, y: y)) }
+    }
+    path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+    path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+    path.closeSubpath()
+    return path
+  }
+}
+
+private struct FocusWaterArtwork: View {
+  var progress: Double
+  var body: some View {
+    GeometryReader { geometry in
+      let value = FocusStyleGeometry.clamped(progress)
+      let level = geometry.size.height * (1 - value)
+      ZStack(alignment: .topLeading) {
+        Color(white: 0.12)
+        FocusWaterSurface(progress: value, rear: true).fill(Color(red: 0.53, green: 0.65, blue: 0.69).opacity(0.55))
+        FocusWaterSurface(progress: value).fill(LinearGradient(colors: [Color(red: 0.32, green: 0.43, blue: 0.47), Color(red: 0.19, green: 0.29, blue: 0.34)], startPoint: .top, endPoint: .bottom))
+        if geometry.size.height >= 30 {
+          FocusDuckBoat().frame(width: 34, height: 23)
+            .position(x: geometry.size.width * 0.62, y: min(geometry.size.height - 12, max(12, level - 5)))
+        }
+      }
+    }
+  }
+}
+
+private struct FocusDuckBoat: View {
+  var body: some View {
+    GeometryReader { geometry in
+      ZStack(alignment: .topLeading) {
+        Path { p in
+          p.move(to: CGPoint(x: 2, y: 13))
+          p.addQuadCurve(to: CGPoint(x: 25, y: 13), control: CGPoint(x: 15, y: 18))
+          p.addLine(to: CGPoint(x: 25, y: 8))
+          p.addCurve(to: CGPoint(x: 34, y: 8), control1: CGPoint(x: 23, y: -1), control2: CGPoint(x: 35, y: -1))
+          p.addLine(to: CGPoint(x: 33, y: 15))
+          p.addQuadCurve(to: CGPoint(x: 18, y: 23), control: CGPoint(x: 32, y: 23))
+          p.addQuadCurve(to: CGPoint(x: 2, y: 13), control: CGPoint(x: 4, y: 24))
+          p.closeSubpath()
+        }.fill(Color(red: 0.80, green: 0.73, blue: 0.54))
+        Path { p in p.move(to: CGPoint(x: 33, y: 7)); p.addLine(to: CGPoint(x: 38, y: 9)); p.addLine(to: CGPoint(x: 33, y: 11)); p.closeSubpath() }
+          .fill(Color(red: 0.72, green: 0.50, blue: 0.32))
+        Circle().fill(Color(white: 0.15)).frame(width: 1.6, height: 1.6).offset(x: 29, y: 5)
+        FocusCat(focused: true).frame(width: 16, height: 16).offset(x: 9, y: -1)
+      }.scaleEffect(x: geometry.size.width / 38, y: geometry.size.height / 24, anchor: .topLeading)
+    }
+  }
+}

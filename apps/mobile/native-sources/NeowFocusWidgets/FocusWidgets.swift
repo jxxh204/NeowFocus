@@ -66,6 +66,59 @@ struct FocusClock: View {
     }
   }
 }
+
+extension FocusSnapshot {
+  var widgetTimerStyle: FocusTimerStyle { FocusTimerStyle(saved: timerStyle) }
+  func widgetProgress(at date: Date) -> Double {
+    FocusStyleGeometry.progress(status: status, duration: durationSeconds, remaining: remaining(at: date))
+  }
+}
+
+/// The artwork is a delivered snapshot. Only Apple's native timer/progress
+/// views advance autonomously; no unsupported continuous animation is used.
+struct FocusTimerDisplay: View {
+  var snapshot: FocusSnapshot
+  var date: Date = .now
+  var diameter: CGFloat = 76
+  var liveProgress: Bool = false
+  private var end: Date? { snapshot.endsAt.map { Date(timeIntervalSince1970: $0 / 1000) } }
+  var body: some View {
+    VStack(spacing: 4) {
+      if snapshot.widgetTimerStyle == .classic {
+        FocusClock(snapshot: snapshot, date: date, diameter: diameter, liveProgress: liveProgress)
+          .accessibilityElement(children: .ignore).accessibilityLabel("기존 원형")
+          .accessibilityValue("\(Int(snapshot.widgetProgress(at: date) * 100))퍼센트 진행")
+      } else {
+        ZStack {
+          FocusStyleArtwork(style: snapshot.widgetTimerStyle, progress: snapshot.widgetProgress(at: date))
+          if snapshot.status == "completed" {
+            FocusPawShape().fill(.white).frame(width: diameter * 0.32, height: diameter * 0.33)
+          }
+        }.frame(width: diameter * 1.5, height: diameter).clipShape(RoundedRectangle(cornerRadius: min(9, diameter * 0.12)))
+          .accessibilityElement(children: .ignore).accessibilityLabel(Text(snapshot.widgetTimerStyle.title))
+          .accessibilityValue("\(Int(snapshot.widgetProgress(at: date) * 100))퍼센트 진행")
+        if liveProgress && snapshot.status == "running", let end {
+          ProgressView(timerInterval: end.addingTimeInterval(-max(1, snapshot.durationSeconds))...end,
+                       countsDown: false, label: { EmptyView() }, currentValueLabel: { EmptyView() })
+            .progressViewStyle(.linear).tint(snapshot.widgetTimerStyle == .water ? Color(red: 0.66, green: 0.76, blue: 0.78) : .white)
+            .frame(width: diameter * 1.5, height: 3).accessibilityHidden(true)
+        }
+      }
+      if snapshot.showRemainingTime == true && diameter >= 40 {
+        Group {
+          if snapshot.status == "running", let end {
+            Text(timerInterval: min(date, end)...end, countsDown: true)
+          } else {
+            let seconds = max(0, Int(ceil(snapshot.remaining(at: date))))
+            Text(String(format: "%d:%02d", seconds / 60, seconds % 60))
+          }
+        }.font(.caption2.monospacedDigit()).foregroundStyle(.white)
+          .lineLimit(1).minimumScaleFactor(0.8)
+      }
+    }
+    .accessibilityElement(children: .combine)
+  }
+}
 @available(iOS 17.0, *)
 struct FocusControlIntent: AppIntent {
   static var title: LocalizedStringResource = "집중 멈춤·재개"
@@ -98,6 +151,13 @@ struct FocusControlIntent: AppIntent {
 struct FocusWidgetView: View {
   @Environment(\.widgetFamily) var family
   var entry: FocusEntry
+  var body: some View { FocusWidgetContent(entry: entry, family: family) }
+}
+
+struct FocusWidgetContent: View {
+  @Environment(\.dynamicTypeSize) private var typeSize
+  var entry: FocusEntry
+  var family: WidgetFamily
   var snapshot: FocusSnapshot {
     var value = entry.snapshot
     if value.status == "idle" {
@@ -132,7 +192,12 @@ struct FocusWidgetView: View {
         FocusPawShape().fill(.white).frame(width: 38, height: 39)
         Text("오늘 \(todayCount)번의 집중").font(.system(size: family == .systemSmall ? 13 : 16, weight: .medium))
         Text(suggestsFirst ? "오늘 할 일 생각해보기" : "열어서 시작").font(.system(size: 11)).foregroundStyle(.secondary)
-      }.frame(maxWidth: .infinity).foregroundStyle(.white).widgetURL(destination)
+      }.frame(maxWidth: .infinity).foregroundStyle(.white)
+        .background {
+          if snapshot.widgetTimerStyle != .classic {
+            FocusStyleArtwork(style: snapshot.widgetTimerStyle, progress: snapshot.widgetProgress(at: entry.date)).opacity(0.4)
+          }
+        }.widgetURL(destination)
     } else {
       HStack(spacing: 16) {
         if family == .systemMedium {
@@ -148,7 +213,9 @@ struct FocusWidgetView: View {
         }
         VStack(spacing: 8) {
           if family == .systemSmall { FocusCat(focused: snapshot.status == "running").frame(width: 22, height: 22) }
-          FocusClock(snapshot: snapshot, date: entry.date, diameter: family == .systemSmall ? 70 : 82)
+          FocusTimerDisplay(snapshot: snapshot, date: entry.date,
+            diameter: snapshot.widgetTimerStyle == .classic ? (family == .systemSmall ? 70 : 82)
+              : typeSize.isAccessibilitySize ? 46 : family == .systemSmall ? 62 : 70, liveProgress: true)
         }.frame(maxWidth: family == .systemSmall ? .infinity : nil)
       }.foregroundStyle(.white).padding(2).widgetURL(destination)
     }
@@ -174,26 +241,37 @@ struct FocusLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: FocusActivityAttributes.self) { context in
       let snapshot = liveDisplay(context.state, stale: context.isStale)
-      HStack(spacing: 14) {
-        FocusCat(focused: snapshot.status == "running").frame(width: 30, height: 30)
-        VStack(alignment: .leading, spacing: 4) {
-          Text(snapshot.status == "completed" ? "집중 완료" : snapshot.status == "paused" ? "잠시 멈춤" : "집중 중").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
-          if snapshot.showTaskOnLockScreen { Text(snapshot.task).font(.system(size: 14)).foregroundStyle(Color(white: 0.88)).lineLimit(2) }
-        }
-        Spacer(minLength: 8)
-        FocusClock(snapshot: snapshot, diameter: 48, liveProgress: true).frame(width: 70)
-      }.foregroundStyle(.white).padding(18).background(Color(white: 0.153)).activityBackgroundTint(Color(white: 0.153)).activitySystemActionForegroundColor(.white).widgetURL(URL(string: "neowfocus://"))
+      FocusLiveCard(snapshot: snapshot)
+        .activityBackgroundTint(Color(white: 0.153)).activitySystemActionForegroundColor(.white).widgetURL(URL(string: "neowfocus://"))
     } dynamicIsland: { context in
       let snapshot = liveDisplay(context.state, stale: context.isStale)
       return DynamicIsland {
         DynamicIslandExpandedRegion(.leading) { FocusCat(focused: snapshot.status == "running").frame(width: 28,height: 28) }
-        DynamicIslandExpandedRegion(.trailing) { FocusClock(snapshot: snapshot, diameter: 36, liveProgress: true).foregroundStyle(.white) }
+        DynamicIslandExpandedRegion(.trailing) { FocusTimerDisplay(snapshot: snapshot, diameter: 36, liveProgress: true).foregroundStyle(.white) }
         DynamicIslandExpandedRegion(.bottom) { Text(snapshot.showTaskOnLockScreen ? snapshot.task : "지금 하던 집중 그대로").font(.caption).foregroundStyle(.white).lineLimit(1) }
       } compactLeading: { FocusCat(focused: snapshot.status == "running").frame(width: 20,height: 20) }
-      compactTrailing: { FocusClock(snapshot: snapshot, diameter: 18, liveProgress: true).foregroundStyle(.white) }
-      minimal: { FocusCat(focused: snapshot.status == "running").frame(width: 20,height: 20) }
+      compactTrailing: { FocusTimerDisplay(snapshot: snapshot, diameter: 18, liveProgress: true).foregroundStyle(.white) }
+      minimal: {
+        if snapshot.widgetTimerStyle == .classic { FocusCat(focused: snapshot.status == "running").frame(width: 20,height: 20) }
+        else { FocusTimerDisplay(snapshot: snapshot, diameter: 14, liveProgress: true).foregroundStyle(.white) }
+      }
       .widgetURL(URL(string: "neowfocus://"))
     }
+  }
+}
+
+struct FocusLiveCard: View {
+  var snapshot: FocusSnapshot
+  var body: some View {
+    HStack(spacing: 14) {
+      FocusCat(focused: snapshot.status == "running").frame(width: 30, height: 30)
+      VStack(alignment: .leading, spacing: 4) {
+        Text(snapshot.status == "completed" ? "집중 완료" : snapshot.status == "paused" ? "잠시 멈춤" : "집중 중").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+        if snapshot.showTaskOnLockScreen { Text(snapshot.task).font(.system(size: 14)).foregroundStyle(Color(white: 0.88)).lineLimit(2) }
+      }
+      Spacer(minLength: 8)
+      FocusTimerDisplay(snapshot: snapshot, diameter: 48, liveProgress: true)
+    }.foregroundStyle(.white).padding(18).background(Color(white: 0.153))
   }
 }
 
