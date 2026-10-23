@@ -30,7 +30,7 @@
   "actualAnimationPlaybackVerified": false,
   "physicalDeviceVerified": false,
   "blocker": null,
-  "testFlightUploadedForTheseChanges": false,
+  "testFlightUploadedForTheseChanges": true,
   "currentDeliveredTestFlightBuild": "0.1.1 (14)",
   "evidenceType": "Includes actual iOS Simulator SpringBoard, Lock Screen and compact Dynamic Island captures in host/; root PNGs remain offscreen production components. No physical-device claim.",
   "duckBoatRemoval": {
@@ -83,5 +83,6 @@
       "host/blocks-home-and-island.png",
       "host/classic-home-and-island.png"
     ]
-  }
+  },
+  "testFlightUploadStatus": "0.1.1 (15) uploaded; Apple processing and tester availability pending"
 }

@@ -1,0 +1,46 @@
+{
+  "archive": "/Users/jaehwan/code/NeowFocus/apps/mobile/build-output/NeowFocus-0.1.1-15.xcarchive",
+  "passed": true,
+  "bundles": [
+    {
+      "bundle": "NeowFocus.app",
+      "version": "0.1.1",
+      "build": "15",
+      "entitlementKeys": [
+        "application-identifier",
+        "aps-environment",
+        "com.apple.developer.icloud-container-identifiers",
+        "com.apple.developer.icloud-services",
+        "com.apple.developer.team-identifier",
+        "com.apple.security.application-groups",
+        "get-task-allow"
+      ]
+    },
+    {
+      "bundle": "NeowFocusWidgets.appex",
+      "version": "0.1.1",
+      "build": "15",
+      "entitlementKeys": [
+        "application-identifier",
+        "com.apple.developer.icloud-container-identifiers",
+        "com.apple.developer.icloud-services",
+        "com.apple.developer.team-identifier",
+        "com.apple.security.application-groups",
+        "get-task-allow"
+      ]
+    }
+  ],
+  "scannedBinaries": [
+    "NeowFocus",
+    "PlugIns/NeowFocusWidgets.appex/NeowFocusWidgets",
+    "Frameworks/ExpoModulesJSI.framework/ExpoModulesJSI",
+    "Frameworks/hermesvm.framework/hermesvm",
+    "Frameworks/ExpoFont.framework/ExpoFont",
+    "Frameworks/ExpoModulesCore.framework/ExpoModulesCore",
+    "Frameworks/React.framework/React",
+    "Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies",
+    "Frameworks/ExpoModulesWorklets.framework/ExpoModulesWorklets",
+    "Frameworks/ExpoFileSystem.framework/ExpoFileSystem"
+  ],
+  "issues": []
+}

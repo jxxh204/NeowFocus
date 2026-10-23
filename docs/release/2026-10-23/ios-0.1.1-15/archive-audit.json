@@ -1,0 +1,33 @@
+{
+  "archive": "build-output/NeowFocus-0.1.1-15.xcarchive",
+  "version": "0.1.1",
+  "build": "15",
+  "bundleID": "com.neowfocus.pomodorotimer",
+  "extensions": [
+    {
+      "name": "NeowFocusWidgets.appex",
+      "version": "0.1.1",
+      "build": "15",
+      "executableSHA256": "8827644851f1d047baa4252f303e1c67381208c9ea3c8c249b8244255ca5de4f"
+    }
+  ],
+  "strictSignatureVerified": true,
+  "expoConfigVersionVerified": true,
+  "executableSHA256": "7328e81ee9b75fd06d7126f6afdab54485df57645b98baf4c41ddb9c2c630f6a",
+  "hermesSHA256": "8c669dac01c78443809fee2af129ac13e4a32eb76796e4a3eda9a181ef39eb6b",
+  "featuresInHermes": {
+    "calendarSyncEnabled": true,
+    "calendarConnect": true,
+    "calendarSync": true,
+    "sessionAppearance": true,
+    "timerStyle": true,
+    "showRemainingTime": true
+  },
+  "approvedPixelAssetSHA256": "5c308540d30e9cc937e544a7ce9f68ebf77fd7038fd3f210096b93d7321e7642",
+  "sourceCommit": "0ef4186dee00c8dc052368db1977463391689df2",
+  "physicalDeviceVerified": false,
+  "realAccountRoundTripVerified": false,
+  "approvedPixelAssetFiles": [
+    "assets/assets/completion-pixel/cat-stamp-pixel-v1.png"
+  ]
+}

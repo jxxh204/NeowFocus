@@ -1,3 +1,9 @@
+# 2026-10-23 — iOS 0.1.1(15) TestFlight 업로드 성공, Apple 처리 중
+
+위젯·Live Activity 타이머 스타일과 오리배 제거를 포함한 iOS 0.1.1(15)을 **16:12:49 KST** 업로드했다. Xcode exit 0 / `Upload succeeded` / `EXPORT SUCCEEDED` 및 App Store Connect 빌드 15 접수를 확인했다. 기존 내부 그룹 **더기와 쟈니들(2명)** 의 자동 Xcode 배포 설정은 켜져 있다. Apple 처리 완료·빌드 15 그룹 연결·테스터 접근은 아직 확인되지 않았다. 처리 중에는 테스트 안내 입력란도 비활성화되어 있다. [현재 기록](../../../docs/release/2026-10-23/ios-0.1.1-15/README.md).
+
+---
+
 # 2026-10-22 — iOS 0.1.1(13) TestFlight 배포 확인 완료
 
 타이머 스타일 3종과 승인한 설정·두 버튼 바텀시트가 포함된 새 iOS 배포 아카이브를 만들었다. 앱/위젯 0.1.1(13), 실제 번들·픽셀 자산·Screen Time API 제거·서명 검사를 통과했고 **14:37 KST TestFlight 업로드 성공 / EXPORT SUCCEEDED**를 확인했다. Apple 처리 완료 후 기존 내부 그룹 **더기와 쟈니들(2명)** 연결과 한국어 테스트 안내 저장을 확인했다. 실물 iPhone 설치/동작 확인은 별도다. [최신 기록](../../../docs/release/2026-10-22/ios-0.1.1-13/README.md).

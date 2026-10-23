@@ -1,6 +1,6 @@
 # Timer styles in widgets and Live Activities
 
-Local candidate: **NeowFocus iOS 0.1.1 (15)**. The currently delivered TestFlight build remains **0.1.1 (14)**. No upload or public submission was performed for this candidate. The signed Simulator Release app was rebuilt after duck-boat removal and installed in a dedicated QA simulator for host validation.
+Local candidate: **NeowFocus iOS 0.1.1 (15)**. Candidate **0.1.1 (15)** was uploaded to TestFlight at 16:12:49 KST on 2026-10-23 and is processing. The last build with confirmed tester access remains **0.1.1 (14)**. No public submission was performed. See [release status](../../release/2026-10-23/ios-0.1.1-15/README.md). The signed Simulator Release app was rebuilt after duck-boat removal and installed in a dedicated QA simulator for host validation.
 
 ## Behavior
 
@@ -39,7 +39,7 @@ Host screenshots (actual Simulator UI, distinct from the offscreen references be
 
 ## Still pending
 
-CUA coordinate clicks/drags repeatedly returned `noWindowsAvailable`; accessibility controls and native menus worked. Direct widget intent-button taps, expanded Dynamic Island gestures, medium-widget host layout, animation playback, Reduce Motion and physical-device Always-On behavior remain **unverified**. The app-driven pause/resume checks above do not establish widget-button interaction. No physical-device test or TestFlight upload is claimed.
+CUA coordinate clicks/drags repeatedly returned `noWindowsAvailable`; accessibility controls and native menus worked. Direct widget intent-button taps, expanded Dynamic Island gestures, medium-widget host layout, animation playback, Reduce Motion and physical-device Always-On behavior remain **unverified**. The app-driven pause/resume checks above do not establish widget-button interaction. No physical-device test is claimed. TestFlight upload is recorded separately; tester availability for build 15 remains pending Apple processing.
 
 The fresh simulator also showed an initial notification-scheduling warning. Permission was subsequently granted, but the old warning remained visible in the app. This timer-style validation does not establish completion notification delivery.
 

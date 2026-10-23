@@ -1,0 +1,34 @@
+{
+  "platform": "iOS",
+  "version": "0.1.1",
+  "build": "15",
+  "sourceCommit": "0ef4186dee00c8dc052368db1977463391689df2",
+  "status": "UPLOADED_PROCESSING",
+  "uploaded": true,
+  "processingComplete": false,
+  "testerAccessVerified": false,
+  "physicalDeviceVerified": false,
+  "testFlightAppId": "6751244958",
+  "existingInternalGroup": "더기와 쟈니들",
+  "groupId": "28bc289e-316b-4ce0-ba1c-a7188672b5ed",
+  "groupTesterCount": 2,
+  "groupAutomaticXcodeDistributionVerified": true,
+  "publicSubmissionRequested": false,
+  "sourceChecks": {
+    "typecheck": true,
+    "timerStyles": true,
+    "coreTests": 84
+  },
+  "archiveVerified": true,
+  "uploadExitCode": 0,
+  "uploadedAt": "2026-10-23T16:12:49.183+09:00",
+  "uploadLog": "apps/mobile/build-output/upload-0.1.1-15.log",
+  "frameworkSymbolWarnings": [
+    "React.framework",
+    "ReactNativeDependencies.framework",
+    "hermesvm.framework"
+  ],
+  "testNotesSaved": false,
+  "testFlightBuildId": "359748a9-724b-4049-8a4d-c4c6869e2834",
+  "uploadRowVerified": true
+}
