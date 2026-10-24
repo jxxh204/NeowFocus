@@ -1,6 +1,6 @@
 # iOS TestFlight 배포
 
-기존 설정: bundle ID `com.neowfocus.pomodorotimer`, team `L67FAG9382`, 현재 version/build는 `app.json`에서 관리한다(0.1.1 / 15).
+기존 설정: bundle ID `com.neowfocus.pomodorotimer`, team `L67FAG9382`, 현재 version/build는 `app.json`에서 관리한다(0.1.1 / 16).
 
 기본 타이머·기록은 로컬에 저장하며, 선택형 iCloud·위젯·Live Activity 구현을 포함한다. 실제 기기에서의 동작 확인과 업로드 완료는 구분한다. [최신 배포 상태](RELEASE-STATUS.md)를 먼저 확인한다.
 
