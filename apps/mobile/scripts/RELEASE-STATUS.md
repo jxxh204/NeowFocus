@@ -1,3 +1,11 @@
+# 2026-10-24 — iOS 0.1.1(16) 아카이브 완료, 업로드 인증 대기
+
+냐우포커스 하루 일정이 반복 갱신 뒤 이틀로 늘어나는 문제를 수정한 빌드 16의 배포 아카이브를 검증했다. 실제 iOS EventKit 날짜 회귀 검사 6사례, 모바일 타입 검사, 타이머 스타일 검사, core 84 tests, 전체 iOS Release 시뮬레이터 빌드와 배포 `ARCHIVE SUCCEEDED`를 확인했다. 앱·위젯·Expo config 모두 0.1.1(16), 기존 픽셀 고양이 원본 바이트, 서명, Screen Time 제거 검사도 통과했다.
+
+15:19 KST 업로드 시도는 `exportArchive Failed to Use Accounts` / 팀 `L67FAG9382` App Store Connect 접근 오류로 exit 70을 반환했다. **업로드되지 않았다.** 웹 세션도 만료돼 Xcode·웹 재로그인을 요청했다. 인증 후 검증한 아카이브로 재시도하며 재빌드는 필요 없다. [현재 기록](../../../docs/release/2026-10-24/ios-0.1.1-16/README.md).
+
+---
+
 # 2026-10-23 — iOS 0.1.1(15) TestFlight 업로드 성공, Apple 처리 중
 
 위젯·Live Activity 타이머 스타일과 오리배 제거를 포함한 iOS 0.1.1(15)을 **16:12:49 KST** 업로드했다. Xcode exit 0 / `Upload succeeded` / `EXPORT SUCCEEDED` 및 App Store Connect 빌드 15 접수를 확인했다. 기존 내부 그룹 **더기와 쟈니들(2명)** 의 자동 Xcode 배포 설정은 켜져 있다. Apple 처리 완료·빌드 15 그룹 연결·테스터 접근은 아직 확인되지 않았다. 처리 중에는 테스트 안내 입력란도 비활성화되어 있다. [현재 기록](../../../docs/release/2026-10-23/ios-0.1.1-15/README.md).
