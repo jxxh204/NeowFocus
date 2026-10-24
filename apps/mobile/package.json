@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "test:timer-styles": "node scripts/check-timer-styles.cjs",
-    "test:widget-styles": "bash scripts/check-widget-styles.sh"
+    "test:widget-styles": "bash scripts/check-widget-styles.sh",
+    "test:calendar-dates": "bash scripts/check-calendar-dates.sh"
   },
   "dependencies": {
     "@neowfocus/core": "workspace:*",

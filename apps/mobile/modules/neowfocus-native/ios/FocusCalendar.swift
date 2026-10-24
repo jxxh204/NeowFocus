@@ -9,6 +9,26 @@ struct FocusCalendarDay: Decodable {
   let title: String
 }
 
+struct FocusCalendarEventDates {
+  let start: Date
+  let nextDayStart: Date
+
+  // EventKit normalizes an all-day end to the final second of its civil day.
+  // Assigning the following midnight to an already all-day event includes that
+  // following day as well. Keep the exclusive query bound separate from writes.
+  var end: Date { nextDayStart.addingTimeInterval(-1) }
+
+  func matches(_ event: EKEvent) -> Bool {
+    event.isAllDay && event.startDate == start && event.endDate == end
+  }
+
+  func apply(to event: EKEvent) {
+    event.isAllDay = true
+    event.startDate = start
+    event.endDate = end
+  }
+}
+
 /// Only the dedicated calendar and exact NeowFocus day URLs are ever mutated.
 actor FocusCalendarStore {
   static let shared = FocusCalendarStore()
@@ -114,14 +134,13 @@ actor FocusCalendarStore {
           continue
         }
         let event = owned.first ?? EKEvent(eventStore: store)
+        let dates = FocusCalendarEventDates(start: start, nextDayStart: end)
         let notes = "NeowFocus의 하루 집중 기록\n\(summary.count)회 · 총 \(Int(summary.focusedMs / 1000))초\n집중한 실제 시간만 합산하며, 작업 이름은 공유하지 않습니다."
-        if event.calendar == nil || event.title != summary.title || event.notes != notes || !event.isAllDay || event.startDate != start || event.endDate != end {
+        if event.calendar == nil || event.title != summary.title || event.notes != notes || !dates.matches(event) {
           if event.calendar == nil { event.calendar = calendar }
           event.title = summary.title
           event.notes = notes
-          event.startDate = start
-          event.endDate = end
-          event.isAllDay = true
+          dates.apply(to: event)
           event.availability = .free
           event.url = marker
           try store.save(event, span: .thisEvent, commit: false)

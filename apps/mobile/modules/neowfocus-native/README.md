@@ -51,6 +51,7 @@ xcodebuild -workspace ios/NeowFocus.xcworkspace -scheme NeowFocus \
 - `focusCalendarDays`는 완료일의 기기 현지 날짜별로 실제 집중 시간을 합산한다. 수동 마침도 한 번으로 세고 충돌로 제외한 기록은 세지 않는다. 제목 예: `냐우포커스 · 3회 · 1시간 25분`. 작업 이름은 전송하지 않는다.
 - `neowfocus://daily/YYYY-MM-DD` URL이 일치하는 자체 생성 일정만 갱신·삭제한다. 기록 삭제·복원은 같은 날짜 합계를 갱신한다. 다른 일정과 캘린더는 삭제하지 않는다. 연동을 끄면 기존 일정은 남는다.
 - 앱이 실행 중이거나 다시 열렸을 때 iCloud 상태 병합을 먼저 마친 뒤 일정을 갱신한다. 오프라인/충돌 중에는 갱신을 기다린다. iOS 백그라운드 즉시 실행, EventKit의 다른 기기 반영 시각은 보장하지 않는다.
+- 종일 일정의 조회에는 다음 날 0시까지의 반열린 구간을 쓰고, EventKit에 저장할 종료 시각은 해당 날짜의 마지막 초로 지정한다. 이미 이틀로 늘어난 자체 생성 일정도 다음 정상 연동 때 하루로 고친다. 날짜 정규화 차이로 동일한 일정을 다시 저장하지 않도록 EventKit의 정규화된 시각으로 비교한다. 회귀 검사: `pnpm --filter @neowfocus/mobile test:calendar-dates <booted-iOS-simulator-UDID>`. 검증 범위와 배포 상태는 `docs/implementation/focus-calendar-evidence/single-day-fix-2026-10-24.md` 참조.
 - 냐우캘린더의 iPhone 캘린더 연결에서 접근을 허용하고 캘린더를 선택하면, 기존 선택과 함께 전용 캘린더의 NeowFocus URL 일정도 읽기 전용으로 표시한다. 두 앱의 업데이트가 필요하다. 일정의 URL을 열면 해당 날짜의 집중 목록으로 이동한다.
 
 검증: core 84 tests, 모바일 타입 검사·타이머 스타일/완료 분기·고양이 진입 geometry 검사, Calendar 타입 검사·lint 및 캘린더 연결 27 tests 통과. Swift 단독 iOS simulator SDK typecheck 및 config plugin 권한 키 생성 확인. 기존 시뮬레이터 설치본의 물 스타일 1분 자연 종료는 물 배경을 유지했으며 `docs/implementation/focus-calendar-evidence/water-natural-completion.png`에 저장했다. 보고된 자동 블록 전환은 이 조건에서 재현되지 않았고, 잘못된 스타일 값이 블록으로 처리되는 fallback은 제거했다. TestFlight 모바일 앱에서 발생했다는 사용자 확인을 받은 뒤, 완료 화면이 직전 진행 중 스타일을 별도로 유지하도록 보강하고 설정값이 달라져도 배경을 유지하는 회귀 검사를 추가했다. 실계정 iCloud 저장·복원 및 두 앱 사이의 일정 반영은 아직 확인하지 않았다. 이 변경은 기존 TestFlight 0.1.1(13)에 포함되어 있지 않다.
