@@ -34,4 +34,4 @@ PASS: 6 civil-day cases using production date setters and real EventKit; no cale
 
 ## 배포 상태
 
-기존 TestFlight 0.1.1(15)에는 포함되지 않는다. 후속 업로드 요청에 따라 0.1.1(16) 배포 아카이브를 생성·검증했으나, Xcode 계정 인증 오류로 업로드가 중단됐다. 아직 실계정의 기존 일정이 복구되거나 수정 빌드가 테스터에게 배포된 상태는 아니다. 재개 명령과 검증 결과는 [빌드 16 배포 기록](../../release/2026-10-24/ios-0.1.1-16/README.md)에 보관했다.
+기존 TestFlight 0.1.1(15)에는 포함되지 않는다. 수정 빌드 **0.1.1(16)**은 2026-10-25 21:28 KST Xcode Organizer로 업로드했고, App Store Connect에서 처리 완료·기존 내부 그룹 2명 연결·한국어 테스트 안내 저장을 확인했다. 수정 빌드 실기기 설치 및 실계정 기존 일정 복구는 아직 확인하지 않았다. [빌드 16 배포 기록](../../release/2026-10-24/ios-0.1.1-16/README.md) 참조.
