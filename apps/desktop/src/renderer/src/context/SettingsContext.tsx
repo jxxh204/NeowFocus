@@ -18,11 +18,32 @@ export type ThemeColorKey = keyof typeof THEME_COLORS
 // 타이머 시간 옵션 (분 단위)
 export const TIMER_DURATION_OPTIONS = [15, 25, 45, 60] as const
 
+// 슈퍼포커스 작업실. default는 처음 그린 작업실로, 회색 고양이가 그림에 함께 그려져 있다
+export type SuperFocusRoom = 'default' | 'nature' | 'scrapyard'
+export type SuperFocusCat = 'gray' | 'british' | 'siamese' | 'maine'
+
+const SUPER_FOCUS_ROOMS: readonly string[] = ['default', 'nature', 'scrapyard']
+const SUPER_FOCUS_CATS: readonly string[] = ['gray', 'british', 'siamese', 'maine']
+
 export type Settings = {
   timerDuration: number // 초 단위
   themeColor: ThemeColorKey
   autoBreak?: boolean
   alerts?: boolean
+  superFocusRoom?: SuperFocusRoom
+  superFocusCat?: SuperFocusCat
+}
+
+/** 저장된 값이 없거나 지금은 없는 작업실이면 기본값으로 읽는다 */
+export function superFocusScene(settings: Settings): { room: SuperFocusRoom; cat: SuperFocusCat } {
+  const room = SUPER_FOCUS_ROOMS.includes(settings.superFocusRoom ?? '')
+    ? (settings.superFocusRoom as SuperFocusRoom)
+    : 'default'
+  const cat = SUPER_FOCUS_CATS.includes(settings.superFocusCat ?? '')
+    ? (settings.superFocusCat as SuperFocusCat)
+    : 'gray'
+  // 기본 작업실에는 회색 고양이가 그려져 있어서 다른 고양이를 얹지 않는다
+  return { room, cat: room === 'default' ? 'gray' : cat }
 }
 
 type SettingsContextType = {
@@ -32,7 +53,9 @@ type SettingsContextType = {
   setTimerDuration: (minutes: number) => void
   setThemeColor: (color: ThemeColorKey) => void
   resetSettings: () => void
-  updateExperience: (patch: Pick<Partial<Settings>, 'alerts' | 'autoBreak'>) => void
+  updateExperience: (
+    patch: Pick<Partial<Settings>, 'alerts' | 'autoBreak' | 'superFocusRoom' | 'superFocusCat'>
+  ) => void
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -70,7 +93,9 @@ const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
     setSettings(DEFAULT_SETTINGS)
   }, [setSettings])
   const updateExperience = useCallback(
-    (patch: Pick<Partial<Settings>, 'alerts' | 'autoBreak'>) => {
+    (
+      patch: Pick<Partial<Settings>, 'alerts' | 'autoBreak' | 'superFocusRoom' | 'superFocusCat'>
+    ) => {
       setSettings((prev) => ({ ...prev, ...patch }))
     },
     [setSettings]

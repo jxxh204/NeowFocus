@@ -22,7 +22,8 @@ import {
   notificationProtocol,
   showWindowProtocol,
   getSystemLocaleProtocol,
-  navigateToProtocol
+  navigateToProtocol,
+  superFocusProtocol
 } from './IpcProtocol'
 import {
   WINDOW_SIZE,
@@ -146,6 +147,7 @@ function createWindow(): { mainWindow: BrowserWindow; tray: Electron.Tray } {
   showWindowProtocol(mainWindow)
   getSystemLocaleProtocol()
   navigateToProtocol(mainWindow)
+  superFocusProtocol(mainWindow)
 
   createDockMenu(mainWindow)
 

@@ -6,6 +6,7 @@ import SettingsPage from '@renderer/page/settings'
 import DashboardPage from '@renderer/page/dashboard'
 import { BrowserBlockingPage } from '@renderer/component/BrowserBlockingControl'
 import { TinyWindowPage } from '@renderer/page/tinyWindow'
+import SuperFocusPage from '@renderer/page/superfocus'
 import { Route, Routes, useNavigate, useLocation } from 'react-router-dom'
 import { useTaskContext } from '@renderer/context/TaskContext'
 import { ROUTES } from '@renderer/constants'
@@ -16,11 +17,17 @@ function Router() {
   const { taskStatus, focusState } = useTaskContext()
 
   useEffect(() => {
-    const focusRoute = pathname === ROUTES.FOCUS || pathname === ROUTES.TINY_WINDOW
+    const focusRoute =
+      pathname === ROUTES.FOCUS ||
+      pathname === ROUTES.TINY_WINDOW ||
+      pathname === ROUTES.SUPER_FOCUS
     if (taskStatus === 'idle' && focusRoute) navigate(ROUTES.INPUT, { replace: true })
     else if (taskStatus !== 'idle' && pathname === ROUTES.INPUT)
       navigate(ROUTES.FOCUS, { replace: true })
-    else if (focusState.conflicts?.length && pathname === ROUTES.TINY_WINDOW)
+    else if (
+      focusState.conflicts?.length &&
+      (pathname === ROUTES.TINY_WINDOW || pathname === ROUTES.SUPER_FOCUS)
+    )
       navigate(ROUTES.FOCUS, { replace: true })
   }, [taskStatus, pathname, focusState.conflicts?.length, navigate])
 
@@ -50,6 +57,7 @@ function Router() {
         <Route path={ROUTES.INPUT} element={<InputPage />} />
         <Route path={ROUTES.FOCUS} element={<FocusPage />} />
         <Route path={ROUTES.TINY_WINDOW} element={<TinyWindowPage />} />
+        <Route path={ROUTES.SUPER_FOCUS} element={<SuperFocusPage />} />
         <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
         <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
         <Route path="/blocking" element={<BrowserBlockingPage />} />

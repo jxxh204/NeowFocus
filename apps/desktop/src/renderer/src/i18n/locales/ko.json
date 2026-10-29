@@ -13,6 +13,7 @@
     "sessionCount": "회차",
     "defaultTaskName": "Focus Time",
     "tinyWindowButton": "작은 창 보기 (Enter)",
+    "superFocusButton": "슈퍼포커스 (F)",
     "quickComplete": "빠른 완료",
     "timerMenu": {
       "pause": "일시정지",
@@ -26,6 +27,49 @@
     "notification": {
       "title": "작업 완료! 🎉",
       "body": "25분 집중 시간이 끝났습니다."
+    }
+  },
+  "superFocus": {
+    "place": "냐우의 작업실",
+    "sceneAlt": "벙커 작업실 책상 위에서 회색 고양이가 노트북 옆에 엎드려 있고, 창밖 도시에는 버섯구름이 피어오른다",
+    "worlds": {
+      "nature": "햇살이 드는 작업실 책상 위의 고양이. 창밖은 초록 덩굴에 덮인 폐허 도시",
+      "scrapyard": "폐차장 속 작업실 책상 위의 고양이. 창밖에 쌓인 버스와 굴착기"
+    },
+    "status": {
+      "focus": "집중하는 시간",
+      "paused": "잠시 멈춤",
+      "done": "집중 끝",
+      "break": "쉬어가는 시간"
+    },
+    "gaugeLabel": "집중 흐름",
+    "showControls": "멈추거나 마치기",
+    "focusHint": "클릭하면 멈추거나 마칠 수 있어요 · esc 작은 창으로",
+    "pause": "잠시 멈춤",
+    "resume": "다시 집중",
+    "finish": "마침",
+    "backToWindow": "작은 창으로 돌아가기 · 집중은 계속",
+    "toWindow": "작은 창으로",
+    "pausedCaption": "작업실도 같이 쉬고 있어요",
+    "pausedHint": "space 다시 집중 · esc 작은 창으로",
+    "doneTitle": "집중 하나가 쌓였어요.",
+    "breakOverTitle": "휴식이 끝났어요.",
+    "doneNote": "{{minutes}}분 집중했어요 · 오늘 {{count}}번째",
+    "repeat": "같은 일 한 번 더",
+    "newTask": "다른 일 시작하기",
+    "today": "오늘은 여기까지",
+    "breakCaption": "잠깐 쉬어가요. 어깨를 펴고 멀리 보기.",
+    "breakTimeLabel": "휴식 남은 시간",
+    "endBreak": "휴식 끝내기",
+    "intro": {
+      "title": "고양이 작업실에서 집중해요",
+      "body": "화면 전체가 작업실로 바뀌어요. 할 일과 집중 흐름만 조용히 남겨둘게요.",
+      "click": "클릭",
+      "clickDesc": "잠시 멈춤 · 마침",
+      "escDesc": "작은 창으로 · 집중은 계속",
+      "enter": "작업실 들어가기",
+      "skip": "다음부터 안내 없이 바로 열기",
+      "close": "닫기"
     }
   },
   "tinyWindow": {

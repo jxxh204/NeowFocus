@@ -15,9 +15,25 @@ export type Settings = {
   showTaskOnLockScreen: boolean
   restDay?: string
   lastDayEndEntry?: string
+  /** 켜 두면 다음 집중도 슈퍼포커스로 본다 */
+  superFocus: boolean
+  superFocusIntroSeen: boolean
+  superFocusRoom: SuperFocusRoom
+  superFocusCat: SuperFocusCat
 }
 
-const DEFAULT_SETTINGS: Settings = { ...normalizeTimerAppearance(null), defaultMinutes: DEFAULT_FOCUS_MINUTES, alerts: true, autoBreak: false, syncEnabled: false, calendarSyncEnabled: false, showTaskOnLockScreen: false }
+/** default는 처음 그린 작업실로, 회색 고양이가 그림에 함께 그려져 있다 */
+export type SuperFocusRoom = 'default' | 'nature' | 'scrapyard'
+export type SuperFocusCat = 'gray' | 'british' | 'siamese' | 'maine'
+const SUPER_FOCUS_ROOMS: readonly string[] = ['default', 'nature', 'scrapyard']
+const SUPER_FOCUS_CATS: readonly string[] = ['gray', 'british', 'siamese', 'maine']
+
+/** 기본 작업실에는 회색 고양이가 그려져 있어서 다른 고양이를 얹지 않는다 */
+export function superFocusScene(settings: Settings): { room: SuperFocusRoom; cat: SuperFocusCat } {
+  return { room: settings.superFocusRoom, cat: settings.superFocusRoom === 'default' ? 'gray' : settings.superFocusCat }
+}
+
+const DEFAULT_SETTINGS: Settings = { ...normalizeTimerAppearance(null), defaultMinutes: DEFAULT_FOCUS_MINUTES, alerts: true, autoBreak: false, syncEnabled: false, calendarSyncEnabled: false, showTaskOnLockScreen: false, superFocus: false, superFocusIntroSeen: false, superFocusRoom: 'default', superFocusCat: 'gray' }
 
 type SettingsContextValue = {
   settings: Settings
@@ -34,7 +50,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     storage.loadSettings<Partial<Settings>>().then((saved) => {
       if (saved) setSettings((prev) => ({ ...prev, ...saved,
         alerts: typeof saved.alerts === 'boolean' ? saved.alerts : prev.alerts,
-        autoBreak: saved.autoBreak === true, calendarSyncEnabled: saved.calendarSyncEnabled === true && saved.syncEnabled === true,
+        autoBreak: saved.autoBreak === true, superFocus: saved.superFocus === true, superFocusIntroSeen: saved.superFocusIntroSeen === true,
+        superFocusRoom: SUPER_FOCUS_ROOMS.includes(saved.superFocusRoom ?? '') ? saved.superFocusRoom! : prev.superFocusRoom,
+        superFocusCat: SUPER_FOCUS_CATS.includes(saved.superFocusCat ?? '') ? saved.superFocusCat! : prev.superFocusCat,
+        calendarSyncEnabled: saved.calendarSyncEnabled === true && saved.syncEnabled === true,
         ...normalizeTimerAppearance(saved) }))
       setLoaded(true)
     })

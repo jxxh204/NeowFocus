@@ -20,6 +20,7 @@ import { CompletionPaw, type PawTarget } from '@/components/CompletionPaw'
 import { CompletionCat, useDayEndMotion } from '@/components/CompletionCat'
 import { catEntryGeometry, nextCatEntry, type CatEntry } from '@/components/completionGeometry'
 import { FocusControlsSheet } from '@/components/FocusControlsSheet'
+import { SuperFocusIntro, SuperFocusScreen } from '@/components/SuperFocus'
 import { TimerScene } from '@/components/timer/TimerScene'
 import { clampProgress } from '@/components/timer/geometry'
 import { CircularTimer } from '@/components/CircularTimer'
@@ -42,7 +43,7 @@ const READY_MINUTES = [5, 15, 25, 45, 60] as const
 type Panel = 'records' | 'settings' | null
 
 export default function FocusScreen() {
-  const { state, now, dismiss, completionFeedback, finishBreak } = useFocus()
+  const { state, now, dismiss, completionFeedback, finishBreak, start } = useFocus()
   const { settings, update } = useSettings()
   const insets = useSafeAreaInsets()
   const { width, height } = useWindowDimensions()
@@ -99,6 +100,18 @@ export default function FocusScreen() {
     setMode('today')
   }
   const rest = () => { update({ restDay: today.day }); setMode('home'); dismiss() }
+  const [superFocusIntro, setSuperFocusIntro] = useState(false)
+  const openSuperFocus = () => {
+    if (settings.superFocusIntroSeen) update({ superFocus: true })
+    else setSuperFocusIntro(true)
+  }
+  const superFocusVisible = settings.superFocus && !state.conflicts?.length && !dayId && panel === null
+    && current !== null && (active || current.status === 'finished')
+  const againInSuperFocus = () => {
+    if (!current) return
+    update({ restDay: undefined })
+    start(current.task, current.plannedMs / 60_000)
+  }
   const timerSize = Math.min(268, Math.max(164, width - 112), Math.max(164, height * 0.34))
 
   // Old links keep working, but records and settings now open over the same canvas.
@@ -124,7 +137,7 @@ export default function FocusScreen() {
       {!state.conflicts?.length && !dayId && current && (active || current.status === 'finished') && <TimerScene
         key={`${current.id}-${sceneStyle}`} style={sceneStyle}
         progress={clampProgress(current.status === 'finished' ? current.focusedMs / current.plannedMs : 1 - remainingOf(current, now) / current.plannedMs)}
-        running={current.status === 'running' && panel === null} />}
+        running={current.status === 'running' && panel === null && !superFocusVisible} />}
       <KeyboardAvoidingView
         style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -145,7 +158,7 @@ export default function FocusScreen() {
           keyboardDismissMode="interactive"
         >
           <SyncConflict />
-          {!state.conflicts?.length && (active && current ? <Session session={current} timerSize={timerSize} />
+          {!state.conflicts?.length && (active && current ? <Session session={current} timerSize={timerSize} onSuperFocus={openSuperFocus} />
             : dayId ? <Today count={displayedCount} actualCount={today.count} focusedMs={today.focusedMs} tasks={today.tasks}
                 progress={dayMotion.stamp} catProgress={dayMotion.progress} rotation={stampRotation} onTarget={measurePawTarget} onContinue={() => prepareNext()} onRest={rest} />
             : current?.status === 'finished' ? <Done session={current} timerStyle={sceneStyle} onAgain={() => prepareNext()} onNew={() => prepareNext(false)} onToday={showToday} />
@@ -156,6 +169,10 @@ export default function FocusScreen() {
           {panel === 'records' ? <RecordsPanel day={recordDay} /> : panel === 'settings' ? <SettingsPanel /> : null}
         </SecondarySheet>
       </KeyboardAvoidingView>
+      {superFocusVisible && current && <SuperFocusScreen session={current} onExit={() => update({ superFocus: false })}
+        onAgain={againInSuperFocus} onNew={() => prepareNext(false)} onToday={showToday} />}
+      {superFocusIntro && <SuperFocusIntro onClose={() => setSuperFocusIntro(false)}
+        onEnter={() => { setSuperFocusIntro(false); update({ superFocus: true, superFocusIntroSeen: true }) }} />}
       {dayId && targetReady && panel === null && pawTarget && <CompletionCat target={pawTarget} progress={dayMotion.progress} entry={dayEntry} viewport={{ width, height }} onReady={() => setCatImageLoaded(true)} />}
     </View>
   )
@@ -275,7 +292,7 @@ function Ready({ timerSize, seed, todayCount, prepareFirstTask, onPrepared }: { 
   )
 }
 
-function Session({ session, timerSize }: { session: FocusSession; timerSize: number }) {
+function Session({ session, timerSize, onSuperFocus }: { session: FocusSession; timerSize: number; onSuperFocus: () => void }) {
   const { now, pause, resume, finish } = useFocus()
   const { settings } = useSettings()
   const [controls, setControls] = useState(false)
@@ -298,7 +315,7 @@ function Session({ session, timerSize }: { session: FocusSession; timerSize: num
         {settings.showRemainingTime && <Text style={styles.clock} accessibilityLabel={`남은 시간 ${formatClock(remaining)}`}>{formatClock(remaining)}</Text>}
       </View>
     </Pressable>
-    {controls && <FocusControlsSheet paused={paused} onToggle={paused ? resume : pause} onFinish={finish} onClose={() => setControls(false)} />}
+    {controls && <FocusControlsSheet paused={paused} onToggle={paused ? resume : pause} onFinish={finish} onClose={() => setControls(false)} onSuperFocus={onSuperFocus} />}
   </View>
 }
 
