@@ -52,6 +52,13 @@ const windowAPI = {
   getSystemLocale: (): Promise<string> => {
     return ipcRenderer.invoke('GET_SYSTEM_LOCALE')
   },
+  onSuperFocusExited: (callback: () => void) => {
+    const listener = () => callback()
+    ipcRenderer.on('SUPER_FOCUS_EXITED', listener)
+    return () => {
+      ipcRenderer.removeListener('SUPER_FOCUS_EXITED', listener)
+    }
+  },
   onNavigateTo: (callback: (route: string) => void) => {
     const handler = (_event: Electron.IpcRendererEvent, route: string) => callback(route)
     ipcRenderer.on('NAVIGATE_TO', handler)

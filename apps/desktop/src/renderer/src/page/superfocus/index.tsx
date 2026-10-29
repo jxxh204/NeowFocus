@@ -73,17 +73,28 @@ export default function SuperFocusPage(): JSX.Element {
         ? 'paused'
         : 'focus'
 
-  // 이 화면에 있는 동안만 창을 화면 전체로 키운다
+  const backToWindow = useCallback(() => navigate(ROUTES.FOCUS), [navigate])
+
+  // 이 화면에 있는 동안만 창을 전체화면으로 띄운다
   useEffect(() => {
     window.message?.send(IPC_CHANNELS.SUPER_FOCUS, true)
     return () => window.message?.send(IPC_CHANNELS.SUPER_FOCUS, false)
   }, [])
 
+  // 녹색 버튼이나 ⌃⌘F로 전체화면을 빠져나오면 작은 창으로 돌아간다
+  useEffect(() => {
+    const electron = window.electron as {
+      onSuperFocusExited?: (callback: () => void) => (() => void) | void
+    }
+    const cleanup = electron?.onSuperFocusExited?.(backToWindow)
+    return () => {
+      if (cleanup) cleanup()
+    }
+  }, [backToWindow])
+
   useEffect(() => {
     if (phase !== 'focus') setControls(false)
   }, [phase])
-
-  const backToWindow = useCallback(() => navigate(ROUTES.FOCUS), [navigate])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -296,6 +307,11 @@ const Room = styled.main`
   overflow: hidden;
   background: #15100b;
   color: ${cream};
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   -webkit-app-region: no-drag;
   user-select: none;
 
@@ -331,8 +347,8 @@ const TopScrim = styled.div`
 const BottomScrim = styled.div`
   position: absolute;
   inset: auto 0 0 0;
-  height: 60%;
-  background: linear-gradient(rgba(12, 9, 6, 0), rgba(12, 9, 6, 0.9));
+  height: 40%;
+  background: linear-gradient(rgba(12, 9, 6, 0), rgba(12, 9, 6, 0.55));
   pointer-events: none;
 `
 
@@ -388,11 +404,20 @@ const CloseButton = styled.button`
   padding: 0;
 `
 
+// 화면 가운데의 반투명 판. 뒤의 작업실과 고양이가 비쳐 보인다
 const Bottom = styled.div<{ $gap?: number }>`
   position: absolute;
-  left: 24px;
-  right: 24px;
-  bottom: 40px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100% - 96px);
+  padding: 36px 48px;
+  border-radius: 28px;
+  background: rgba(20, 16, 12, 0.4);
+  border: 1px solid rgba(255, 244, 226, 0.12);
+  backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -8,7 +8,11 @@ export default defineConfig({
     plugins: [],
     build: {
       sourcemap: false,
-      minify: process.env.NODE_ENV === 'production'
+      minify: process.env.NODE_ENV === 'production',
+      rollupOptions: {
+        // ws가 있으면 쓰고 없으면 건너뛰는 선택 모듈. 묶으면 시작할 때 바로 멈춘다
+        external: ['bufferutil', 'utf-8-validate']
+      }
     }
   },
   preload: {
