@@ -4,6 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg'
 import { AUTO_BREAK_MS, achievementForDay, formatClock, remainingOf, type FocusSession } from '@neowfocus/core'
 import { useFocus } from '@/focus/FocusProvider'
+import { superFocusScene, useSettings } from '@/focus/SettingsProvider'
+import { NeowScene } from './NeowScene'
 import { formatDuration } from '@/focus/format'
 import { CircularTimer } from './CircularTimer'
 import { Paw } from './Icons'
@@ -21,14 +23,17 @@ type Phase = 'focus' | 'paused' | 'done' | 'break'
 function Workroom({ moving, dimmed }: { moving: boolean; dimmed?: boolean }) {
   const { width, height } = useWindowDimensions()
   const insets = useSafeAreaInsets()
+  const { room, cat } = superFocusScene(useSettings().settings)
   const imageHeight = Math.round(height * 0.76)
   const imageWidth = Math.round(imageHeight * WORKROOM_RATIO)
   const left = Math.round(width / 2 - imageWidth * 0.62)
   const top = insets.top
   const fadeStart = top + imageHeight * 0.48
   return <View style={StyleSheet.absoluteFill} pointerEvents="none">
-    <Image source={moving ? WORKROOM_MOTION : WORKROOM_STILL} accessibilityIgnoresInvertColors
-      style={{ position: 'absolute', left, top, width: imageWidth, height: imageHeight }} />
+    {room === 'default'
+      ? <Image source={moving ? WORKROOM_MOTION : WORKROOM_STILL} accessibilityIgnoresInvertColors
+        style={{ position: 'absolute', left, top, width: imageWidth, height: imageHeight }} />
+      : <NeowScene room={room} cat={cat} moving={moving} left={left} top={top} width={imageWidth} height={imageHeight} />}
     {dimmed && <View style={[StyleSheet.absoluteFill, styles.dim]} />}
     <Svg style={StyleSheet.absoluteFill} width={width} height={height}>
       <Defs>

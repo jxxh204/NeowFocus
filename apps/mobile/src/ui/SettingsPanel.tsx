@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-nat
 import Constants from 'expo-constants'
 import { TimerStyleSettings } from '@/components/timer/TimerStyleSettings'
 import { DurationChips } from '@/components/DurationChips'
+import { SuperFocusSceneSettings } from '@/components/SuperFocusSceneSettings'
 import { useSettings } from '@/focus/SettingsProvider'
 import { IntegrationSettings } from '@/focus/IntegrationSettings'
 import { color } from '@/theme'
@@ -22,6 +23,7 @@ export function SettingsPanel() {
         value={settings.defaultMinutes}
         onChange={(defaultMinutes) => update({ defaultMinutes })}
       />
+      <SuperFocusSceneSettings />
       <View style={styles.row}>
         <View style={styles.rowText}>
           <Text style={styles.rowTitle}>완료 소리·진동</Text>
