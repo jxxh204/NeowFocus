@@ -45,6 +45,7 @@
     "resume": "Resume",
     "finish": "Finish",
     "backToWindow": "Back to the small window · focus continues",
+    "toWindow": "Small window",
     "pausedCaption": "The workroom is resting too",
     "pausedHint": "space to resume · esc for the small window",
     "doneTitle": "One more focus session done.",

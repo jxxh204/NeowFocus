@@ -183,8 +183,8 @@ export default function SuperFocusPage(): JSX.Element {
       )}
 
       {intro ? (
-        <Bottom>
-          <Title $size={32}>{t('superFocus.intro.title')}</Title>
+        <IntroCard>
+          <Title>{t('superFocus.intro.title')}</Title>
           <Body>{t('superFocus.intro.body')}</Body>
           <Hints>
             <li>
@@ -207,93 +207,95 @@ export default function SuperFocusPage(): JSX.Element {
             />
             {t('superFocus.intro.skip')}
           </SkipLabel>
-        </Bottom>
+        </IntroCard>
       ) : phase === 'focus' || phase === 'paused' ? (
-        <Bottom>
-          <Title>{currentTask.taskName || t('focus.defaultTaskName')}</Title>
+        <Dock>
           <Gauge
             role="img"
             aria-label={`${t('superFocus.gaugeLabel')} ${Math.round(100 - percentage)}%`}
           >
             <CircularTimer
               percentage={percentage}
-              size={104}
-              strokeWidth={10}
-              handStrokeWidth={10}
+              size={40}
+              strokeWidth={4}
+              handStrokeWidth={4}
               paused={phase === 'paused'}
             />
           </Gauge>
-          {phase === 'paused' && <Caption>{t('superFocus.pausedCaption')}</Caption>}
-          {phase === 'focus' && !controls && <Caption>{t('superFocus.focusHint')}</Caption>}
+          <DockText>
+            <DockTitle>{currentTask.taskName || t('focus.defaultTaskName')}</DockTitle>
+            {phase === 'paused' ? (
+              <DockCaption>{t('superFocus.pausedHint')}</DockCaption>
+            ) : (
+              !controls && <DockCaption>{t('superFocus.focusHint')}</DockCaption>
+            )}
+          </DockText>
           {(controls || phase === 'paused') && (
-            <>
-              <Actions>
-                {phase === 'paused' ? (
-                  <Primary type="button" onClick={resumeTask} autoFocus>
-                    {t('superFocus.resume')}
-                  </Primary>
-                ) : (
-                  <Primary type="button" onClick={pauseTask} autoFocus>
-                    {t('superFocus.pause')}
-                  </Primary>
-                )}
-                <Secondary type="button" onClick={completeEarly}>
-                  {t('superFocus.finish')}
-                </Secondary>
-              </Actions>
+            <DockActions>
               {phase === 'paused' ? (
-                <Hint>{t('superFocus.pausedHint')}</Hint>
+                <Primary type="button" onClick={resumeTask} autoFocus>
+                  {t('superFocus.resume')}
+                </Primary>
               ) : (
-                <TextButton type="button" onClick={backToWindow}>
-                  {t('superFocus.backToWindow')}
-                </TextButton>
+                <Primary type="button" onClick={pauseTask} autoFocus>
+                  {t('superFocus.pause')}
+                </Primary>
               )}
-            </>
+              <Secondary type="button" onClick={completeEarly}>
+                {t('superFocus.finish')}
+              </Secondary>
+              <TextButton type="button" onClick={backToWindow}>
+                {t('superFocus.toWindow')}
+              </TextButton>
+            </DockActions>
           )}
-        </Bottom>
+        </Dock>
       ) : phase === 'break' ? (
-        <Bottom>
-          <Title>{currentTask.taskName || t('focus.defaultTaskName')}</Title>
-          <BreakTime role="timer" aria-label={t('superFocus.breakTimeLabel')}>
+        <Dock>
+          <DockTime role="timer" aria-label={t('superFocus.breakTimeLabel')}>
             {clock(breakRemaining)}
-          </BreakTime>
-          <Caption>{t('superFocus.breakCaption')}</Caption>
-          <Progress aria-hidden="true">
-            <span style={{ width: `${breakProgress * 100}%` }} />
-          </Progress>
-          <Actions>
+          </DockTime>
+          <DockText>
+            <DockTitle>{t('superFocus.breakCaption')}</DockTitle>
+            <Progress aria-hidden="true">
+              <span style={{ width: `${breakProgress * 100}%` }} />
+            </Progress>
+          </DockText>
+          <DockActions>
             <Primary type="button" onClick={finishBreak} autoFocus>
               {t('superFocus.endBreak')}
             </Primary>
             <Secondary type="button" onClick={doneForToday}>
               {t('superFocus.today')}
             </Secondary>
-          </Actions>
-        </Bottom>
+          </DockActions>
+        </Dock>
       ) : (
-        <Bottom $gap={12}>
+        <Dock>
           <PawBadge>
-            <Icon name="paw_white" alt="" size={44} />
+            <Icon name="paw_white" alt="" size={24} />
           </PawBadge>
-          <Title $size={30}>
-            {breakFinished ? t('superFocus.breakOverTitle') : t('superFocus.doneTitle')}
-          </Title>
-          <TaskLine>{currentTask.taskName || t('focus.defaultTaskName')}</TaskLine>
-          <Caption>
-            {t('superFocus.doneNote', { minutes: focusedMinutes, count: todayCount })}
-          </Caption>
-          <Actions $top={12}>
+          <DockText>
+            <DockTitle $strong>
+              {breakFinished ? t('superFocus.breakOverTitle') : t('superFocus.doneTitle')}
+            </DockTitle>
+            <DockCaption>
+              {currentTask.taskName || t('focus.defaultTaskName')} ·{' '}
+              {t('superFocus.doneNote', { minutes: focusedMinutes, count: todayCount })}
+            </DockCaption>
+          </DockText>
+          <DockActions>
             <Primary type="button" onClick={repeat} autoFocus>
               {t('superFocus.repeat')}
             </Primary>
             <Secondary type="button" onClick={newTask}>
               {t('superFocus.newTask')}
             </Secondary>
-          </Actions>
-          <TextButton type="button" onClick={doneForToday}>
-            {t('superFocus.today')}
-          </TextButton>
-        </Bottom>
+            <TextButton type="button" onClick={doneForToday}>
+              {t('superFocus.today')}
+            </TextButton>
+          </DockActions>
+        </Dock>
       )}
     </Room>
   )
@@ -347,8 +349,8 @@ const TopScrim = styled.div`
 const BottomScrim = styled.div`
   position: absolute;
   inset: auto 0 0 0;
-  height: 40%;
-  background: linear-gradient(rgba(12, 9, 6, 0), rgba(12, 9, 6, 0.55));
+  height: 28%;
+  background: linear-gradient(rgba(12, 9, 6, 0), rgba(12, 9, 6, 0.45));
   pointer-events: none;
 `
 
@@ -404,25 +406,11 @@ const CloseButton = styled.button`
   padding: 0;
 `
 
-// 화면 가운데의 반투명 판. 뒤의 작업실과 고양이가 비쳐 보인다
-const Bottom = styled.div<{ $gap?: number }>`
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+const glass = `
   box-sizing: border-box;
-  width: max-content;
-  max-width: calc(100% - 96px);
-  padding: 36px 48px;
-  border-radius: 28px;
-  background: rgba(20, 16, 12, 0.4);
+  background: rgba(20, 16, 12, 0.5);
   border: 1px solid rgba(255, 244, 226, 0.12);
   backdrop-filter: blur(4px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${({ $gap }) => $gap ?? 18}px;
-  text-align: center;
   pointer-events: none;
 
   button,
@@ -431,22 +419,93 @@ const Bottom = styled.div<{ $gap?: number }>`
   }
 `
 
-const Title = styled.h1<{ $size?: number }>`
-  margin: 0;
-  max-width: 880px;
-  font-size: ${({ $size }) => $size ?? 28}px;
-  line-height: 1.35;
-  font-weight: ${({ $size }) => ($size ? 600 : 500)};
-  letter-spacing: -0.6px;
-  overflow-wrap: anywhere;
-  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.55);
+// 처음 안내만 내용이 많아 카드로 둔다. 화면 아래쪽에 두어 고양이를 가리지 않는다
+const IntroCard = styled.div`
+  ${glass}
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 96px);
+  padding: 28px 44px 20px;
+  border-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
 `
 
-const TaskLine = styled.p`
+// 집중 중에는 작업실이 주인공이다. 아래 가운데의 작은 막대 하나만 두고, 버튼도 이 막대 안에서 늘어난다
+const Dock = styled.div`
+  ${glass}
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 96px);
+  padding: 10px 12px 10px 14px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+`
+
+const DockText = styled.div`
+  min-width: 0;
+  padding-right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+`
+
+const DockTitle = styled.p<{ $strong?: boolean }>`
   margin: 0;
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 17px;
-  line-height: 25px;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+  line-height: 24px;
+  font-weight: ${({ $strong }) => ($strong ? 600 : 500)};
+  letter-spacing: -0.3px;
+`
+
+const DockCaption = styled.p`
+  margin: 0;
+  max-width: 520px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  color: rgba(255, 244, 226, 0.7);
+`
+
+const DockTime = styled.p`
+  margin: 0;
+  padding-left: 10px;
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 400;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+`
+
+const DockActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+const Title = styled.h1`
+  margin: 0;
+  max-width: 880px;
+  font-size: 28px;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  overflow-wrap: anywhere;
 `
 
 const Body = styled.p`
@@ -454,45 +513,18 @@ const Body = styled.p`
   font-size: 16px;
   line-height: 25px;
   color: rgba(255, 244, 226, 0.82);
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
 `
 
 const Gauge = styled.div`
   display: flex;
 `
 
-const Caption = styled.p`
-  margin: 0;
-  font-size: 14px;
-  letter-spacing: 2px;
-  color: rgba(255, 244, 226, 0.74);
-`
-
-const Hint = styled.p`
-  margin: 0;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-  color: rgba(255, 244, 226, 0.66);
-`
-
-const BreakTime = styled.p`
-  margin: 0;
-  font-size: 112px;
-  line-height: 116px;
-  font-weight: 400;
-  letter-spacing: -3px;
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-`
-
 const Progress = styled.div`
-  width: 240px;
+  width: 200px;
   height: 3px;
   border-radius: 2px;
   background: rgba(255, 244, 226, 0.2);
-  margin-bottom: 4px;
+  margin-top: 6px;
   span {
     display: block;
     height: 100%;
@@ -501,35 +533,30 @@ const Progress = styled.div`
   }
 `
 
-const Actions = styled.div<{ $top?: number }>`
-  margin-top: ${({ $top }) => $top ?? 4}px;
-  display: flex;
-  gap: 14px;
-`
-
 const Primary = styled.button<{ $wide?: boolean }>`
-  width: ${({ $wide }) => ($wide ? 280 : 220)}px;
-  min-height: 58px;
+  width: ${({ $wide }) => ($wide ? '280px' : 'auto')};
+  min-height: ${({ $wide }) => ($wide ? 58 : 46)}px;
+  padding: 0 22px;
   border: 0;
   border-radius: 999px;
   background: #e8c690;
   color: #2b1e10;
-  font-size: 18px !important;
+  font-size: ${({ $wide }) => ($wide ? 18 : 15)}px !important;
   font-weight: 600 !important;
-  margin-top: ${({ $wide }) => ($wide ? 14 : 0)}px;
+  margin-top: ${({ $wide }) => ($wide ? 10 : 0)}px;
   &:hover {
     background: #f0d3a3;
   }
 `
 
 const Secondary = styled.button`
-  width: 220px;
-  min-height: 58px;
+  min-height: 46px;
+  padding: 0 22px;
   border-radius: 999px;
   border: 1px solid rgba(255, 244, 226, 0.24);
   background: rgba(20, 16, 12, 0.55);
   color: ${cream};
-  font-size: 18px !important;
+  font-size: 15px !important;
   font-weight: 500 !important;
   &:hover {
     background: rgba(40, 32, 24, 0.7);
@@ -538,6 +565,7 @@ const Secondary = styled.button`
 
 const TextButton = styled.button`
   min-height: 44px;
+  padding: 0 12px;
   border: 0;
   background: transparent;
   color: rgba(255, 244, 226, 0.78);
@@ -547,9 +575,9 @@ const TextButton = styled.button`
 `
 
 const PawBadge = styled.div`
-  width: 84px;
-  height: 84px;
-  border-radius: 42px;
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
   background: rgba(20, 16, 12, 0.55);
   border: 1px solid rgba(255, 244, 226, 0.16);
   display: flex;

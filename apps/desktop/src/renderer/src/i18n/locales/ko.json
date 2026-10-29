@@ -45,6 +45,7 @@
     "resume": "다시 집중",
     "finish": "마침",
     "backToWindow": "작은 창으로 돌아가기 · 집중은 계속",
+    "toWindow": "작은 창으로",
     "pausedCaption": "작업실도 같이 쉬고 있어요",
     "pausedHint": "space 다시 집중 · esc 작은 창으로",
     "doneTitle": "집중 하나가 쌓였어요.",

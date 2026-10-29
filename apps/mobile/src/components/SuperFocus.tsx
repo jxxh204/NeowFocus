@@ -70,6 +70,14 @@ function LinkButton({ label, onPress }: { label: string; onPress: () => void }) 
   </Pressable>
 }
 
+/** 화면 아래쪽의 반투명 판. 작업실이 주인공이라 고양이와 창밖을 가리지 않는 바닥 쪽에 둔다. 판 바깥을 누르면 아래 화면이 눌린다. */
+function CenterPanel({ children, tight = false }: { children: ReactNode; tight?: boolean }) {
+  const insets = useSafeAreaInsets()
+  return <View style={[styles.center, { paddingBottom: Math.max(insets.bottom, 12) + 8 }]} pointerEvents="box-none">
+    <View style={[styles.panel, tight && styles.tight]} pointerEvents="box-none">{children}</View>
+  </View>
+}
+
 /** 슈퍼포커스: 집중 화면 위에 작업실을 깔고, 상자 없이 그 위에 바로 UI를 올린다. 남은 집중 시간은 숨기고 휴식만 시간으로 보여준다. */
 export function SuperFocusScreen({ session, onExit, onAgain, onNew, onToday }: {
   session: FocusSession; onExit: () => void; onAgain: () => void; onNew: () => void; onToday: () => void
@@ -86,7 +94,6 @@ export function SuperFocusScreen({ session, onExit, onAgain, onNew, onToday }: {
   const todayCount = achievementForDay(state.records, now).count
   const breakProgress = Math.min(1, Math.max(0, 1 - (breakRemaining * 1000) / AUTO_BREAK_MS))
   const moving = reduced === false && active && (phase === 'focus' || phase === 'break')
-  const bottom = { bottom: Math.max(insets.bottom, 16) + 16 }
 
   return <View style={styles.screen} accessibilityViewIsModal>
     <Workroom moving={moving} dimmed={phase === 'paused'} />
@@ -95,11 +102,11 @@ export function SuperFocusScreen({ session, onExit, onAgain, onNew, onToday }: {
       accessibilityValue={{ text: `${progress}퍼센트 진행` }} onPress={() => setControls(open => !open)} />}
     <TopBar right={<View style={styles.chip}><Text style={styles.chipText}>{status}</Text></View>} />
 
-    {phase === 'focus' || phase === 'paused' ? <View style={[styles.bottom, bottom]} pointerEvents="box-none">
+    {phase === 'focus' || phase === 'paused' ? <CenterPanel>
       <Text style={styles.title} accessibilityRole="header">{session.task}</Text>
       <View accessibilityRole="progressbar" accessibilityLabel={phase === 'paused' ? '집중 잠시 멈춤' : '집중 중'}
         accessibilityValue={{ min: 0, max: 100, now: progress }}>
-        <CircularTimer remaining={remaining / session.plannedMs} paused={phase === 'paused'} size={96} strokeWidth={10} />
+        <CircularTimer remaining={remaining / session.plannedMs} paused={phase === 'paused'} size={64} strokeWidth={7} />
       </View>
       {phase === 'paused' ? <Text style={styles.caption}>작업실도 같이 쉬고 있어요</Text>
         : !controls && <Text style={styles.caption}>화면을 누르면 멈추거나 마칠 수 있어요</Text>}
@@ -110,8 +117,8 @@ export function SuperFocusScreen({ session, onExit, onAgain, onNew, onToday }: {
         </View>
         <LinkButton label={phase === 'paused' ? '슈퍼포커스 끄기' : '슈퍼포커스 끄기 · 집중은 계속'} onPress={onExit} />
       </>}
-    </View>
-    : phase === 'break' ? <View style={[styles.bottom, bottom, styles.tight]} pointerEvents="box-none">
+    </CenterPanel>
+    : phase === 'break' ? <CenterPanel tight>
       <Text style={[styles.title, styles.smallTitle]}>{session.task}</Text>
       <Text style={styles.breakTime} accessibilityLabel={`휴식 남은 시간 ${formatClock(breakRemaining * 1000)}`}>{formatClock(breakRemaining * 1000)}</Text>
       <Text style={styles.caption}>잠깐 쉬어가요. 어깨를 펴고 멀리 보기.</Text>
@@ -120,8 +127,8 @@ export function SuperFocusScreen({ session, onExit, onAgain, onNew, onToday }: {
         <Pill primary label="휴식 끝내기" onPress={finishBreak} />
         <Pill label="오늘은 여기까지" onPress={onToday} />
       </View>
-    </View>
-    : <View style={[styles.bottom, bottom, styles.tight]} pointerEvents="box-none">
+    </CenterPanel>
+    : <CenterPanel tight>
       <View style={styles.pawBadge}><Paw size={38} /></View>
       <Text style={[styles.title, styles.doneTitle]} accessibilityRole="header">{breakFinished ? '휴식이 끝났어요.' : '집중 하나가 쌓였어요.'}</Text>
       <Text style={styles.task}>{session.task}</Text>
@@ -131,20 +138,19 @@ export function SuperFocusScreen({ session, onExit, onAgain, onNew, onToday }: {
         <Pill label="다른 일 시작" onPress={onNew} />
       </View>
       <LinkButton label="오늘은 여기까지" onPress={onToday} />
-    </View>}
+    </CenterPanel>}
   </View>
 }
 
 /** 처음 한 번 안내. 들어가기를 눌러야 다음부터 바로 열린다. */
 export function SuperFocusIntro({ onEnter, onClose }: { onEnter: () => void; onClose: () => void }) {
-  const insets = useSafeAreaInsets()
   const { reduced, active } = useMotionPreference()
   return <View style={styles.screen} accessibilityViewIsModal onAccessibilityEscape={onClose}>
     <Workroom moving={reduced === false && active} />
     <TopBar right={<Pressable accessibilityRole="button" accessibilityLabel="닫기" onPress={onClose} style={({ pressed }) => [styles.close, pressed && styles.pressed]}>
       <Svg width={16} height={16} viewBox="0 0 18 18" fill="none"><Path d="M4 4l10 10M14 4L4 14" stroke={CREAM} strokeWidth={1.8} strokeLinecap="round" /></Svg>
     </Pressable>} />
-    <View style={[styles.bottom, { bottom: Math.max(insets.bottom, 16) + 16 }, styles.tight]}>
+    <CenterPanel tight>
       <Text style={[styles.title, styles.introTitle]} accessibilityRole="header">고양이 작업실에서 집중해요</Text>
       <Text style={styles.body}>집중 화면이 고양이 작업실로 바뀌어요.{'\n'}할 일과 집중 흐름만 조용히 남겨둘게요.</Text>
       <View style={styles.hints}>
@@ -153,7 +159,7 @@ export function SuperFocusIntro({ onEnter, onClose }: { onEnter: () => void; onC
       </View>
       <View style={[styles.row, styles.introRow]}><Pill primary label="작업실 들어가기" onPress={onEnter} /></View>
       <LinkButton label="다음에 할게요" onPress={onClose} />
-    </View>
+    </CenterPanel>
   </View>
 }
 
@@ -165,7 +171,9 @@ const styles = StyleSheet.create({
   chip: { paddingVertical: 9, paddingHorizontal: 16, borderRadius: 999, backgroundColor: 'rgba(20,16,12,0.5)', borderWidth: 1, borderColor: 'rgba(255,244,226,0.16)' },
   chipText: { color: CREAM, fontSize: 14, fontWeight: '500' },
   close: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(20,16,12,0.5)', borderWidth: 1, borderColor: 'rgba(255,244,226,0.16)' },
-  bottom: { position: 'absolute', left: 24, right: 24, alignItems: 'center', gap: 16 },
+  center: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, justifyContent: 'flex-end', alignItems: 'center', paddingHorizontal: 12 },
+  panel: { width: '100%', maxWidth: 420, alignItems: 'center', gap: 14, paddingVertical: 22, paddingHorizontal: 18, borderRadius: 28,
+    backgroundColor: 'rgba(20,16,12,0.45)', borderWidth: 1, borderColor: 'rgba(255,244,226,0.12)' },
   tight: { gap: 10 },
   title: { color: CREAM, fontSize: 24, lineHeight: 33, fontWeight: '500', letterSpacing: -0.6, textAlign: 'center', textShadowColor: 'rgba(0,0,0,0.55)', textShadowRadius: 14 },
   smallTitle: { fontSize: 22, lineHeight: 31 },
