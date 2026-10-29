@@ -1,5 +1,32 @@
-import { ipcMain, app } from 'electron'
+import { ipcMain, app, screen } from 'electron'
 import { revealWindow } from './handlers/windowHandler'
+import { WINDOW_SIZE } from './constants'
+
+// 슈퍼포커스: 작은 창을 화면 전체로 키웠다가, 끄면 원래 자리와 크기로 되돌린다
+export const superFocusProtocol = (mainWindow: Electron.BrowserWindow): void => {
+  let restoreBounds: Electron.Rectangle | null = null
+  ipcMain.on('SUPER_FOCUS', (_e: Electron.IpcMainEvent, enabled: boolean) => {
+    if (!mainWindow || mainWindow.isDestroyed()) return
+    if (enabled) {
+      if (restoreBounds) return
+      restoreBounds = mainWindow.getBounds()
+      const { bounds } = screen.getDisplayMatching(restoreBounds)
+      // 0은 제한 없음. 메뉴 막대와 Dock 위까지 덮는다
+      mainWindow.setMaximumSize(0, 0)
+      mainWindow.setAlwaysOnTop(true, 'screen-saver')
+      mainWindow.setBounds(bounds)
+      revealWindow(mainWindow)
+      mainWindow.setAlwaysOnTop(true, 'screen-saver')
+    } else {
+      if (!restoreBounds) return
+      const previous = restoreBounds
+      restoreBounds = null
+      mainWindow.setMaximumSize(0, WINDOW_SIZE.MAX_HEIGHT)
+      mainWindow.setBounds(previous)
+      mainWindow.setAlwaysOnTop(true, 'floating')
+    }
+  })
+}
 
 export const windowSizeChange = (mainWindow): void => {
   ipcMain.on('WINDOW_SIZE_CHANGE', (_e: Electron.IpcMainEvent, size) => {

@@ -13,6 +13,7 @@
     "sessionCount": "sessions",
     "defaultTaskName": "Focus Time",
     "tinyWindowButton": "Tiny Window View (Enter)",
+    "superFocusButton": "Super Focus (F)",
     "quickComplete": "Complete",
     "timerMenu": {
       "pause": "Pause",
@@ -26,6 +27,44 @@
     "notification": {
       "title": "Task Completed! 🎉",
       "body": "25 minutes of focus time is over."
+    }
+  },
+  "superFocus": {
+    "place": "Neow's Workroom",
+    "sceneAlt": "A gray cat lies by a laptop on a desk in a bunker workroom while a mushroom cloud rises over the city outside",
+    "status": {
+      "focus": "Focus time",
+      "paused": "Paused",
+      "done": "Focus done",
+      "break": "Break time"
+    },
+    "gaugeLabel": "Focus progress",
+    "showControls": "Pause or finish",
+    "focusHint": "Click to pause or finish · esc for the small window",
+    "pause": "Pause",
+    "resume": "Resume",
+    "finish": "Finish",
+    "backToWindow": "Back to the small window · focus continues",
+    "pausedCaption": "The workroom is resting too",
+    "pausedHint": "space to resume · esc for the small window",
+    "doneTitle": "One more focus session done.",
+    "breakOverTitle": "Your break is over.",
+    "doneNote": "Focused {{minutes}} min · #{{count}} today",
+    "repeat": "Same task again",
+    "newTask": "Start something else",
+    "today": "Done for today",
+    "breakCaption": "Take a short break. Stretch and look far away.",
+    "breakTimeLabel": "Break time left",
+    "endBreak": "End break",
+    "intro": {
+      "title": "Focus in the cat's workroom",
+      "body": "Your whole screen becomes the workroom. Only your task and focus progress stay.",
+      "click": "Click",
+      "clickDesc": "Pause · Finish",
+      "escDesc": "Small window · focus continues",
+      "enter": "Enter the workroom",
+      "skip": "Open directly next time",
+      "close": "Close"
     }
   },
   "tinyWindow": {

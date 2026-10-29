@@ -15,9 +15,12 @@ export type Settings = {
   showTaskOnLockScreen: boolean
   restDay?: string
   lastDayEndEntry?: string
+  /** 켜 두면 다음 집중도 슈퍼포커스로 본다 */
+  superFocus: boolean
+  superFocusIntroSeen: boolean
 }
 
-const DEFAULT_SETTINGS: Settings = { ...normalizeTimerAppearance(null), defaultMinutes: DEFAULT_FOCUS_MINUTES, alerts: true, autoBreak: false, syncEnabled: false, calendarSyncEnabled: false, showTaskOnLockScreen: false }
+const DEFAULT_SETTINGS: Settings = { ...normalizeTimerAppearance(null), defaultMinutes: DEFAULT_FOCUS_MINUTES, alerts: true, autoBreak: false, syncEnabled: false, calendarSyncEnabled: false, showTaskOnLockScreen: false, superFocus: false, superFocusIntroSeen: false }
 
 type SettingsContextValue = {
   settings: Settings
@@ -34,7 +37,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     storage.loadSettings<Partial<Settings>>().then((saved) => {
       if (saved) setSettings((prev) => ({ ...prev, ...saved,
         alerts: typeof saved.alerts === 'boolean' ? saved.alerts : prev.alerts,
-        autoBreak: saved.autoBreak === true, calendarSyncEnabled: saved.calendarSyncEnabled === true && saved.syncEnabled === true,
+        autoBreak: saved.autoBreak === true, superFocus: saved.superFocus === true, superFocusIntroSeen: saved.superFocusIntroSeen === true, calendarSyncEnabled: saved.calendarSyncEnabled === true && saved.syncEnabled === true,
         ...normalizeTimerAppearance(saved) }))
       setLoaded(true)
     })

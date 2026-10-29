@@ -37,12 +37,14 @@ export const ROUTES = {
   FOCUS: '/focus',
   TINY_WINDOW: '/tiny_window',
   SETTINGS: '/settings',
-  DASHBOARD: '/dashboard'
+  DASHBOARD: '/dashboard',
+  SUPER_FOCUS: '/superfocus'
 } as const
 
 // IPC 채널
 export const IPC_CHANNELS = {
   WINDOW_SIZE_CHANGE: 'WINDOW_SIZE_CHANGE',
+  SUPER_FOCUS: 'SUPER_FOCUS',
   WINDOW_MINIMIZE: 'window-minimize',
   WINDOW_MOVE: 'window-move',
   WINDOW_SET_POSITION: 'window-set-position',

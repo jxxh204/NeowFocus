@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { useTaskContext } from '@renderer/context/TaskContext'
 import { useTimer } from './hooks/useTimer'
-import { WINDOW_SIZE } from '@renderer/constants'
+import { ROUTES, WINDOW_SIZE } from '@renderer/constants'
 import TimerDisplay from './components/TimerDisplay'
 import TaskNameDisplay from './components/TaskNameDisplay'
 import StopConfirmModal from './components/StopConfirmModal'
@@ -38,12 +38,14 @@ export default function FocusRunning(): JSX.Element {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
-        e.key === 'Enter' &&
         !showStopModal &&
         isReady &&
         !(e.target as HTMLElement)?.closest('button,input,textarea,select,a')
       ) {
-        navigate('/tiny_window')
+        if (e.key === 'Enter') navigate(ROUTES.TINY_WINDOW)
+        // F 키로 슈퍼포커스 작업실을 연다
+        else if (e.key.toLowerCase() === 'f' && !e.metaKey && !e.ctrlKey && !e.altKey)
+          navigate(ROUTES.SUPER_FOCUS)
       }
     }
 
@@ -116,10 +118,24 @@ export default function FocusRunning(): JSX.Element {
       </Container.Body>
 
       <Container.Bottom height={WINDOW_SIZE.BOTTOM_SECTION_HEIGHT}>
-        <Container.Button onClick={handleTinyWindowClick}>
-          {t('focus.tinyWindowButton')}
-          <Icon name="icon_mini" alt="window_mini" size={16} />
-        </Container.Button>
+        <BottomActions>
+          <Container.Button onClick={handleTinyWindowClick}>
+            {t('focus.tinyWindowButton')}
+            <Icon name="icon_mini" alt="window_mini" size={16} />
+          </Container.Button>
+          <Container.Button onClick={() => navigate(ROUTES.SUPER_FOCUS)}>
+            {t('focus.superFocusButton')}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"
+                stroke="#C7C9CB"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Container.Button>
+        </BottomActions>
       </Container.Bottom>
 
       <StopConfirmModal
@@ -130,6 +146,12 @@ export default function FocusRunning(): JSX.Element {
     </Container>
   )
 }
+
+const BottomActions = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+`
 
 const IconGroup = styled.div`
   display: flex;
