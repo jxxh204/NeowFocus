@@ -9,8 +9,31 @@ import {
   useSettingsContext,
   THEME_COLORS,
   TIMER_DURATION_OPTIONS,
-  ThemeColorKey
+  ThemeColorKey,
+  superFocusScene,
+  type SuperFocusCat,
+  type SuperFocusRoom
 } from '@renderer/context/SettingsContext'
+import roomDefault from '@renderer/page/superfocus/assets/workroom-still.png'
+import roomNature from '@renderer/page/superfocus/assets/worlds/room-nature.png'
+import roomScrapyard from '@renderer/page/superfocus/assets/worlds/room-scrapyard.png'
+import catGray from '@renderer/page/superfocus/assets/worlds/cat-gray.png'
+import catBritish from '@renderer/page/superfocus/assets/worlds/cat-british.png'
+import catSiamese from '@renderer/page/superfocus/assets/worlds/cat-siamese.png'
+import catMaine from '@renderer/page/superfocus/assets/worlds/cat-maine.png'
+
+const ROOM_CHOICES: { id: SuperFocusRoom; label: string; image: string }[] = [
+  { id: 'default', label: '기본 작업실', image: roomDefault },
+  { id: 'nature', label: '햇살과 초록 폐허', image: roomNature },
+  { id: 'scrapyard', label: '폐차장 속 피난처', image: roomScrapyard }
+]
+
+const CAT_CHOICES: { id: SuperFocusCat; label: string; image: string }[] = [
+  { id: 'gray', label: '회색 고양이', image: catGray },
+  { id: 'british', label: '브리티시', image: catBritish },
+  { id: 'siamese', label: '샴', image: catSiamese },
+  { id: 'maine', label: '메인쿤', image: catMaine }
+]
 
 const SettingsWrapper = styled.div`
   display: flex;
@@ -191,6 +214,81 @@ const ColorButton = styled.button<{ $color: string; $isSelected: boolean }>`
   }
 `
 
+const SceneItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: ${({ theme }) => theme.color.input.background};
+  border-radius: 8px;
+`
+
+const RoomGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+`
+
+const RoomButton = styled.button<{ $isSelected: boolean }>`
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: ${({ $isSelected }) => ($isSelected ? 600 : 400)};
+  color: ${({ theme }) => theme.color.text.primary};
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    box-sizing: border-box;
+    border: 2px solid
+      ${({ $isSelected, theme }) => ($isSelected ? theme.color.primary[500] : 'transparent')};
+  }
+`
+
+const CatRow = styled.div`
+  display: flex;
+  gap: 6px;
+`
+
+const CatButton = styled.button<{ $isSelected: boolean }>`
+  flex: 1 1 0;
+  min-height: 60px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: ${({ $isSelected }) => ($isSelected ? 600 : 400)};
+  color: ${({ theme }) => theme.color.text.primary};
+  background: ${({ $isSelected }) => ($isSelected ? 'rgba(0, 255, 133, 0.1)' : 'transparent')};
+  border: 1px solid
+    ${({ $isSelected, theme }) =>
+      $isSelected ? theme.color.primary[500] : theme.color.container.border};
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  img {
+    width: 56px;
+    height: 28px;
+    object-fit: contain;
+  }
+`
+
 const SETTINGS_TOP_SECTION_HEIGHT = 16
 const SETTINGS_BODY_HEIGHT = 540
 
@@ -199,6 +297,7 @@ function SettingsPage() {
   const navigate = useNavigate()
   const { settings, timerDurationMinutes, setTimerDuration, setThemeColor, updateExperience } =
     useSettingsContext()
+  const { room: superFocusRoom, cat: superFocusCat } = superFocusScene(settings)
   const { syncEnabled, syncStatus, setSyncEnabled, retrySync, updateDraft } = useTaskContext()
 
   const handleBack = () => {
@@ -256,6 +355,49 @@ function SettingsPage() {
                 ))}
               </ColorButtonGroup>
             </SettingItem>
+            <SectionTitle>슈퍼포커스</SectionTitle>
+            <SceneItem>
+              <SettingLabel id="room-label">작업실</SettingLabel>
+              <RoomGrid role="radiogroup" aria-labelledby="room-label">
+                {ROOM_CHOICES.map((room) => (
+                  <RoomButton
+                    key={room.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={superFocusRoom === room.id}
+                    $isSelected={superFocusRoom === room.id}
+                    onClick={() => updateExperience({ superFocusRoom: room.id })}
+                  >
+                    <img src={room.image} alt="" />
+                    {room.label}
+                  </RoomButton>
+                ))}
+              </RoomGrid>
+            </SceneItem>
+            <SceneItem>
+              <SettingLabel id="cat-label">고양이</SettingLabel>
+              <CatRow role="radiogroup" aria-labelledby="cat-label">
+                {CAT_CHOICES.map((cat) => (
+                  <CatButton
+                    key={cat.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={superFocusCat === cat.id}
+                    disabled={superFocusRoom === 'default' && cat.id !== 'gray'}
+                    $isSelected={superFocusCat === cat.id}
+                    onClick={() => updateExperience({ superFocusCat: cat.id })}
+                  >
+                    <img src={cat.image} alt="" />
+                    {cat.label}
+                  </CatButton>
+                ))}
+              </CatRow>
+              <Detail>
+                {superFocusRoom === 'default'
+                  ? '기본 작업실에는 회색 고양이가 함께 그려져 있어요. 다른 고양이는 다른 작업실에서 고를 수 있어요.'
+                  : '슈퍼포커스를 열면 고른 작업실에서 집중해요.'}
+              </Detail>
+            </SceneItem>
             <SectionTitle>연결 및 알림</SectionTitle>
             <SettingItem>
               <div>

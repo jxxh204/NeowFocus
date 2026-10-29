@@ -8,8 +8,10 @@ import { useTaskContext } from '@renderer/context/TaskContext'
 import { IPC_CHANNELS, ROUTES } from '@renderer/constants'
 import CircularTimer from '@renderer/component/CircularTimer'
 import Icon from '@renderer/component/ui/Icon'
+import { superFocusScene, useSettingsContext } from '@renderer/context/SettingsContext'
 import roomMotion from './assets/workroom.webp'
 import roomStill from './assets/workroom-still.png'
+import WorldScene from './WorldScene'
 
 const SKIP_INTRO_KEY = 'neowfocus.superfocus.skipIntro.v1'
 
@@ -60,6 +62,8 @@ export default function SuperFocusPage(): JSX.Element {
     finishBreak
   } = useTaskContext()
   const reduceMotion = usePrefersReducedMotion()
+  const { settings } = useSettingsContext()
+  const { room, cat } = superFocusScene(settings)
   const [controls, setControls] = useState(false)
   const [intro, setIntro] = useState(() => !readSkipIntro())
   const [skipNext, setSkipNext] = useState(false)
@@ -150,11 +154,21 @@ export default function SuperFocusPage(): JSX.Element {
 
   return (
     <Room>
-      <Scene
-        src={moving ? roomMotion : roomStill}
-        alt={t('superFocus.sceneAlt')}
-        $paused={phase === 'paused'}
-      />
+      {room === 'default' ? (
+        <Scene
+          src={moving ? roomMotion : roomStill}
+          alt={t('superFocus.sceneAlt')}
+          $paused={phase === 'paused'}
+        />
+      ) : (
+        <WorldScene
+          room={room}
+          cat={cat}
+          motion={moving}
+          paused={phase === 'paused'}
+          label={t(`superFocus.worlds.${room}`)}
+        />
+      )}
       <TopScrim aria-hidden="true" />
       <BottomScrim aria-hidden="true" />
       {phase === 'focus' && !intro && (

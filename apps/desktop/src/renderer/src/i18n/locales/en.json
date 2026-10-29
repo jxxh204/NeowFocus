@@ -32,6 +32,10 @@
   "superFocus": {
     "place": "Neow's Workroom",
     "sceneAlt": "A gray cat lies by a laptop on a desk in a bunker workroom while a mushroom cloud rises over the city outside",
+    "worlds": {
+      "nature": "A cat on the desk of a sunlit workroom. Outside, a ruined city overgrown with green vines",
+      "scrapyard": "A cat on the desk of a workroom in a scrapyard. Outside, stacked buses and an excavator"
+    },
     "status": {
       "focus": "Focus time",
       "paused": "Paused",
