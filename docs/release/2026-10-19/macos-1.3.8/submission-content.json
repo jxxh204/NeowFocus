@@ -1,0 +1,10 @@
+{
+  "version": "1.3.8",
+  "build": "1.3.8",
+  "whatsNew": {
+    "ko": "다른 앱을 전체 화면으로 사용 중에도 집중 타이머를 볼 수 있도록 개선했습니다. Dock 아이콘과 기존 화면 디자인은 유지됩니다.",
+    "en-US": "The focus timer can now stay visible over other apps in full screen. The Dock icon and existing interface are preserved."
+  },
+  "reviewNotes": "This macOS update changes the existing timer window to an Electron native panel so it can remain visible over other apps in native full-screen Spaces. The Dock icon remains visible and the existing interface is unchanged. No additional permissions or login are required. Please test the timer alongside another app in native full screen, including the compact timer and hiding/reopening the window.",
+  "releaseMode": "AUTOMATIC_AFTER_APPROVAL"
+}

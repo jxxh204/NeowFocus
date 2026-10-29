@@ -1,0 +1,53 @@
+{
+  "platform": "iOS",
+  "version": "0.1.1",
+  "build": "16",
+  "sourceCommit": "6468977cac28e7349231ea9d406018cadd166612",
+  "calendarFixCommit": "ad78d65",
+  "status": "AVAILABLE_TO_INTERNAL_TESTERS",
+  "uploaded": true,
+  "processingComplete": true,
+  "testerAccessVerified": true,
+  "physicalDeviceVerified": false,
+  "realAccountRoundTripVerified": false,
+  "testFlightAppId": "6751244958",
+  "existingInternalGroup": "더기와 쟈니들",
+  "groupId": "28bc289e-316b-4ce0-ba1c-a7188672b5ed",
+  "groupAccessVerifiedThisRun": true,
+  "sourceChecks": {
+    "nativeEventKitCivilDayCases": 6,
+    "repeatedUpdatesPerCase": 20,
+    "typecheck": true,
+    "timerStyles": true,
+    "coreTests": 84,
+    "releaseSimulatorBuild": true
+  },
+  "archiveVerified": true,
+  "screenTimeFreeAuditPassed": true,
+  "uploadExitCode": null,
+  "uploadAttemptAt": "2026-10-24T15:19:15+09:00",
+  "resumeCommand": "bash scripts/upload-testflight.sh build-output/NeowFocus-0.1.1-16.xcarchive build-output/TestFlight-0.1.1-16",
+  "testNotesSaved": true,
+  "publicSubmissionRequested": false,
+  "uploadMethod": "Xcode Organizer App Store Connect",
+  "uploadedAt": "2026-10-25T21:28:00+09:00",
+  "testFlightBuildId": "5b23116c-9e56-424b-a496-ee46e2d5d86d",
+  "uploadRowVerified": true,
+  "cliRetryExitCode": 70,
+  "cliRetryLog": "apps/mobile/build-output/upload-0.1.1-16-retry-20261025.log",
+  "uploadEvidence": [
+    "uploaded-build16-organizer.png",
+    "upload-complete-organizer.png",
+    "testflight-processing.png",
+    "internal-group-automatic.png",
+    "testflight-ready.png"
+  ],
+  "frameworkSymbolWarnings": [
+    "React.framework",
+    "ReactNativeDependencies.framework",
+    "hermesvm.framework"
+  ],
+  "groupAutomaticXcodeDistributionVerified": true,
+  "groupTesterCount": 2,
+  "testFlightURL": "https://appstoreconnect.apple.com/teams/e5ec510c-eb5f-47f1-99e1-31e2ce1e77cc/apps/6751244958/testflight/ios/5b23116c-9e56-424b-a496-ee46e2d5d86d"
+}

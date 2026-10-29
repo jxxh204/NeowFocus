@@ -1,0 +1,21 @@
+{
+  "archive": "build-output/NeowFocus-0.1.1-14.xcarchive",
+  "version": "0.1.1",
+  "build": "14",
+  "bundleID": "com.neowfocus.pomodorotimer",
+  "calendarUsage": "냐우포커스 전용 iCloud 캘린더에 하루 집중 횟수와 총 시간을 저장하고 갱신합니다. 다른 일정은 변경하지 않습니다.",
+  "extensions": [
+    {
+      "name": "NeowFocusWidgets.appex",
+      "version": "0.1.1",
+      "build": "14"
+    }
+  ],
+  "strictSignatureVerified": true,
+  "eventKitLinked": true,
+  "expoConfigVersionVerified": true,
+  "executableSHA256": "7f71ea6ccdc1f5b89ee5a588823ffff310b495e23f47bde77064d89aeb932755",
+  "hermesSHA256": "9bd3f37515374df32df42ec28cad0ee9694033a4374d505f6e07fd2957a1f06d",
+  "physicalDeviceVerified": false,
+  "realAccountRoundTripVerified": false
+}

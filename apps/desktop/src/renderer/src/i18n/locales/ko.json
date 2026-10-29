@@ -1,0 +1,118 @@
+{
+  "input": {
+    "placeholder": "집중이 필요한 일 하나를 적어주세요.",
+    "startButton": "뽀모도로 시작",
+    "dashboard": "기록 보기"
+  },
+  "focus": {
+    "stopConfirmModal": {
+      "title": "진행중인 작업을 삭제하실 건가요?",
+      "cancelButton": "닫기",
+      "confirmButton": "삭제하기"
+    },
+    "sessionCount": "회차",
+    "defaultTaskName": "Focus Time",
+    "tinyWindowButton": "작은 창 보기 (Enter)",
+    "superFocusButton": "슈퍼포커스 (F)",
+    "quickComplete": "빠른 완료",
+    "timerMenu": {
+      "pause": "일시정지",
+      "resume": "재개",
+      "stop": "작업중단"
+    },
+    "completionActions": {
+      "newTask": "다른 작업",
+      "repeat": "계속하기"
+    },
+    "notification": {
+      "title": "작업 완료! 🎉",
+      "body": "25분 집중 시간이 끝났습니다."
+    }
+  },
+  "superFocus": {
+    "place": "냐우의 작업실",
+    "sceneAlt": "벙커 작업실 책상 위에서 회색 고양이가 노트북 옆에 엎드려 있고, 창밖 도시에는 버섯구름이 피어오른다",
+    "worlds": {
+      "nature": "햇살이 드는 작업실 책상 위의 고양이. 창밖은 초록 덩굴에 덮인 폐허 도시",
+      "scrapyard": "폐차장 속 작업실 책상 위의 고양이. 창밖에 쌓인 버스와 굴착기"
+    },
+    "status": {
+      "focus": "집중하는 시간",
+      "paused": "잠시 멈춤",
+      "done": "집중 끝",
+      "break": "쉬어가는 시간"
+    },
+    "gaugeLabel": "집중 흐름",
+    "showControls": "멈추거나 마치기",
+    "focusHint": "클릭하면 멈추거나 마칠 수 있어요 · esc 작은 창으로",
+    "pause": "잠시 멈춤",
+    "resume": "다시 집중",
+    "finish": "마침",
+    "backToWindow": "작은 창으로 돌아가기 · 집중은 계속",
+    "toWindow": "작은 창으로",
+    "pausedCaption": "작업실도 같이 쉬고 있어요",
+    "pausedHint": "space 다시 집중 · esc 작은 창으로",
+    "doneTitle": "집중 하나가 쌓였어요.",
+    "breakOverTitle": "휴식이 끝났어요.",
+    "doneNote": "{{minutes}}분 집중했어요 · 오늘 {{count}}번째",
+    "repeat": "같은 일 한 번 더",
+    "newTask": "다른 일 시작하기",
+    "today": "오늘은 여기까지",
+    "breakCaption": "잠깐 쉬어가요. 어깨를 펴고 멀리 보기.",
+    "breakTimeLabel": "휴식 남은 시간",
+    "endBreak": "휴식 끝내기",
+    "intro": {
+      "title": "고양이 작업실에서 집중해요",
+      "body": "화면 전체가 작업실로 바뀌어요. 할 일과 집중 흐름만 조용히 남겨둘게요.",
+      "click": "클릭",
+      "clickDesc": "잠시 멈춤 · 마침",
+      "escDesc": "작은 창으로 · 집중은 계속",
+      "enter": "작업실 들어가기",
+      "skip": "다음부터 안내 없이 바로 열기",
+      "close": "닫기"
+    }
+  },
+  "tinyWindow": {
+    "defaultTaskName": "Focus Time"
+  },
+  "settings": {
+    "title": "설정",
+    "timer": {
+      "title": "타이머",
+      "duration": "집중 시간",
+      "minutes": "분"
+    },
+    "appearance": {
+      "title": "외관",
+      "color": "테마 컬러",
+      "icon": "아이콘"
+    },
+    "colors": {
+      "white": "화이트",
+      "green": "그린",
+      "blue": "블루",
+      "purple": "퍼플",
+      "pink": "핑크",
+      "orange": "오렌지",
+      "yellow": "옐로우"
+    },
+    "comingSoon": "준비 중",
+    "back": "돌아가기"
+  },
+  "dashboard": {
+    "title": "내 집중 기록",
+    "empty": "아직 완료한 작업이 없습니다.\n첫 번째 뽀모도로를 시작해보세요!",
+    "today": "오늘",
+    "yesterday": "어제",
+    "sessions": "회",
+    "back": "돌아가기",
+    "deleteConfirmModal": {
+      "title": "이 기록을 삭제할까요?",
+      "cancelButton": "취소",
+      "confirmButton": "삭제"
+    },
+    "contextMenu": {
+      "delete": "삭제"
+    }
+  }
+}

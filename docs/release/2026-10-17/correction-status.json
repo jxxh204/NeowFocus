@@ -1,0 +1,21 @@
+{
+  "appId": "6751244958",
+  "iOSVersion": "0.1.0",
+  "rejectedBuild": "9",
+  "guideline": "2.5.1",
+  "rejectionSource": "App Store Connect full review message verified on 2026-10-18",
+  "replacementBuild": "12",
+  "archiveSucceeded": true,
+  "binaryAuditPassed": true,
+  "uploaded": true,
+  "resubmitted": true,
+  "blocker": null,
+  "archive": "apps/mobile/build-output/NeowFocus-0.1.0-12.xcarchive",
+  "macOS": "1.3.7 (1.3.7) also submitted; WAITING_FOR_REVIEW",
+  "publicPolicyUpdateApproved": true,
+  "publicPolicyUpdated": true,
+  "additionalAudit": "app-review-audit.md",
+  "uploadedAt": "2026-10-18T00:57:34+09:00",
+  "resubmittedAt": "2026-10-18T01:07:00+09:00",
+  "reviewState": "WAITING_FOR_REVIEW"
+}

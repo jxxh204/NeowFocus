@@ -1,0 +1,179 @@
+{
+  "image": "cat-stamp-pixel-v1.png",
+  "width": 1254,
+  "height": 1254,
+  "columns": 4,
+  "rows": 2,
+  "frameWidth": 313,
+  "frameHeight": 627,
+  "anchorMeaning": "cropped upper back center; align anchors between frames",
+  "frames": [
+    {
+      "index": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 313,
+        "height": 627
+      },
+      "anchor": {
+        "x": 174,
+        "y": 157
+      },
+      "opaqueBounds": [
+        43,
+        156,
+        304,
+        496
+      ]
+    },
+    {
+      "index": 1,
+      "rect": {
+        "x": 313,
+        "y": 0,
+        "width": 313,
+        "height": 627
+      },
+      "anchor": {
+        "x": 163,
+        "y": 156
+      },
+      "opaqueBounds": [
+        33,
+        156,
+        294,
+        531
+      ]
+    },
+    {
+      "index": 2,
+      "rect": {
+        "x": 626,
+        "y": 0,
+        "width": 313,
+        "height": 627
+      },
+      "anchor": {
+        "x": 152,
+        "y": 156
+      },
+      "opaqueBounds": [
+        21,
+        156,
+        283,
+        569
+      ]
+    },
+    {
+      "index": 3,
+      "rect": {
+        "x": 939,
+        "y": 0,
+        "width": 313,
+        "height": 627
+      },
+      "anchor": {
+        "x": 140,
+        "y": 156
+      },
+      "opaqueBounds": [
+        10,
+        156,
+        272,
+        567
+      ]
+    },
+    {
+      "index": 4,
+      "rect": {
+        "x": 0,
+        "y": 627,
+        "width": 313,
+        "height": 627
+      },
+      "anchor": {
+        "x": 174,
+        "y": 89
+      },
+      "opaqueBounds": [
+        43,
+        89,
+        305,
+        464
+      ]
+    },
+    {
+      "index": 5,
+      "rect": {
+        "x": 313,
+        "y": 627,
+        "width": 313,
+        "height": 627
+      },
+      "anchor": {
+        "x": 162,
+        "y": 89
+      },
+      "opaqueBounds": [
+        32,
+        88,
+        294,
+        451
+      ]
+    },
+    {
+      "index": 6,
+      "rect": {
+        "x": 626,
+        "y": 627,
+        "width": 313,
+        "height": 627
+      },
+      "anchor": {
+        "x": 151,
+        "y": 89
+      },
+      "opaqueBounds": [
+        21,
+        89,
+        283,
+        457
+      ]
+    },
+    {
+      "index": 7,
+      "rect": {
+        "x": 939,
+        "y": 627,
+        "width": 313,
+        "height": 627
+      },
+      "anchor": {
+        "x": 140,
+        "y": 89
+      },
+      "opaqueBounds": [
+        10,
+        88,
+        272,
+        429
+      ]
+    }
+  ],
+  "animationOrder": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    6,
+    5,
+    7
+  ],
+  "contact": {
+    "frame": 3,
+    "x": 199,
+    "y": 539
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "electron": "28.3.3",
+  "dockVisible": true,
+  "windows": [
+    {
+      "native": {
+        "windowClass": "ElectronNSPanel",
+        "nonactivatingPanel": true,
+        "activationPolicy": 0,
+        "visible": false,
+        "onActiveSpace": true,
+        "canJoinAllSpaces": true,
+        "level": 3,
+        "screen": 3,
+        "fullScreenAuxiliary": true
+      },
+      "title": "Electron",
+      "visible": false,
+      "minimized": false,
+      "alwaysOnTop": true,
+      "allSpaces": true,
+      "focused": false,
+      "bounds": {
+        "x": 1011,
+        "y": 34,
+        "width": 402,
+        "height": 186
+      }
+    }
+  ]
+}

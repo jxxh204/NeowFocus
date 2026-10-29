@@ -4,7 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NeowFocus is an Electron-based Pomodoro timer desktop application with React and TypeScript. It features a cute cat-themed UI with system tray integration and always-on-top floating timer functionality.
+NeowFocus is a "focus on one thing now" timer with a cute cat-themed UI. The repo is a pnpm monorepo:
+
+| Path | What |
+| --- | --- |
+| `apps/desktop` | Existing Electron + React 18 app (system tray, always-on-top floating timer, Mac App Store build) |
+| `apps/mobile` | New Expo SDK 57 + React Native app, iOS first (`@neowfocus/mobile`) |
+| `packages/core` | Shared pure-TS focus timer model (`@neowfocus/core`), tested with Vitest |
+
+Root commands: `pnpm test`, `pnpm typecheck` (all workspaces), or `pnpm desktop <script>`, `pnpm mobile <script>`, `pnpm core <script>`.
+
+- The two apps use different React majors, so the workspace uses pnpm's default **isolated** linker. Do not switch to `nodeLinker: hoisted`.
+- `packages/core` stores a session's **end time (`endsAt`)**, not a ticking remaining-seconds value, so backgrounded apps and (later) other devices compute the same remaining time. The desktop app does not use it yet.
+- Mobile web preview (no Xcode needed): `cd apps/mobile && npx expo start --web`. Native iOS builds need Xcode or EAS.
+- Planned cross-device sync is iCloud (CloudKit), which will need a small Swift native module in each app.
+
+Everything below describes `apps/desktop`; run its commands there or via `pnpm desktop <script>`.
 
 ## Essential Commands
 
@@ -102,7 +117,7 @@ The application uses Electron's multi-process architecture:
 
 ### Build & Package System
 
-- **Package manager**: pnpm (with hoisted node-linker)
+- **Package manager**: pnpm 10 workspace (isolated node-linker, see top of file)
 - **Forge config**: `forge.config.js` (replaces electron-builder)
 - **entitlements**: `build/entitlements.mas.plist` (main) and `build/entitlements.mas.inherit.plist` (helpers)
 - **Provisioning**: `build/NeowFocus_Mac_App_Store.provisionprofile`

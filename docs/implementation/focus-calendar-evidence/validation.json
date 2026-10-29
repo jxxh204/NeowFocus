@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-10-22T23:55:23.065231+09:00",
+  "focusSourceCommit": "3755fc7828f4da669baced31c08eab4e703adff6",
+  "calendarSourceCommit": "ebfaddb07eddab21d3c84ced08ab75e06f01c4d4",
+  "calendarSourceBackup": "neow-calendar-integration.patch",
+  "localBuild": {
+    "platform": "iOS Simulator",
+    "configuration": "Release",
+    "version": "0.1.1",
+    "build": "13",
+    "distribution": "local validation only",
+    "bundleSHA256": "ab372e8d1022472db7ea29dc5cc7e6d0d1bc86f084bfa6a1f1179d4a901210f5",
+    "signedBuildLog": "apps/mobile/build-output/calendar-simulator-signed-build.log",
+    "result": "BUILD SUCCEEDED"
+  },
+  "checks": {
+    "focusCoreTests": 84,
+    "calendarConnectionTests": 27,
+    "focusTypecheck": true,
+    "calendarTypecheckAndLint": true,
+    "timerStyleAndGeometryChecks": true,
+    "calendarIOSBundleExport": true,
+    "newBuildWaterNaturalCompletion1Minute": true,
+    "calendarSettingDefaultOff": true,
+    "dayLinkOpensFocusRecords": true
+  },
+  "uiVerificationMethod": "Device Hub screenshots and coordinate interactions; Release app AX contents were unavailable.",
+  "evidence": [
+    "new-build-water-natural-completion.png",
+    "mobile-calendar-settings.png",
+    "day-link-records.png"
+  ],
+  "realAccountCloudKitRoundTripVerified": false,
+  "realAccountCalendarCrossAppRoundTripVerified": false,
+  "testFlightUploadPerformedForTheseChanges": false,
+  "githubPushPerformedForTheseChanges": false
+}

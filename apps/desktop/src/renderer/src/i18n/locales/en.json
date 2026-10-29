@@ -1,0 +1,118 @@
+{
+  "input": {
+    "placeholder": "Write one task that needs your focus.",
+    "startButton": "Start Pomodoro",
+    "dashboard": "View History"
+  },
+  "focus": {
+    "stopConfirmModal": {
+      "title": "Do you want to delete the current task?",
+      "cancelButton": "Cancel",
+      "confirmButton": "Delete"
+    },
+    "sessionCount": "sessions",
+    "defaultTaskName": "Focus Time",
+    "tinyWindowButton": "Tiny Window View (Enter)",
+    "superFocusButton": "Super Focus (F)",
+    "quickComplete": "Complete",
+    "timerMenu": {
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Stop"
+    },
+    "completionActions": {
+      "newTask": "New Task",
+      "repeat": "One More Timer"
+    },
+    "notification": {
+      "title": "Task Completed! 🎉",
+      "body": "25 minutes of focus time is over."
+    }
+  },
+  "superFocus": {
+    "place": "Neow's Workroom",
+    "sceneAlt": "A gray cat lies by a laptop on a desk in a bunker workroom while a mushroom cloud rises over the city outside",
+    "worlds": {
+      "nature": "A cat on the desk of a sunlit workroom. Outside, a ruined city overgrown with green vines",
+      "scrapyard": "A cat on the desk of a workroom in a scrapyard. Outside, stacked buses and an excavator"
+    },
+    "status": {
+      "focus": "Focus time",
+      "paused": "Paused",
+      "done": "Focus done",
+      "break": "Break time"
+    },
+    "gaugeLabel": "Focus progress",
+    "showControls": "Pause or finish",
+    "focusHint": "Click to pause or finish · esc for the small window",
+    "pause": "Pause",
+    "resume": "Resume",
+    "finish": "Finish",
+    "backToWindow": "Back to the small window · focus continues",
+    "toWindow": "Small window",
+    "pausedCaption": "The workroom is resting too",
+    "pausedHint": "space to resume · esc for the small window",
+    "doneTitle": "One more focus session done.",
+    "breakOverTitle": "Your break is over.",
+    "doneNote": "Focused {{minutes}} min · #{{count}} today",
+    "repeat": "Same task again",
+    "newTask": "Start something else",
+    "today": "Done for today",
+    "breakCaption": "Take a short break. Stretch and look far away.",
+    "breakTimeLabel": "Break time left",
+    "endBreak": "End break",
+    "intro": {
+      "title": "Focus in the cat's workroom",
+      "body": "Your whole screen becomes the workroom. Only your task and focus progress stay.",
+      "click": "Click",
+      "clickDesc": "Pause · Finish",
+      "escDesc": "Small window · focus continues",
+      "enter": "Enter the workroom",
+      "skip": "Open directly next time",
+      "close": "Close"
+    }
+  },
+  "tinyWindow": {
+    "defaultTaskName": "Focus Time"
+  },
+  "settings": {
+    "title": "Settings",
+    "timer": {
+      "title": "Timer",
+      "duration": "Focus Duration",
+      "minutes": "m"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "color": "Theme Color",
+      "icon": "Icon"
+    },
+    "colors": {
+      "white": "White",
+      "green": "Green",
+      "blue": "Blue",
+      "purple": "Purple",
+      "pink": "Pink",
+      "orange": "Orange",
+      "yellow": "Yellow"
+    },
+    "comingSoon": "Coming Soon",
+    "back": "Back"
+  },
+  "dashboard": {
+    "title": "My Focus History",
+    "empty": "No completed tasks yet.\nStart your first pomodoro!",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "sessions": " sessions",
+    "back": "Back",
+    "deleteConfirmModal": {
+      "title": "Delete this record?",
+      "cancelButton": "Cancel",
+      "confirmButton": "Delete"
+    },
+    "contextMenu": {
+      "delete": "Delete"
+    }
+  }
+}

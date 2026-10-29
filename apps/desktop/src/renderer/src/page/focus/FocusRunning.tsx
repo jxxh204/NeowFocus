@@ -1,0 +1,160 @@
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
+import { useTaskContext } from '@renderer/context/TaskContext'
+import { useTimer } from './hooks/useTimer'
+import { ROUTES, WINDOW_SIZE } from '@renderer/constants'
+import TimerDisplay from './components/TimerDisplay'
+import TaskNameDisplay from './components/TaskNameDisplay'
+import StopConfirmModal from './components/StopConfirmModal'
+import Container from '@components/Container'
+import MinimizeButton from '@components/MinimizeButton'
+import Icon from '@renderer/component/ui/Icon'
+
+export default function FocusRunning(): JSX.Element {
+  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const { currentTask, resetCurrentTask, completeEarly } = useTaskContext()
+  const [showStopModal, setShowStopModal] = useState(false)
+
+  const { timerState, remainingTime, percentage, formatTime, handlePause, handleResume } =
+    useTimer()
+
+  // 도메인 로직: 태스크 없으면 입력 페이지로
+  useEffect(() => {
+    if (!currentTask?.taskName) {
+      navigate('/')
+    }
+  }, [currentTask?.taskName, navigate])
+
+  // 키보드 이벤트: Enter 키로 작은 창으로 전환
+  // 입력창에서의 Enter 이벤트 전파 방지를 위해 마운트 후 지연 활성화
+  useEffect(() => {
+    let isReady = false
+    const timer = setTimeout(() => {
+      isReady = true
+    }, 300) // 300ms 후 Enter 키 활성화
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        !showStopModal &&
+        isReady &&
+        !(e.target as HTMLElement)?.closest('button,input,textarea,select,a')
+      ) {
+        if (e.key === 'Enter') navigate(ROUTES.TINY_WINDOW)
+        // F 키로 슈퍼포커스 작업실을 연다
+        else if (e.key.toLowerCase() === 'f' && !e.metaKey && !e.ctrlKey && !e.altKey)
+          navigate(ROUTES.SUPER_FOCUS)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [showStopModal, navigate])
+
+  // 이벤트 핸들러: 타이머 중지 확인
+  const handleStopClick = () => {
+    setShowStopModal(true)
+  }
+
+  const handleStopConfirm = () => {
+    resetCurrentTask()
+    setShowStopModal(false)
+    navigate('/')
+  }
+
+  const handleStopCancel = () => {
+    setShowStopModal(false)
+  }
+
+  // 이벤트 핸들러: 일시정지
+  const handlePauseClick = () => {
+    handlePause()
+  }
+
+  // 이벤트 핸들러: 재개
+  const handleResumeClick = () => {
+    handleResume()
+  }
+
+  // 이벤트 핸들러: 빠른 완료 (진행된 시간만큼만 저장)
+  const handleQuickComplete = () => {
+    completeEarly()
+  }
+
+  // 이벤트 핸들러: 작은 창으로 전환
+  const handleTinyWindowClick = () => {
+    navigate('/tiny_window')
+  }
+
+  return (
+    <Container width={WINDOW_SIZE.DEFAULT_WIDTH}>
+      <Container.Top height={WINDOW_SIZE.TOP_SECTION_HEIGHT}>
+        <IconGroup>
+          <Icon name="cat_face" alt="cat" size={24} />
+          <Icon name="bubble" alt="bubble_focus" height={16} width={68} />
+        </IconGroup>
+        <MinimizeButton />
+      </Container.Top>
+
+      <Container.Body height={WINDOW_SIZE.BODY_SECTION_FOCUS_HEIGHT} padding="0 0 0 10px">
+        <TaskNameDisplay
+          taskName={currentTask?.taskName || t('focus.defaultTaskName')}
+          onComplete={handleQuickComplete}
+          onDelete={handleStopClick}
+        />
+        <TimerDisplay
+          percentage={percentage}
+          formatTime={formatTime}
+          remainingTime={remainingTime}
+          timerState={timerState}
+          onResume={handleResumeClick}
+          onPause={handlePauseClick}
+        />
+      </Container.Body>
+
+      <Container.Bottom height={WINDOW_SIZE.BOTTOM_SECTION_HEIGHT}>
+        <BottomActions>
+          <Container.Button onClick={handleTinyWindowClick}>
+            {t('focus.tinyWindowButton')}
+            <Icon name="icon_mini" alt="window_mini" size={16} />
+          </Container.Button>
+          <Container.Button onClick={() => navigate(ROUTES.SUPER_FOCUS)}>
+            {t('focus.superFocusButton')}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path
+                d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"
+                stroke="#C7C9CB"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Container.Button>
+        </BottomActions>
+      </Container.Bottom>
+
+      <StopConfirmModal
+        isOpen={showStopModal}
+        onClose={handleStopCancel}
+        onConfirm={handleStopConfirm}
+      />
+    </Container>
+  )
+}
+
+const BottomActions = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+`
+
+const IconGroup = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+`

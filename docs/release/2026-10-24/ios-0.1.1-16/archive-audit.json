@@ -1,0 +1,32 @@
+{
+  "archive": "apps/mobile/build-output/NeowFocus-0.1.1-16.xcarchive",
+  "version": "0.1.1",
+  "build": "16",
+  "bundleID": "com.neowfocus.pomodorotimer",
+  "sourceCommit": "6468977cac28e7349231ea9d406018cadd166612",
+  "calendarFixCommit": "ad78d65",
+  "nativeCalendarDateHelperVerified": true,
+  "extensions": [
+    {
+      "name": "NeowFocusWidgets.appex",
+      "version": "0.1.1",
+      "build": "16",
+      "executableSHA256": "794c5fc118bcf669258ce37485dc13a85af2a063449b6b25441f2b75f2e5cdb8"
+    }
+  ],
+  "strictSignatureVerified": true,
+  "expoConfigVersionVerified": true,
+  "executableSHA256": "904dd4d11c3cf85674eed1c61e044e793a10a24a2cc992baefe31c77285f7227",
+  "hermesSHA256": "8c669dac01c78443809fee2af129ac13e4a32eb76796e4a3eda9a181ef39eb6b",
+  "featuresInHermes": {
+    "calendarSyncEnabled": true,
+    "calendarConnect": true,
+    "calendarSync": true,
+    "sessionAppearance": true,
+    "timerStyle": true,
+    "showRemainingTime": true
+  },
+  "approvedPixelAssetSHA256": "5c308540d30e9cc937e544a7ce9f68ebf77fd7038fd3f210096b93d7321e7642",
+  "physicalDeviceVerified": false,
+  "realAccountRoundTripVerified": false
+}

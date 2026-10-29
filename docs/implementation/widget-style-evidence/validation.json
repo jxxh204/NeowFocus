@@ -1,0 +1,88 @@
+{
+  "checkedAt": "2026-10-23T15:39:43.535510+09:00",
+  "sourceCommit": "e44a5c75efd0c86220d39c32abc1e9e3efb044c7",
+  "localBuild": {
+    "platform": "iOS Simulator",
+    "configuration": "Release",
+    "version": "0.1.1",
+    "build": "15",
+    "widgetBuild": "15",
+    "result": "BUILD SUCCEEDED",
+    "strictSignatureVerified": true,
+    "installedInQASimulator": true,
+    "hermesSHA256": "4ace81cc8aa37f1eaf3f4e68eacdd13ebbdfb10c6a1680ba92d2c1246d0fb950",
+    "scopeNote": "Signed Release app rebuilt after duck-boat removal; strict deep signature verification passed and the app was installed in the dedicated QA simulator."
+  },
+  "checks": {
+    "mobileTypecheck": true,
+    "timerStylesChecks": true,
+    "nativeLegacyDecodeAndStylePreservation": true,
+    "tetrominoes": 24,
+    "coveredCells": 96,
+    "nativeModelExecutablePassed": true,
+    "offscreenProductionViewsRendered": true,
+    "offscreenPausedLayoutsInspected": true,
+    "offscreenRunningProgressViewVerified": false,
+    "mechanicalDetectorFindings": 0
+  },
+  "actualWidgetHostDeliveryVerified": true,
+  "actualLockScreenAndDynamicIslandVerified": true,
+  "actualAnimationPlaybackVerified": false,
+  "physicalDeviceVerified": false,
+  "blocker": null,
+  "testFlightUploadedForTheseChanges": true,
+  "currentDeliveredTestFlightBuild": "0.1.1 (14)",
+  "evidenceType": "Includes actual iOS Simulator SpringBoard, Lock Screen and compact Dynamic Island captures in host/; root PNGs remain offscreen production components. No physical-device claim.",
+  "duckBoatRemoval": {
+    "checkedAt": "2026-10-23T14:14:30.743244+09:00",
+    "productionWidgetAndCardSourcesCompiled": true,
+    "offscreenProductionViewsRendered": true,
+    "pausedWaterCardInspected": true,
+    "twoWaveLayersRetained": true,
+    "testFlightUploaded": false
+  },
+  "hostValidation": {
+    "environment": "iOS 27.0 Simulator, iPhone 18 Pro, NeowFocus Widget QA",
+    "simulatorUDID": "9A5B5268-BC97-41DC-8DD3-2C4526F0C8E3",
+    "interactionTool": "CUA accessibility controls and Device Hub menus; captures saved with simctl io screenshot",
+    "homeSmallWidget": [
+      "water completed in gallery and on home screen",
+      "blocks running",
+      "classic running"
+    ],
+    "compactDynamicIsland": [
+      "blocks running",
+      "classic running"
+    ],
+    "lockScreenLiveActivity": [
+      "water running",
+      "water paused",
+      "water resumed",
+      "water completed"
+    ],
+    "pauseResumeDrivenFromApp": true,
+    "pausedRemainingTime": "14:34 retained across lock/unlock and style changes; resumed countdown observed",
+    "waterCompletionStyleRetained": true,
+    "yellowUnsupportedPlaceholderObservedInActualHost": false,
+    "duckBoatObserved": false,
+    "taskPrivacySwitchRemainedOff": true,
+    "iCloudAndCalendarSyncRemainedOff": true,
+    "qaSessionEndedAfterValidation": true,
+    "widgetIntentButtonsTapped": false,
+    "expandedDynamicIslandVerified": false,
+    "mediumWidgetHostVerified": false,
+    "reduceMotionDeviceBehaviorVerified": false,
+    "alwaysOnPhysicalDeviceBehaviorVerified": false,
+    "pendingReason": "CUA coordinate clicks/drags repeatedly failed with noWindowsAvailable. Accessibility and native menu actions allowed the documented flows; direct widget intent buttons and expanded-island gestures remain unverified.",
+    "firstLaunchNote": "A newly booted simulator initially showed no Live Activity card. After extension registration completed and the native Live Activity permission prompts were accepted, the card rendered. Initial renderer content settled to the current countdown.",
+    "notificationNote": "The fresh simulator initially showed a notification-scheduling warning before authorization. The notification prompt was later accepted, but the old warning remained in the app. Completion notification delivery was not validated in this timer-style test.",
+    "captures": [
+      "host/water-lock-screen.png",
+      "host/water-paused-lock-screen.png",
+      "host/water-completed-lock-screen.png",
+      "host/blocks-home-and-island.png",
+      "host/classic-home-and-island.png"
+    ]
+  },
+  "testFlightUploadStatus": "0.1.1 (15) uploaded; Apple processing and tester availability pending"
+}

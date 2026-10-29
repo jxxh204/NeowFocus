@@ -40,3 +40,5 @@ manual-fix-certificate.sh
 
 # build 캐시
 .electron-builder
+# Universal CloudKit Node-API binary (rebuilt by desktop package hook)
+apps/desktop/build/native/

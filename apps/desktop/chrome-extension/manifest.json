@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "NeowFocus 집중 보호",
+  "version": "0.1.0",
+  "minimum_chrome_version": "120",
+  "description": "NeowFocus 집중 중 직접 선택한 사이트만 잠시 차단합니다.",
+  "permissions": ["declarativeNetRequestWithHostAccess", "storage", "alarms"],
+  "host_permissions": ["http://127.0.0.1:42731/*"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "worker.js", "type": "module" },
+  "action": { "default_popup": "popup.html", "default_title": "NeowFocus 집중 보호" },
+  "web_accessible_resources": [
+    { "resources": ["blocked.html", "blocked.js", "style.css"], "matches": ["<all_urls>"] }
+  ]
+}

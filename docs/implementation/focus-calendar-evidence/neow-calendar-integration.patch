@@ -1,0 +1,423 @@
+From ebfaddb07eddab21d3c84ced08ab75e06f01c4d4 Mon Sep 17 00:00:00 2001
+From: JxxH204 <ahhancom@gmail.com>
+Date: Thu, 22 Oct 2026 23:54:21 +0900
+Subject: [PATCH] Show NeowFocus daily summaries alongside connected calendars
+
+---
+ mobile/App.tsx                          | 30 +++++++---
+ mobile/src/naver/NaverCalendarPanel.tsx |  4 ++
+ mobile/src/naver/model.ts               | 12 ++++
+ mobile/src/naver/store.ts               | 77 ++++++++++++++++++++++--
+ mobile/src/naver/useNaverCalendar.ts    |  1 +
+ mobile/tests/naver-calendar.test.ts     | 80 +++++++++++++++++++++++++
+ 6 files changed, 190 insertions(+), 14 deletions(-)
+
+diff --git a/mobile/App.tsx b/mobile/App.tsx
+index cf0e91f..efb3edb 100644
+--- a/mobile/App.tsx
++++ b/mobile/App.tsx
+@@ -36,7 +36,7 @@ import {
+ import { BrandMark } from "./src/design/BrandMark";
+ import { useGoogleCalendar } from "./src/google/useGoogleCalendar";
+ import { useNaverCalendar } from "./src/naver/useNaverCalendar";
+-import { naverItemsOn } from "./src/naver/model";
++import { connectedCalendarItemsOn } from "./src/naver/model";
+ import { PlanningPanel } from "./src/planning/PlanningPanel";
+ import * as P from "./src/planning/model";
+ import { persistChange } from "./src/planning/persistence";
+@@ -158,7 +158,11 @@ function CalendarApp() {
+       (
+         [
+           ...calendarItemsOn(doc, google.snapshots, day),
+-          ...naverItemsOn(naver.snapshot, day),
++          ...connectedCalendarItemsOn(
++            naver.snapshot,
++            naver.focusSnapshots,
++            day,
++          ),
+           ...P.planningItemsOn(doc, day),
+         ] as CalendarDisplayItem[]
+       )
+@@ -180,7 +184,13 @@ function CalendarApp() {
+             ? { ...item, event: { ...item.event, color: category.color } }
+             : item;
+         }),
+-    [doc, google.snapshots, naver.snapshot, activeCategoryFilter],
++    [
++      doc,
++      google.snapshots,
++      naver.snapshot,
++      naver.focusSnapshots,
++      activeCategoryFilter,
++    ],
+   );
+   const testing =
+     Platform.OS === "ios" && Settings.get("NEOW_UI_TESTING") === "YES";
+@@ -430,9 +440,9 @@ function CalendarApp() {
+     setSchedulingMemoID(undefined);
+     if (e?.id.startsWith("todo:") || e?.id.startsWith("habit:")) return;
+     if (e?.id.startsWith("naver:")) {
+-      const original = naver.snapshot?.events.find(
+-        (entry) => `naver:${entry.instanceKey}` === e.id,
+-      );
++      const original = [naver.snapshot, ...naver.focusSnapshots]
++        .flatMap((snapshot) => snapshot?.events ?? [])
++        .find((entry) => `naver:${entry.instanceKey}` === e.id);
+       if (original) void naver.open(original);
+       return;
+     }
+@@ -1491,7 +1501,11 @@ function CalendarApp() {
+             ...calendarItemsOn(doc, google.snapshots, day).filter(
+               (item) => item.google,
+             ),
+-            ...naverItemsOn(naver.snapshot, day),
++            ...connectedCalendarItemsOn(
++              naver.snapshot,
++              naver.focusSnapshots,
++              day,
++            ),
+           ])}
+           onClose={() => setTool(undefined)}
+           onSelect={selectSearch}
+@@ -1618,7 +1632,7 @@ function CalendarApp() {
+                           {o.google
+                             ? `${o.google.time || "종일"} · ${o.google.calendarName || "Google 캘린더"} · Google`
+                             : o.naver
+-                              ? `${o.naver.time || "종일"} · ${naver.snapshot?.calendar.title || "연결 캘린더"}`
++                              ? `${o.naver.time || "종일"} · ${[naver.snapshot, ...naver.focusSnapshots].find((snapshot) => snapshot?.calendar.id === o.naver?.calendarID)?.calendar.title || "연결 캘린더"}`
+                               : `${D.label(o.start)}${o.event.timing ? ` · ${D.timeLabel(o.event, o.start)} · ${o.event.timing.timeZone}` : ""}`}
+                           {o.event.recurrence ? " · 반복" : ""}
+                         </Text>
+diff --git a/mobile/src/naver/NaverCalendarPanel.tsx b/mobile/src/naver/NaverCalendarPanel.tsx
+index 1f5b7af..0d15615 100644
+--- a/mobile/src/naver/NaverCalendarPanel.tsx
++++ b/mobile/src/naver/NaverCalendarPanel.tsx
+@@ -120,6 +120,10 @@ export function NaverCalendarPanel({
+         이 화면에서는 캘린더 하나를 선택해요. 새로 선택하면 기존 선택을
+         대체하며, Google 연결 화면의 선택과는 별개예요.
+       </Text>
++      <Text style={[styles.body, { color: c.muted }]}>
++        냐우포커스에서 캘린더 연동을 켜면, 전용 ‘냐우포커스’ 캘린더의 하루 집중
++        횟수와 총 시간도 함께 표시해요. 현재 선택한 캘린더는 유지됩니다.
++      </Text>
+       {!n.supported ? (
+         <Text
+           testID="naver-unsupported"
+diff --git a/mobile/src/naver/model.ts b/mobile/src/naver/model.ts
+index 3293cc3..8295f99 100644
+--- a/mobile/src/naver/model.ts
++++ b/mobile/src/naver/model.ts
+@@ -40,6 +40,7 @@ export type NativeEventInput = {
+   allDay: boolean;
+   timeZone?: string;
+   status?: string;
++  url?: string;
+ };
+ export function localDate(value: Date | string) {
+   return new Date(
+@@ -114,6 +115,17 @@ export function naverItemsOn(
+   });
+ }
+ 
++export function connectedCalendarItemsOn(
++  snapshot: NaverSnapshot | undefined,
++  focusSnapshots: NaverSnapshot[],
++  day: D.Day,
++) {
++  const items = [snapshot, ...focusSnapshots].flatMap((source) =>
++    naverItemsOn(source, day),
++  );
++  return [...new Map(items.map((item) => [item.event.id, item])).values()];
++}
++
+ export type CreateForm = {
+   title: string;
+   startDate: Date;
+diff --git a/mobile/src/naver/store.ts b/mobile/src/naver/store.ts
+index 539e5c4..5cbad69 100644
+--- a/mobile/src/naver/store.ts
++++ b/mobile/src/naver/store.ts
+@@ -22,6 +22,7 @@ export type NaverState = {
+   calendars: NaverCalendar[];
+   selected?: NaverCalendar;
+   snapshot?: NaverSnapshot;
++  focusSnapshots: NaverSnapshot[];
+   busy: boolean;
+   error?: string;
+   notice?: string;
+@@ -75,6 +76,7 @@ export class NaverCalendarStore {
+       permission: "unknown",
+       canAskAgain: true,
+       calendars: [],
++      focusSnapshots: [],
+       busy: false,
+     };
+   }
+@@ -125,6 +127,7 @@ export class NaverCalendarStore {
+               calendars: [],
+               selected: undefined,
+               snapshot: undefined,
++              focusSnapshots: [],
+             });
+         }
+       }
+@@ -147,7 +150,12 @@ export class NaverCalendarStore {
+       canAskAgain: permission.canAskAgain,
+     });
+     if (permission.status !== "granted") {
+-      this.set({ calendars: [], selected: undefined, snapshot: undefined });
++      this.set({
++        calendars: [],
++        selected: undefined,
++        snapshot: undefined,
++        focusSnapshots: [],
++      });
+       return false;
+     }
+     return true;
+@@ -176,6 +184,7 @@ export class NaverCalendarStore {
+       this.selection = undefined;
+       this.set({
+         snapshot: undefined,
++        focusSnapshots: [],
+         error:
+           "연결한 캘린더가 없어졌어요. 계정을 확인하고 다시 선택해 주세요.",
+       });
+@@ -206,7 +215,12 @@ export class NaverCalendarStore {
+       !latest.some((c) => sameSelection(this.selection!, c))
+     ) {
+       this.selection = undefined;
+-      this.set({ calendars: latest, selected: undefined, snapshot: undefined });
++      this.set({
++        calendars: latest,
++        selected: undefined,
++        snapshot: undefined,
++        focusSnapshots: [],
++      });
+       await this.persist(token);
+       throw Error("연결한 캘린더가 없어졌어요. 다시 선택해 주세요.");
+     }
+@@ -228,6 +242,44 @@ export class NaverCalendarStore {
+         syncedAt: new Date().toISOString(),
+       },
+     });
++    // Keep the user's selected calendar. NeowFocus summaries are an additional,
++    // read-only source under this same explicit iPhone-calendar connection.
++    this.set({ focusSnapshots: [] });
++    const focusSnapshots: NaverSnapshot[] = [];
++    for (const focus of latest.filter(
++      (c) => c.id !== currentCalendar.id && c.title === "냐우포커스",
++    )) {
++      const entries = await this.adapter.events(focus.id, from, until);
++      if (!this.current(token) || !(await this.permission(token))) return;
++      const available = await this.adapter.calendars();
++      if (!this.current(token) || !(await this.permission(token))) return;
++      if (
++        !available.some(
++          (c) =>
++            c.id === focus.id &&
++            c.title === focus.title &&
++            c.source.id === focus.source.id &&
++            c.source.name === focus.source.name,
++        )
++      )
++        continue;
++      focusSnapshots.push({
++        calendar: focus,
++        from,
++        until,
++        syncedAt: new Date().toISOString(),
++        events: entries.flatMap((entry) => {
++          if (
++            !entry.allDay ||
++            !/^neowfocus:\/\/daily\/\d{4}-\d{2}-\d{2}$/.test(entry.url ?? "")
++          )
++            return [];
++          const normalized = normalizeEvent(entry, focus.id);
++          return normalized ? [normalized] : [];
++        }),
++      });
++    }
++    if (this.current(token)) this.set({ focusSnapshots });
+   }
+   initialize = async () => {
+     return this.run(async (token) => {
+@@ -245,7 +297,11 @@ export class NaverCalendarStore {
+   selectCalendar = (calendar: NaverCalendar, from?: D.Day, until?: D.Day) =>
+     this.run(async (token) => {
+       this.selectionLoaded = true;
+-      this.set({ selected: undefined, snapshot: undefined });
++      this.set({
++        selected: undefined,
++        snapshot: undefined,
++        focusSnapshots: [],
++      });
+       if (!(await this.list(token))) return;
+       const actual = this.state.calendars.find(
+         (c) =>
+@@ -275,6 +331,7 @@ export class NaverCalendarStore {
+     this.set({
+       selected: undefined,
+       snapshot: undefined,
++      focusSnapshots: [],
+       busy: false,
+       error: undefined,
+       notice: undefined,
+@@ -294,6 +351,7 @@ export class NaverCalendarStore {
+     ++this.generation;
+     this.set({
+       snapshot: undefined,
++      focusSnapshots: [],
+       calendars: [],
+       selected: undefined,
+       busy: false,
+@@ -329,11 +387,16 @@ export class NaverCalendarStore {
+     if (this.nativeFormOpen) return Promise.resolve();
+     return this.run(async (token) => {
+       if (!(await this.list(token))) return;
+-      const selected = this.state.selected;
++      const focus = this.state.focusSnapshots.find(
++        (snapshot) =>
++          snapshot.calendar.id === event.calendarID &&
++          snapshot.events.some((e) => e.instanceKey === event.instanceKey),
++      );
++      const selected = focus?.calendar ?? this.state.selected;
+       if (
+         !selected ||
+         event.calendarID !== selected.id ||
+-        !this.state.snapshot?.events.some(
++        !(focus ?? this.state.snapshot)?.events.some(
+           (e) => e.instanceKey === event.instanceKey,
+         )
+       )
+@@ -344,7 +407,9 @@ export class NaverCalendarStore {
+       try {
+         await this.adapter.open(
+           event,
+-          selected.allowsModifications,
++          !focus &&
++            selected.title !== "냐우포커스" &&
++            selected.allowsModifications,
+           () => this.current(token),
+           selected,
+         );
+diff --git a/mobile/src/naver/useNaverCalendar.ts b/mobile/src/naver/useNaverCalendar.ts
+index 392be80..fbe3e2b 100644
+--- a/mobile/src/naver/useNaverCalendar.ts
++++ b/mobile/src/naver/useNaverCalendar.ts
+@@ -48,6 +48,7 @@ const adapter: NaverAdapter = {
+       allDay: event.allDay,
+       timeZone: event.timeZone,
+       status: event.status,
++      url: event.url,
+     }));
+   },
+   async create(expected, form, current) {
+diff --git a/mobile/tests/naver-calendar.test.ts b/mobile/tests/naver-calendar.test.ts
+index 3513ba5..fdf6439 100644
+--- a/mobile/tests/naver-calendar.test.ts
++++ b/mobile/tests/naver-calendar.test.ts
+@@ -5,6 +5,7 @@ import {
+   createForm,
+   normalizeEvent,
+   naverItemsOn,
++  connectedCalendarItemsOn,
+   type NaverCalendar,
+   type NativeEventInput,
+ } from "../src/naver/model.ts";
+@@ -32,6 +33,7 @@ const event = (
+   startDate: "2026-10-02T00:00:00+09:00",
+   endDate: "2026-10-06T00:00:00+09:00",
+   allDay: true,
++  ...(calendarId === "focus" ? { url: "neowfocus://daily/2026-10-02" } : {}),
+   ...extra,
+ });
+ const local = (extra: Partial<D.Event> = {}): D.Event => ({
+@@ -99,6 +101,84 @@ function fixture() {
+ const from = "2026-10-01",
+   until = "2026-11-01";
+ 
++test("NeowFocus daily summaries appear alongside the selected calendar and open read-only", async () => {
++  const f = fixture();
++  const focus = { ...calendar("focus"), title: "냐우포커스" };
++  f.calendars.push(focus);
++  await f.store.selectCalendar(f.calendars[0], from, until);
++  const state = f.store.getSnapshot();
++  assert.equal(state.selected?.id, "a");
++  assert.equal(state.focusSnapshots.length, 1);
++  assert.equal(
++    connectedCalendarItemsOn(state.snapshot, state.focusSnapshots, "2026-10-02")
++      .length,
++    2,
++  );
++  await f.store.open(state.focusSnapshots[0].events[0]);
++  assert.equal(f.calls.opens.at(-1)?.editable, false);
++  await f.store.disconnect();
++  assert.equal(f.store.getSnapshot().focusSnapshots.length, 0);
++});
++
++test("selecting NeowFocus itself never duplicates its daily event", async () => {
++  const f = fixture();
++  f.calendars[0].title = "냐우포커스";
++  await f.store.selectCalendar(f.calendars[0], from, until);
++  const state = f.store.getSnapshot();
++  assert.equal(state.focusSnapshots.length, 0);
++  assert.equal(
++    connectedCalendarItemsOn(state.snapshot, state.focusSnapshots, "2026-10-02")
++      .length,
++    1,
++  );
++  await f.store.open(state.snapshot!.events[0]);
++  assert.equal(f.calls.opens.at(-1)?.editable, false);
++});
++
++test("automatic NeowFocus source ignores unmarked, timed and canceled events", async () => {
++  const f = fixture();
++  f.calendars.push({ ...calendar("focus"), title: "냐우포커스" });
++  f.adapter.events = async (id) =>
++    id !== "focus"
++      ? [event(id)]
++      : [
++          event(id),
++          event(id, { id: "personal", url: undefined }),
++          event(id, { id: "timed", allDay: false }),
++          event(id, { id: "canceled", status: "canceled" }),
++          event(id, { id: "another-app", url: "another://daily/2026-10-02" }),
++        ];
++  await f.store.selectCalendar(f.calendars[0], from, until);
++  assert.deepEqual(
++    f.store.getSnapshot().focusSnapshots[0].events.map((event) => event.id),
++    ["same-series"],
++  );
++});
++
++test("revoked permission and a background return fence focus-summary reads", async () => {
++  const f = fixture();
++  f.calendars.push({ ...calendar("focus"), title: "냐우포커스" });
++  await f.store.selectCalendar(f.calendars[0], from, until);
++  f.store.background();
++  assert.equal(f.store.getSnapshot().focusSnapshots.length, 0);
++  const pending = deferred<NativeEventInput[]>();
++  const entered = deferred<void>();
++  f.adapter.events = async (id) => {
++    if (id === "focus") {
++      entered.resolve();
++      return pending.promise;
++    }
++    return [event(id)];
++  };
++  const work = f.store.reloadCalendars();
++  await entered.promise;
++  f.permission({ status: "denied", canAskAgain: false });
++  pending.resolve([event("focus")]);
++  await work;
++  assert.equal(f.store.getSnapshot().focusSnapshots.length, 0);
++  assert.equal(f.store.getSnapshot().snapshot, undefined);
++});
++
+ test("all-day original keeps inclusive occupied days and exclusive end, with stable connected identity", () => {
+   const normalized = normalizeEvent(event(), "a")!;
+   const snapshot = {
+-- 
+2.54.0 (Apple Git-157)
+
